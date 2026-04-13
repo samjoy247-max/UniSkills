@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Bookings — UniSkills</title>
+  <link rel="stylesheet" href="./style.css"/>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand"><img src="./1776022356294_image.png" alt="" onerror="this.style.display='none'"/>Uni<span>Skills</span></a>
+    <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
+    <ul class="navbar-links" id="navLinks">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="skills.html">Browse Skills</a></li>
+      <li><a href="bookings.html" class="active">Bookings</a></li>
+      <li><a href="alumni.html">Alumni</a></li>
+      <li><a href="profile.html">Profile</a></li>
+    </ul>
+    <div class="navbar-user">
+      <div class="avatar-sm">TK</div>
+      <span class="nav-name">Tanjida K.</span>
+      <a href="index.html" style="color:#7a94b0;font-size:0.8rem;margin-left:4px;">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-banner">
+  <div class="container">
+    <div>
+      <h1>My Bookings</h1>
+      <p>Track all your session requests — as Seeker and as Provider.</p>
+    </div>
+    <a href="skills.html" class="btn btn-amber">Browse More Skills</a>
+  </div>
+</section>
+
+<main>
+  <div class="container">
+
+    <div class="role-tabs" id="bookingTabs">
+      <button class="role-tab-btn active" onclick="switchBookingTab('seeker')" id="btab-seeker">As Seeker (Learning)</button>
+      <button class="role-tab-btn" onclick="switchBookingTab('provider')" id="btab-provider">As Provider (Teaching)</button>
+    </div>
+
+    <!-- SEEKER VIEW -->
+    <div id="bpanel-seeker">
+      <div class="filter-row mb-3">
+        <label>Filter:</label>
+        <select class="form-control" style="width:auto;">
+          <option>All Statuses</option><option>Pending</option><option>Accepted</option><option>Completed</option><option>Cancelled</option>
+        </select>
+      </div>
+
+      <!-- Accepted -->
+      <div class="booking-item" style="border-left:4px solid var(--success);">
+        <div class="booking-left">
+          <h4>Python for Beginners</h4>
+          <p>Provider: Samiul Alam Joy &nbsp;·&nbsp; Saturday, 14 Jan 2025 · 3:00–5:00 PM &nbsp;·&nbsp; Online</p>
+          <p>Fee: ৳300 &nbsp;·&nbsp; Booked on: 10 Jan 2025</p>
+          <div class="alert alert-success mt-2" style="font-size:0.82rem;padding:10px 14px;">
+            <span>📞</span>
+            <div>
+              <strong>Provider Contact (Revealed):</strong><br/>
+              Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5122303c38243d7f3b3e28112430217c33357f343524">[email&#160;protected]</a> &nbsp;|&nbsp; Phone: 017XXXXXXXX<br/>
+              <span style="color:var(--text-muted);font-size:0.78rem;">Contact the provider to confirm session details.</span>
+            </div>
+          </div>
+        </div>
+        <div class="booking-right">
+          <span class="badge badge-accepted">Accepted</span>
+          <a href="skill-detail.html" class="btn btn-ghost btn-sm">View Skill</a>
+        </div>
+      </div>
+
+      <!-- Pending -->
+      <div class="booking-item" style="border-left:4px solid var(--amber);">
+        <div class="booking-left">
+          <h4>Figma UI Design Basics</h4>
+          <p>Provider: Khadija Akter Esha &nbsp;·&nbsp; Monday, 16 Jan 2025 · 5:00–7:00 PM &nbsp;·&nbsp; Online</p>
+          <p>Fee: ৳200 &nbsp;·&nbsp; Booked on: 12 Jan 2025</p>
+          <div class="alert alert-warning mt-2" style="font-size:0.82rem;padding:10px 14px;">
+            <span>⏳</span> Waiting for provider to accept. Contact info will be shared after acceptance.
+          </div>
+        </div>
+        <div class="booking-right">
+          <span class="badge badge-pending">Pending</span>
+          <button class="btn btn-ghost btn-sm" style="color:var(--danger);border-color:var(--danger);" onclick="alert('Booking cancelled.')">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Completed - rate -->
+      <div class="booking-item" style="border-left:4px solid var(--info);">
+        <div class="booking-left">
+          <h4>LaTeX Report Writing</h4>
+          <p>Provider: Niloy Hasan &nbsp;·&nbsp; Wednesday, 10 Jan 2025 · 2:00–4:00 PM &nbsp;·&nbsp; Online</p>
+          <p>Fee: ৳180 &nbsp;·&nbsp; Completed on: 10 Jan 2025</p>
+        </div>
+        <div class="booking-right">
+          <span class="badge badge-completed">Completed</span>
+          <a href="rating.html" class="btn btn-amber btn-sm">⭐ Rate Session</a>
+        </div>
+      </div>
+
+      <!-- Completed + rated -->
+      <div class="booking-item" style="border-left:4px solid var(--border-dark);">
+        <div class="booking-left">
+          <h4>Data Structures (C++)</h4>
+          <p>Provider: Shahin Akand &nbsp;·&nbsp; Friday, 5 Jan 2025 · 4:00–6:00 PM &nbsp;·&nbsp; Offline</p>
+          <p>Fee: ৳250 &nbsp;·&nbsp; Completed on: 5 Jan 2025</p>
+          <div class="stars mt-1">
+            <span style="font-size:0.82rem;color:var(--text-muted);">Your rating:&nbsp;</span>
+            <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span>
+            <span class="rating-text">4/5</span>
+          </div>
+        </div>
+        <div class="booking-right">
+          <span class="badge badge-completed">Completed</span>
+          <span class="text-muted" style="font-size:0.78rem;">Rated ✓</span>
+        </div>
+      </div>
+
+      <!-- Cancelled -->
+      <div class="booking-item" style="border-left:4px solid var(--danger);opacity:0.7;">
+        <div class="booking-left">
+          <h4>Academic English Writing</h4>
+          <p>Provider: Rumi Akter &nbsp;·&nbsp; Sunday, 8 Jan 2025 · 2:00 PM &nbsp;·&nbsp; Offline</p>
+          <p>Fee: ৳150 &nbsp;·&nbsp; Cancelled by provider</p>
+        </div>
+        <div class="booking-right">
+          <span class="badge badge-cancelled">Cancelled</span>
+          <a href="skills.html" class="btn btn-ghost btn-sm">Find Similar</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROVIDER VIEW -->
+    <div id="bpanel-provider" style="display:none;">
+      <div class="alert alert-info mb-3">
+        <span>📋</span> Booking requests from other students for your skill posts. Accept or decline each.
+      </div>
+
+      <div class="booking-item" style="border-left:4px solid var(--amber);">
+        <div class="booking-left">
+          <h4>Django Web Development <span style="font-weight:400;color:var(--text-muted);font-size:0.84rem;">← your post</span></h4>
+          <p>Seeker: Rima Akter (CSE, 4th Sem) &nbsp;·&nbsp; Requested: 13 Jan 2025</p>
+          <p>Time Slot: Sat, 18 Jan 2025 · 4:00–6:00 PM</p>
+          <p style="font-style:italic;font-size:0.84rem;color:var(--text-mid);">"I want to learn how to build a basic e-commerce project using Django."</p>
+        </div>
+        <div class="booking-right">
+          <span class="badge badge-pending">New Request</span>
+          <div class="d-flex gap-1">
+            <button class="btn btn-success btn-sm" onclick="alert('Booking accepted! Contact details shared with seeker.')">✓ Accept</button>
+            <button class="btn btn-danger btn-sm" onclick="alert('Request declined.')">✗ Decline</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="booking-item" style="border-left:4px solid var(--success);">
+        <div class="booking-left">
+          <h4>Data Structures (C++) <span style="font-weight:400;color:var(--text-muted);font-size:0.84rem;">← your post</span></h4>
+          <p>Seeker: Mohidul Hasan (EEE, 3rd Sem) &nbsp;·&nbsp; Accepted: 11 Jan 2025</p>
+          <p>Time Slot: Fri, 13 Jan 2025 · 4:00–6:00 PM</p>
+        </div>
+        <div class="booking-right">
+          <span class="badge badge-accepted">Accepted</span>
+          <button class="btn btn-primary btn-sm" onclick="alert('Session marked as completed!')">Mark Completed</button>
+        </div>
+      </div>
+
+      <div class="booking-item" style="border-left:4px solid var(--border-dark);">
+        <div class="booking-left">
+          <h4>Data Structures (C++) <span style="font-weight:400;color:var(--text-muted);font-size:0.84rem;">← your post</span></h4>
+          <p>Seeker: Nusrat Sharmin (CSE, 2nd Sem) &nbsp;·&nbsp; Completed: 5 Jan 2025</p>
+          <div class="stars mt-1">
+            <span style="font-size:0.82rem;color:var(--text-muted);">Seeker rated you:&nbsp;</span>
+            <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span>
+            <span class="rating-text">5/5</span>
+          </div>
+        </div>
+        <div class="booking-right">
+          <span class="badge badge-completed">Completed</span>
+          <a href="rating.html" class="btn btn-amber btn-sm">Rate Seeker</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer-note">
+  <span>UniSkills</span> — University of Asia Pacific &nbsp;|&nbsp; Learn · Grow · Excel
+</footer>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="./main.js" defer></script>
+<script>
+function switchBookingTab(role) {
+  ['

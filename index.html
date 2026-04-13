@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UniSkills — Peer Skill Sharing & Alumni Network</title>
+  <link rel="stylesheet" href="./style.css"/>
+  <style>
+    body { background: var(--navy); }
+    .auth-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 460px;
+      align-items: stretch;
+    }
+
+    /* ── Left panel ── */
+    .auth-left {
+      background: linear-gradient(160deg, var(--navy) 0%, #0a1c36 60%, #061328 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 56px;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-left::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 360px; height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,160,32,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .auth-left::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -60px;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(30,75,184,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .auth-brand { display:flex; align-items:center; gap:12px; margin-bottom:52px; }
+    .auth-brand img { width:42px; height:42px; border-radius:8px; }
+    .auth-brand-name { font-family:var(--font-head); font-size:1.6rem; color:#fff; }
+    .auth-brand-name span { color:var(--amber); }
+
+    .auth-headline { font-family:var(--font-head); font-size:2.6rem; color:#fff; line-height:1.18; margin-bottom:20px; letter-spacing:-0.5px; }
+    .auth-headline em { color:var(--amber); font-style:italic; }
+    .auth-tagline { color:#7a9bbf; font-size:1rem; line-height:1.6; max-width:420px; margin-bottom:44px; }
+    .auth-pills { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:48px; }
+    .auth-pill { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); color:#a8c4dc; font-size:0.8rem; padding:6px 14px; border-radius:20px; }
+    .auth-stats { display:flex; gap:36px; }
+    .auth-stat-num { font-family:var(--font-head); font-size:1.9rem; color:var(--amber); line-height:1; }
+    .auth-stat-lbl { font-size:0.78rem; color:#6a8eaa; margin-top:3px; text-transform:uppercase; letter-spacing:0.5px; }
+
+    /* ── Right panel ── */
+    .auth-right {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px 40px;
+      overflow-y: auto;
+    }
+    .auth-right-inner { max-width: 380px; margin: 0 auto; width: 100%; }
+
+    /* Role switcher — only Student / Alumni */
+    .role-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 28px;
+      background: var(--bg-alt, #eeede8);
+      padding: 5px;
+      border-radius: 10px;
+    }
+    .role-sw-btn {
+      padding: 10px 6px;
+      background: transparent;
+      border: none;
+      border-radius: 7px;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+    .role-sw-btn .sw-icon { font-size: 1.15rem; display:block; margin-bottom:3px; }
+    .role-sw-btn.active { background:var(--surface); color:var(--navy); box-shadow:0 1px 6px rgba(15,35,64,0.1); }
+
+    .auth-panel { display:none; }
+    .auth-panel.active { display:block; }
+
+    .auth-toggle-link { display:block; text-align:center; margin-top:16px; font-size:0.84rem; color:var(--text-muted); }
+    .auth-toggle-link a { color:var(--navy-mid); font-weight:600; }
+
+    .forgot-link { font-size:0.82rem; color:var(--text-muted); text-align:right; display:block; margin-top:4px; margin-bottom:18px; }
+
+    .auth-form-title { font-size:1.5rem; margin-bottom:4px; }
+    .auth-form-sub { font-size:0.85rem; color:var(--text-muted); margin-bottom:26px; }
+
+    .email-hint { font-size:0.76rem; margin-top:4px; }
+    .email-hint.ok  { color:var(--success); }
+    .email-hint.err { color:var(--danger); }
+
+    /* Admin link at bottom */
+    .admin-footer-link {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .admin-footer-link a { color: var(--navy-mid); font-weight: 600; }
+
+    /* Responsive */
+    @media (max-width: 860px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-left { padding: 36px 28px 32px; }
+      .auth-headline { font-size: 2rem; }
+      .auth-stats { display: none; }
+      .auth-right { padding: 36px 24px; }
+    }
+    @media (max-width: 480px) {
+      .auth-left { padding: 28px 20px; }
+      .auth-headline { font-size: 1.7rem; }
+      .auth-right { padding: 28px 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="auth-page">
+
+  <!-- ── LEFT ── -->
+  <div class="auth-left">
+    <div class="auth-brand">
+      <img src="./1776022356294_image.png" alt="UniSkills Logo" onerror="this.style.display='none'"/>
+      <div class="auth-brand-name">Uni<span>Skills</span></div>
+    </div>
+    <h1 class="auth-headline">
+      Learn from peers,<br/>
+      <em>grow</em> with alumni.
+    </h1>
+    <p class="auth-tagline">
+      A peer-to-peer skill-sharing and alumni networking platform built for University of Asia Pacific students.
+    </p>
+    <div class="auth-pills">
+      <span class="auth-pill">📚 Peer Tutoring</span>
+      <span class="auth-pill">🎓 Alumni Mentorship</span>
+      <span class="auth-pill">⭐ Verified Reviews</span>
+      <span class="auth-pill">🔒 UAP Email Only</span>
+    </div>
+    <div class="auth-stats">
+      <div><div class="auth-stat-num">67</div><div class="auth-stat-lbl">Students</div></div>
+      <div><div class="auth-stat-num">24</div><div class="auth-stat-lbl">Skill Posts</div></div>
+      <div><div class="auth-stat-num">4.7★</div><div class="auth-stat-lbl">Avg Rating</div></div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT ── -->
+  <div class="auth-right">
+    <div class="auth-right-inner">
+
+      <!-- Role switcher: Student | Alumni only -->
+      <div class="role-switcher" id="roleSwitcher">
+        <button class="role-sw-btn active" onclick="switchRole('student')" id="rsw-student">
+          <span class="sw-icon">🎓</span>Student
+        </button>
+        <button class="role-sw-btn" onclick="switchRole('alumni')" id="rsw-alumni">
+          <span class="sw-icon">💼</span>Alumni
+        </button>
+      </div>
+
+      <!-- ── STUDENT PANEL ── -->
+      <div class="auth-panel active" id="panel-student">
+        <!-- Login -->
+        <div id="student-login">
+          <h2 class="auth-form-title">Welcome back</h2>
+          <p class="auth-form-sub">Log in with your UAP email address.</p>
+          <div class="form-group">
+            <label class="form-label">UAP Email</label>
+            <input type="email" class="form-control" id="sl-email" placeholder="yourname@uap-bd.edu" oninput="checkUAPEmail(this,'sl-hint')"/>
+            <div class="email-hint" id="sl-hint"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" placeholder="Enter password"/>
+            <a href="#" class="forgot-link" onclick="showForgot();return false;">Forgot password?</a>
+          </div>
+          <a href="dashboard.html" class="btn btn-primary btn-block" style="margin-bottom:12px;">Log In</a>
+          <span class="auth-toggle-link">New here? <a href="#" onclick="toggleRegister('student');return false;">Create an account</a></span>
+        </div>
+
+        <!-- Register -->
+        <div id="student-register" style="display:none;">
+          <h2 class="auth-form-title">Create account</h2>
+          <p class="auth-form-sub">Join UniSkills using your official UAP email.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-control" placeholder="Your name"/></div>
+            <div class="form-group"><label class="form-label">Student ID</label><input type="text" class="form-control" placeholder="e.g. 23101084"/></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">UAP Email <span style="color:var(--danger)">*</span></label>
+            <input type="email" class="form-control" id="sr-email" placeholder="yourname@uap-bd.edu" oninput="checkUAPEmail(this,'sr-hint')"/>
+            <div class="email-hint" id="sr-hint"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-group">
+              <label class="form-label">Department</label>
+              <select class="form-control"><option value="">Select</option><option>CSE</option><option>EEE</option><option>BBA</option><option>English</option><option>Architecture</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Semester</label>
+              <select class="form-control"><option value="">Select</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" class="form-control" placeholder="01XXXXXXXXX"/></div>
+          <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-control" placeholder="Create a password"/></div>
+          <div class="form-group">
+            <label class="form-label">I want to</label>
+            <div class="role-choice-wrap" style="margin:6px 0 0;">
+              <button type="button" class="role-choice-btn selected" onclick="selectRole(this)">
+                <div class="role-icon">🔍</div><div class="role-name">Learn Skills</div><div class="role-desc">Seeker</div>
+              </button>
+              <button type="button" class="role-choice-btn" onclick="selectRole(this)">
+                <div class="role-icon">✏️</div><div class="role-name">Teach Skills</div><div class="role-desc">Provider</div>
+              </button>
+              <button type="button" class="role-choice-btn" onclick="selectRole(this)">
+                <div class="role-icon">🔄</div><div class="role-name">Both</div><div class="role-desc">Seeker + Provider</div>
+              </button>
+            </div>
+          </div>
+          <a href="dashboard.html" class="btn btn-primary btn-block" style="margin-top:6px;margin-bottom:12px;">Create Account</a>
+          <span class="auth-toggle-link">Already have an account? <a href="#" onclick="toggleRegister('student');return false;">Log in</a></span>
+        </div>
+      </div>
+
+      <!-- ── ALUMNI PANEL ── -->
+      <div class="auth-panel" id="panel-alumni">
+        <!-- Login -->
+        <div id="alumni-login">
+          <h2 class="auth-form-title">Alumni Login</h2>
+          <p class="auth-form-sub">Log in with your verified alumni account.</p>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-control" placeholder="your@email.com"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" placeholder="Enter password"/>
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </div>
+          <!-- Alumni login goes to alumni-specific dashboard -->
+          <a href="alumni-dashboard.html" class="btn btn-primary btn-block" style="margin-bottom:12px;">Log In as Alumni</a>
+          <span class="auth-toggle-link">Not registered yet? <a href="#" onclick="toggleRegister('alumni');return false;">Apply for alumni access</a></span>
+        </div>
+        <!-- Register -->
+        <div id="alumni-register" style="display:none;">
+          <h2 class="auth-form-title">Alumni Registration</h2>
+          <p class="auth-form-sub">Your profile will be verified by admin before activation.</p>
+          <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-control" placeholder="Your full name"/></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-group">
+              <label class="form-label">Department (at UAP)</label>
+              <select class="form-control"><option>CSE</option><option>EEE</option><option>BBA</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Graduation Year</label>
+              <select class="form-control"><option>2025</option><option>2024</option><option>2023</option><option>2022</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Current Role &amp; Company</label><input type="text" class="form-control" placeholder="e.g. Software Engineer @ BRAC IT"/></div>
+          <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-control" placeholder="work@email.com"/></div>
+          <div class="form-group"><label class="form-label">LinkedIn URL</label><input type="url" class="form-control" placeholder="linkedin.com/in/yourname"/></div>
+          <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-control" placeholder="Create a password"/></div>
+          <a href="alumni-dashboard.html" class="btn btn-primary btn-block" style="text-align:center;">Submit Application</a>
+          <span class="auth-toggle-link" style="margin-top:12px;"><a href="#" onclick="toggleRegister('alumni');return false;">← Back to login</a></span>
+        </div>
+      </div>
+
+      <!-- Admin link — small, at bottom, no separate section -->
+      <div class="admin-footer-link">
+        Admin? <a href="admin.html">Go to Admin Panel →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function switchRole(role) {
+  ['student','alumni'].forEach(r => {
+    document.getElementById('panel-'+r).classList.toggle('active', r===role);
+    document.getElementById('rsw-'+r).classList.toggle('active', r===role);
+  });
+}
+function toggleRegister(role) {
+  const lg = document.getElementById(role+'-login');
+  const rg = document.getElementById(role+'-register');
+  if (!lg||!rg) return;
+  const showingLogin = lg.style.display !== 'none';
+  lg.style.display = showingLogin ? 'none' : '';
+  rg.style.display = showingLogin ? ''     : 'none';
+}
+function checkUAPEmail(input, hintId) {
+  const hint = document.getElementById(hintId);
+  if (!hint) return;
+  const val = input.value.trim();
+  if (!val) { hint.textContent=''; input.style.borderColor=''; return; }
+  if (val.endsWith('@uap-bd.edu')) {
+    hint.textContent='✓ Valid UAP email'; hint.className='email-hint ok';
+    input.style.borderColor='var(--success)';
+  } else if (val.includes('@')) {
+    hint.textContent='✗ Must be @uap-bd.edu'; hint.className='email-hint err';
+    input.style.borderColor='var(--danger)';
+  } else { hint.textContent=''; input.style.borderColor=''; }
+}
+function selectRole(btn) {
+  btn.closest('.role-choice-wrap').querySelectorAll('.role-choice-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+function showForgot() {
+  alert('Password reset link will be sent to your @uap-bd.edu email.');
+}
+</script>
+</body>
+</html>

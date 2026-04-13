@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile — UniSkills</title>
+  <link rel="stylesheet" href="./style.css"/>
+  <style>
+    .profile-cols { display:grid; grid-template-columns:280px 1fr; gap:24px; align-items:start; }
+    .profile-sidebar { position:sticky; top:80px; }
+    .info-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
+    .info-item .label { font-size:0.76rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); margin-bottom:3px; }
+    .info-item .value { font-weight:600; font-size:0.92rem; color:var(--navy); }
+    .review-item { padding:14px 0; border-bottom:1px solid var(--border); }
+    .review-item:last-child { border-bottom:none; }
+    @media(max-width:760px){ .profile-cols{grid-template-columns:1fr!important;} .profile-sidebar{position:static;} }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand"><img src="./1776022356294_image.png" alt="" onerror="this.style.display='none'"/>Uni<span>Skills</span></a>
+    <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
+    <ul class="navbar-links" id="navLinks">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="skills.html">Browse Skills</a></li>
+      <li><a href="bookings.html">Bookings</a></li>
+      <li><a href="alumni.html">Alumni</a></li>
+      <li><a href="profile.html" class="active">Profile</a></li>
+    </ul>
+    <div class="navbar-user">
+      <div class="avatar-sm">TK</div>
+      <span class="nav-name">Tanjida K.</span>
+      <a href="index.html" style="color:#7a94b0;font-size:0.8rem;margin-left:4px;">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-banner">
+  <div class="container">
+    <div>
+      <h1>My Profile</h1>
+      <p>Manage your personal info, skills posted, and ratings received.</p>
+    </div>
+    <span class="hero-badge">Seeker + Provider</span>
+  </div>
+</section>
+
+<main>
+  <div class="container">
+    <div class="profile-cols">
+
+      <!-- Sidebar -->
+      <div class="profile-sidebar">
+        <div class="card" style="text-align:center;padding:28px 20px;">
+          <div class="avatar-lg" style="margin:0 auto 14px;width:90px;height:90px;font-size:2.2rem;">TK</div>
+          <h2 style="font-size:1.15rem;margin-bottom:2px;">Tanjida K.</h2>
+          <p class="text-muted" style="font-size:0.87rem;">CSE · 6th Semester</p>
+          <p class="text-muted" style="font-size:0.84rem;">University of Asia Pacific</p>
+
+          <div style="margin:16px 0;padding:14px;background:var(--bg);border-radius:var(--radius);">
+            <div style="font-size:1.8rem;font-weight:700;font-family:var(--font-head);color:var(--amber-dark);">4.6</div>
+            <div class="stars" style="justify-content:center;margin-top:6px;">
+              <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span>
+            </div>
+            <div class="text-muted" style="font-size:0.77rem;margin-top:4px;">Avg Provider Rating · 11 reviews</div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.82rem;margin-bottom:16px;">
+            <div style="background:var(--bg);padding:9px;border-radius:var(--radius);"><div style="font-weight:700;font-size:1.1rem;color:var(--navy);">3</div><div class="text-muted">Posts</div></div>
+            <div style="background:var(--bg);padding:9px;border-radius:var(--radius);"><div style="font-weight:700;font-size:1.1rem;color:var(--navy);">7</div><div class="text-muted">Sessions</div></div>
+          </div>
+
+          <span class="badge badge-accepted" style="display:inline-block;margin-bottom:14px;">Seeker + Provider</span><br/>
+          <button class="btn btn-amber btn-block" onclick="toggleEdit()">✏️ Edit Profile</button>
+        </div>
+
+        <div class="card mt-2" style="padding:16px;">
+          <h4 style="font-size:0.88rem;margin-bottom:10px;color:var(--navy);">Security</h4>
+          <p class="text-muted" style="font-size:0.81rem;margin-bottom:10px;">🔒 Contact details visible only to users with an accepted booking.</p>
+          <button class="btn btn-ghost btn-sm btn-block" style="margin-bottom:8px;">Change Password</button>
+          <a href="index.html" class="btn btn-ghost btn-sm btn-block" style="color:var(--danger);border-color:var(--danger);">Logout</a>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div>
+
+        <!-- VIEW MODE -->
+        <div id="viewMode">
+          <div class="card mb-3">
+            <h3 style="font-size:0.82rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:18px;">Personal Information</h3>
+            <div class="info-grid">
+              <div class="info-item"><div class="label">Full Name</div><div class="value">Tanjida Khatun</div></div>
+              <div class="info-item"><div class="label">UAP Email</div><div class="value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aedacfc0c4c7cacf80c5eedbcfde83ccca80cbcadb">[email&#160;protected]</a></div></div>
+              <div class="info-item"><div class="label">Department</div><div class="value">Computer Science &amp; Engineering</div></div>
+              <div class="info-item"><div class="label">Semester</div><div class="value">6th Semester</div></div>
+              <div class="info-item"><div class="label">Phone</div><div class="value">018XXXXXXXX</div></div>
+              <div class="info-item"><div class="label">Student ID</div><div class="value">23101094</div></div>
+            </div>
+            <div class="alert alert-info mt-3" style="font-size:0.8rem;">
+              <span>🔒</span> Your email and phone are only visible to users who have an accepted booking with you.
+            </div>
+          </div>
+
+          <!-- Skill Posts -->
+          <div class="card mb-3">
+            <div class="section-header">
+              <h3 style="font-size:0.82rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">My Skill Posts</h3>
+              <a href="skills.html#create" class="btn btn-amber btn-sm">+ New Post</a>
+            </div>
+
+            <div class="booking-item" style="margin-bottom:10px;">
+              <div class="booking-left">
+                <h4>Django Web Development</h4>
+                <p>Technical &nbsp;·&nbsp; Online &nbsp;·&nbsp; ৳300/session &nbsp;·&nbsp; Sat 4:00 PM</p>
+              </div>
+              <div class="booking-right">
+                <span class="badge badge-accepted">Approved</span>
+                <div class="d-flex gap-1">
+                  <button class="btn btn-ghost btn-sm">Edit</button>
+                  <button class="btn btn-ghost btn-sm" style="color:var(--danger);border-color:var(--danger);" onclick="if(confirm('Delete this post?'))alert('Post deleted.')">Delete</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="booking-item" style="margin-bottom:10px;">
+              <div class="booking-left">
+                <h4>Data Structures (C++)</h4>
+                <p>Technical &nbsp;·&nbsp; Both &nbsp;·&nbsp; ৳250/session &nbsp;·&nbsp; Fri 4:00 PM</p>
+              </div>
+              <div class="booking-right">
+                <span class="badge badge-accepted">Approved</span>
+                <div class="d-flex gap-1">
+                  <button class="btn btn-ghost btn-sm">Edit</button>
+                  <button class="btn btn-ghost btn-sm" style="color:var(--danger);border-color:var(--danger);" onclick="if(confirm('Delete this post?'))alert('Post deleted.')">Delete</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="booking-item">
+              <div class="booking-left">
+                <h4>English Presentation Skills</h4>
+                <p>Non-Technical &nbsp;·&nbsp; Online &nbsp;·&nbsp; ৳150/session</p>
+              </div>
+              <div class="booking-right">
+                <span class="badge badge-review">Pending Review</span>
+                <span class="text-muted" style="font-size:0.78rem;">Not visible yet</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ratings Received -->
+          <div class="card">
+            <h3 style="font-size:0.82rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px;">Ratings Received</h3>
+
+            <div class="review-item">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <div class="avatar-sm" style="background:#1a3558;">MH</div>
+                <div>
+                  <span style="font-weight:600;font-size:0.88rem;">Mohidul Hasan</span>
+                  <span class="text-muted" style="font-size:0.77rem;margin-left:6px;">for Django Web Dev</span>
+                </div>
+                <div class="stars" style="margin-left:auto;">
+                  <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span>
+                </div>
+              </div>
+              <p style="font-size:0.85rem;color:var(--text-mid);font-style:italic;">"Best Django session I've had! Clear and hands-on. Already building my first project."</p>
+            </div>
+
+            <div class="review-item">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <div class="avatar-sm" style="background:#1e6b3f;">RA</div>
+                <div>
+                  <span style="font-weight:600;font-size:0.88rem;">Rima Akter</span>
+                  <span class="text-muted" style="font-size:0.77rem;margin-left:6px;">for Data Structures</span>
+                </div>
+                <div class="stars" style="margin-left:auto;">
+                  <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span>
+                </div>
+              </div>
+              <p style="font-size:0.85rem;color:var(--text-mid);font-style:italic;">"Explained linked lists clearly. Good session, would book again for trees and graphs."</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- EDIT MODE -->
+        <div id="editMode" style="display:none;">
+          <div class="card">
+            <h3 style="font-size:1rem;margin-bottom:20px;">Edit Profile</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-control" value="Tanjida Khatun"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">UAP Email</label>
+                <input type="email" class="form-control" value="tanjida.k@uap-bd.edu" disabled style="background:var(--bg);"/>
+                <div class="form-hint">Email cannot be changed.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Department</label>
+                <select class="form-control"><option selected>CSE</option><option>EEE</option><option>BBA</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Semester</label>
+                <select class="form-control">
+                  <option>5th</option><option selected>6th</option><option>7th</option><option>8th</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" value="018XXXXXXXX"/>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:8px;">
+              <button class="btn btn-amber" onclick="toggleEdit();alert('Profile updated!')">Save Changes</button>
+              <button class="btn btn-ghost" onclick="toggleEdit()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer-note">
+  <span>UniSkills</span> — University of Asia Pacific &nbsp;|&nbsp; Learn · Grow · Excel
+</footer>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="./main.js" defer></script>
+<script>
+function toggleEdit(){
+  const v=docum

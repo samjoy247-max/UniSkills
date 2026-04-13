@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Alumni Dashboard - UniSkills</title>
+  <link rel="stylesheet" href="./style.css"/>
+  <style>
+    .quick-action-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:14px; }
+    .quick-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px 16px; text-align:center; cursor:pointer; transition:all var(--transition); text-decoration:none; display:block; }
+    .quick-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); text-decoration:none; border-color:var(--amber); }
+    .quick-card .qc-icon { font-size:1.9rem; margin-bottom:8px; }
+    .quick-card h4 { font-size:0.92rem; color:var(--navy); margin-bottom:3px; }
+    .quick-card p { font-size:0.78rem; color:var(--text-muted); }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand"><img src="./1776022356294_image.png" alt="" onerror="this.style.display='none'"/>Uni<span>Skills</span></a>
+    <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
+    <ul class="navbar-links" id="navLinks">
+      <li><a href="alumni-dashboard.html" class="active">Alumni Dashboard</a></li>
+      <li><a href="alumni.html#posts">Career Posts</a></li>
+      <li><a href="alumni.html">Alumni Directory</a></li>
+      <li><a href="alumni-dashboard.html#my-posts">My Posts</a></li>
+      <li><a href="alumni-dashboard.html#profile">My Profile</a></li>
+    </ul>
+    <div class="navbar-user">
+      <div class="avatar-sm">AL</div>
+      <span class="nav-name">Alumni User</span>
+      <a href="index.html" style="color:#7a94b0;font-size:0.8rem;margin-left:4px;">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-banner">
+  <div class="container">
+    <div>
+      <h1>Welcome back, Alumni Mentor</h1>
+      <p>Share guidance, career insights, and opportunities with UAP students.</p>
+    </div>
+    <span class="hero-badge">Alumni Access</span>
+  </div>
+</section>
+
+<main>
+  <div class="container">
+
+    <div class="alert alert-info mb-3">
+      <span>ℹ️</span> Alumni module is separate from student Seeker/Provider module. Career posts require admin approval before publication.
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Total Career Posts</div></div>
+      <div class="stat-card"><div class="stat-num">1</div><div class="stat-label">Pending Approval</div></div>
+      <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Published</div></div>
+      <div class="stat-card"><div class="stat-num">128</div><div class="stat-label">Student Views</div></div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">Quick Actions</span>
+    </div>
+    <div class="quick-action-grid mb-3">
+      <a href="#create-post" class="quick-card">
+        <div class="qc-icon">✍️</div>
+        <h4>Create Career Post</h4>
+        <p>Share guidance for students</p>
+      </a>
+      <a href="#my-posts" class="quick-card">
+        <div class="qc-icon">🗂️</div>
+        <h4>My Career Posts</h4>
+        <p>Track post status</p>
+      </a>
+      <a href="alumni.html#posts" class="quick-card">
+        <div class="qc-icon">📰</div>
+        <h4>Browse Published Posts</h4>
+        <p>View public alumni feed</p>
+      </a>
+      <a href="#profile" class="quick-card">
+        <div class="qc-icon">👤</div>
+        <h4>Alumni Profile</h4>
+        <p>Update profile details</p>
+      </a>
+    </div>
+
+    <hr class="divider"/>
+
+    <section id="my-posts" class="mb-3">
+      <div class="section-header">
+        <span class="section-title">My Career Posts</span>
+      </div>
+
+      <div class="booking-item" style="border-left:3px solid var(--success);">
+        <div class="booking-left">
+          <h4>How to prepare for software interviews</h4>
+          <p>Topic: Career Advice · Submitted: 10 Jan 2025</p>
+        </div>
+        <div class="booking-right">
+          <span class="badge badge-accepted">Published</span>
+        </div>
+      </div>
+
+      <div class="booking-item" style="border-left:3px solid var(--amber);">
+        <div class="booking-left">
+          <h4>DevOps learning roadmap for beginners</h4>
+          <p>Topic: Industry Insights · Submitted: 12 Jan 2025</p>
+        </div>
+        <div class="booking-right">
+          <span class="badge badge-pending">Pending Review</span>
+        </div>
+      </div>
+
+      <div class="booking-item" style="border-left:3px solid var(--success);">
+        <div class="booking-left">
+          <h4>Internship application checklist</h4>
+          <p>Topic: Job Opportunity · Submitted: 03 Jan 2025</p>
+        </div>
+        <div class="booking-right">
+          <span class="badge badge-accepted">Published</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="create-post" class="card mb-3" style="padding:22px;">
+      <div class="section-header">
+        <span class="section-title">Create Career Post</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Post Topic</label>
+        <select class="form-control">
+          <option>Career Advice</option>
+          <option>Industry Insights</option>
+          <option>Job Opportunity</option>
+          <option>Mentorship</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Post Title</label>
+        <input type="text" class="form-control" placeholder="Write a clear title for students"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Post Content</label>
+        <textarea class="form-control" rows="5" placeholder="Share practical career guidance, insights, or opportunities"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="alert('Career post submitted for admin approval.')">Submit Post</button>
+    </section>
+
+    <section id="profile" class="card" style="padding:22px;">
+      <div class="section-header">
+        <span class="section-title">My Alumni Profile</span>
+      </div>
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-control" value="Alumni User"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group"><label class="form-label">Department (UAP)</label><input class="form-control" value="CSE"/></div>
+        <div class="form-group"><label class="form-label">Graduation Year</label><input class="form-control" value="2023"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Current Role & Company</label><input class="form-control" value="Software Engineer @ Example Co."/></div>
+      <div class="form-group"><label class="form-label">LinkedIn URL</label><input class="form-control" value="linkedin.com/in/alumni-user"/></div>
+      <button class="btn btn-amber" onclick="alert('Profile update saved.')">Save Profile</button>
+    </section>
+
+  </div>
+</main>
+
+<footer class="footer-note">
+  <span>UniSkills</span> - University of Asia Pacific | Alumni Networking & Mentorship
+</footer>
+<script src="./main.js" defer></script>
+</body>
+</html>

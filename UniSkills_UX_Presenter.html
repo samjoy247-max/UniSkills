@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UniSkills — UX Presenter</title>
+  <style>
+    :root {
+      --navy: #0f2340;
+      --amber: #e8a020;
+      --bg: #f4f3ef;
+      --surface: #fff;
+      --border: #e0ddd6;
+      --text: #1a1a1a;
+      --muted: #6a6760;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', Segoe UI, sans-serif; background: var(--bg); color: var(--text); }
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap');
+
+    .wrap { width: min(1280px, 97vw); margin: 16px auto; }
+
+    .top {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: grid;
+      gap: 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 14px rgba(15,35,64,0.09);
+    }
+
+    .brand { display:flex; align-items:center; gap:10px; }
+    .brand-logo { width:36px; height:36px; border-radius:6px; }
+    .brand-name { font-size:1.2rem; font-weight:700; color:var(--navy); }
+    .brand-name span { color:var(--amber); }
+    .brand-sub { font-size:0.8rem; color:var(--muted); margin-top:2px; }
+
+    .btns { display:flex; flex-wrap:wrap; gap:7px; }
+    button {
+      border: 1.5px solid #d0cdc6;
+      background: var(--bg);
+      color: #1a2e4a;
+      padding: 7px 13px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    button:hover { background: #e8e7e2; }
+    button.active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #fff;
+    }
+
+    .actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .btn-open {
+      display:inline-block;
+      background:var(--amber);
+      color:var(--navy);
+      padding:8px 16px;
+      border-radius:8px;
+      text-decoration:none;
+      font-weight:700;
+      font-size:0.82rem;
+      border:none;
+    }
+    .btn-open:hover { background:#c98a10; color:#fff; }
+    .hint { font-size:0.78rem; color:var(--muted); }
+
+    .frame-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 2px 14px rgba(15,35,64,0.09);
+      overflow: hidden;
+    }
+    iframe { width:100%; height:82vh; border:0; background:#fff; }
+    @media(max-width:700px){ iframe{height:72vh;} }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <img class="brand-logo" src="./1776022356294_image.png" alt="" onerror="this.style.display='none'"/>
+      <div>
+        <div class="brand-name">Uni<span>Skills</span> — UX Presenter</div>
+        <div class="brand-sub">University of Asia Pacific</div>
+      </div>
+    </div>
+
+    <div class="btns" id="navBtns">
+      <button data-page="index.html" class="active">1. Login / Register</button>
+      <button data-page="dashboard.html">2. Dashboard</button>
+      <button data-page="skills.html">3. Browse Skills</button>
+      <button data-page="skill-detail.html">4. Skill Detail</button>
+      <button data-page="bookings.html">5. My Bookings</button>
+      <button data-page="rating.html">6. Rate Session</button>
+      <button data-page="alumni.html">7. Alumni Network</button>
+      <button data-page="profile.html">8. My Profile</button>
+      <button data-page="admin.html">9. Admin Panel</button>
+    </div>
+
+    <div class="actions">
+      <a id="openTab" class="btn-open" href="index.html" target="_blank">↗ Open in New Tab</a>
+      <span class="hint">Switch pages above · Open in new tab to interact fully</span>
+    </div>
+  </div>
+
+  <div class="frame-wrap">
+    <iframe id="viewer" src="index.html" title="UniSkills UX Viewer"></iframe>
+  </div>
+</div>
+
+<script>
+const buttons = document.querySelectorAll('#navBtns button');
+const frame   = document.getElementById('viewer');
+const openTab = document.getElementById('openTab');
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    frame.src = btn.dataset.page;
+    openTab.href = btn.dataset.page;
+  });
+});
+</script>
+</body>
+</html>

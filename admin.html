@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel — UniSkills</title>
+  <link rel="stylesheet" href="./style.css"/>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand"><img src="./1776022356294_image.png" alt="" onerror="this.style.display='none'"/>Uni<span>Skills</span></a>
+    <ul class="navbar-links">
+      <li><a href="admin.html" class="active">Admin Panel</a></li>
+      <li><a href="dashboard.html">Student View</a></li>
+    </ul>
+    <div class="navbar-user">
+      <div class="avatar-sm" style="background:var(--amber);color:var(--navy);">A</div>
+      <span class="nav-name">Admin</span>
+      <a href="index.html" style="color:#7a94b0;font-size:0.8rem;margin-left:4px;">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-banner">
+  <div class="container">
+    <div>
+      <h1>Admin Panel</h1>
+      <p>Moderate skill posts, verify alumni, manage users, and view platform stats.</p>
+    </div>
+    <span class="hero-badge">Admin Access</span>
+  </div>
+</section>
+
+<main>
+  <div class="container">
+
+    <!-- Stats -->
+    <div class="section-header mb-1"><span class="section-title">Platform Statistics</span></div>
+    <div class="stat-grid mb-3" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr));">
+      <div class="stat-card"><div class="stat-num">67</div><div class="stat-label">Total Students</div></div>
+      <div class="stat-card"><div class="stat-num">8</div><div class="stat-label">Alumni (Verified)</div></div>
+      <div class="stat-card"><div class="stat-num">24</div><div class="stat-label">Skill Posts</div></div>
+      <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Pending Review</div></div>
+      <div class="stat-card"><div class="stat-num">41</div><div class="stat-label">Sessions Done</div></div>
+      <div class="stat-card"><div class="stat-num">4.7</div><div class="stat-label">Avg. Rating</div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="role-tabs" id="adminTabs" style="margin-bottom:28px;">
+      <button class="role-tab-btn active" onclick="switchAdminTab('skills')" id="admtab-skills">Skill Posts</button>
+      <button class="role-tab-btn" onclick="switchAdminTab('alumni')" id="admtab-alumni">Alumni Verification</button>
+      <button class="role-tab-btn" onclick="switchAdminTab('users')" id="admtab-users">Manage Users</button>
+    </div>
+
+    <!-- SKILL POSTS -->
+    <div id="admpanel-skills">
+      <div class="section-header">
+        <span class="section-title">Pending Approval</span>
+        <span class="badge badge-pending" style="font-size:0.8rem;padding:5px 12px;">3 pending</span>
+      </div>
+      <div class="table-wrap mb-3">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Skill Title</th><th>Provider</th><th>Category</th><th>Fee</th><th>Mode</th><th>Submitted</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>English Presentation Skills</strong></td>
+              <td>Tanjida Khatun<br/><span class="text-muted" style="font-size:0.76rem;">CSE · 6th Sem</span></td>
+              <td><span class="skill-cat-badge cat-lang">Non-Technical</span></td>
+              <td>৳150</td><td>Online</td><td>13 Jan 2025</td>
+              <td>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <button class="btn btn-success btn-sm" onclick="alert('Post approved!')">✓ Approve</button>
+                  <button class="btn btn-danger btn-sm" onclick="alert('Post rejected.')">✗ Reject</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Photography Basics</strong></td>
+              <td>Arif Hossain<br/><span class="text-muted" style="font-size:0.76rem;">EEE · 5th Sem</span></td>
+              <td><span class="skill-cat-badge cat-business">Other</span></td>
+              <td>৳120</td><td>Offline</td><td>12 Jan 2025</td>
+              <td>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <button class="btn btn-success btn-sm" onclick="alert('Post approved!')">✓ Approve</button>
+                  <button class="btn btn-danger btn-sm" onclick="alert('Post rejected.')">✗ Reject</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>IELTS Preparation Guide</strong></td>
+              <td>Sadia Begum<br/><span class="text-muted" style="font-size:0.76rem;">English · 7th Sem</span></td>
+              <td><span class="skill-cat-badge cat-lang">Non-Technical</span></td>
+              <td>৳200</td><td>Both</td><td>11 Jan 2025</td>
+              <td>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <button class="btn btn-success btn-sm" onclick="alert('Post approved!')">✓ Approve</button>
+                  <button class="btn btn-danger btn-sm" onclick="alert('Post rejected.')">✗ Reject</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-header mt-3">
+        <span class="section-title">Approved Posts</span>
+        <span class="text-muted" style="font-size:0.84rem;">21 live</span>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Skill Title</th><th>Provider</th><th>Category</th><th>Bookings</th><th>Avg Rating</th><th>Status</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Python for Beginners</strong></td><td>Samiul Joy</td>
+              <td><span class="skill-cat-badge cat-tech">Technical</span></td>
+              <td>11</td><td>⭐ 4.9</td>
+              <td><span class="badge badge-accepted">Live</span></td>
+              <td><button class="btn btn-danger btn-sm" onclick="alert('Post removed.')">Remove</button></td>
+            </tr>
+            <tr>
+              <td><strong>Figma UI Design Basics</strong></td><td>Khadija Esha</td>
+              <td><span class="skill-cat-badge cat-design">Non-Technical</span></td>
+              <td>6</td><td>⭐ 4.2</td>
+              <td><span class="badge badge-accepted">Live</span></td>
+              <td><button class="btn btn-danger btn-sm" onclick="alert('Post removed.')">Remove</button></td>
+            </tr>
+            <tr>
+              <td><strong>Data Structures (C++)</strong></td><td>Tanjida Khatun</td>
+              <td><span class="skill-cat-badge cat-tech">Technical</span></td>
+              <td>9</td><td>⭐ 4.8</td>
+              <td><span class="badge badge-accepted">Live</span></td>
+              <td><button class="btn btn-danger btn-sm" onclick="alert('Post removed.')">Remove</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ALUMNI VERIFICATION -->
+    <div id="admpanel-alumni" style="display:none;">
+      <div class="section-header">
+        <span class="section-title">Pending Verification</span>
+        <span class="badge badge-pending" style="font-size:0.8rem;padding:5px 12px;">2 pending</span>
+      </div>
+      <div class="table-wrap mb-3">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Name</th><th>Graduation</th><th>Current Role</th><th>Email</th><th>LinkedIn</th><th>Applied</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Karim Uddin</strong><br/><span class="text-muted" style="font-size:0.76rem;">CSE</span></td>
+              <td>2024</td><td>SWE @ Reve Systems</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="543f35263d397a2114263122317a373b39">[email&#160;protected]</a></td>
+              <td><a href="#" style="font-size:0.82rem;">linkedin/karim</a></td><td>12 Jan 2025</td>
+              <td>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn btn-success btn-sm" onclick="alert('Alumni verified!')">✓ Verify</button>
+                  <button class="btn btn-danger btn-sm" onclick="alert('Rejected.')">✗ Reject</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Fatema Noor</strong><br/><span class="text-muted" style="font-size:0.76rem;">CSE</span></td>
+              <td>2023</td><td>Data Analyst @ SSL Wireless</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="afc9cedbcac2ce81c1efdcdcc381ccc0c2">[email&#160;protected]</a></td>
+              <td><a href="#" style="font-size:0.82rem;">linkedin/fatema</a></td><td>10 Jan 2025</td>
+              <td>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn btn-success btn-sm" onclick="alert('Alumni verified!')">✓ Verify</button>
+                  <button class="btn btn-danger btn-sm" onclick="alert('Rejected.')">✗ Reject</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-header mt-3"><span class="section-title">Verified Alumni</span></div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Name</th><th>Graduation</th><th>Company</th><th>Posts</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Tanvir Ahmed</strong></td><td>2024</td><td>BRAC IT</td><td>3</td><td><span class="badge badge-verified">Verified</span></td><td><button class="btn btn-danger btn-sm" onclick="alert('Deactivated.')">Deactivate</button></td></tr>
+            <tr><td><strong>Rabeya Khan</strong></td><td>2023</td><td>Pathao</td><td>4</td><td><span class="badge badge-verified">Verified</span></td><td><button class="btn btn-danger btn-sm" onclick="alert('Deactivated.')">Deactivate</button></td></tr>
+            <tr><td><strong>Sumaiya Rahman</strong></td><td>2024</td><td>Shohoz</td><td>2</td><td><span class="badge badge-verified">Verified</span></td><td><button class="btn btn-danger btn-sm" onclick="alert('Deactivated.')">Deactivate</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MANAGE USERS -->
+    <div id="admpanel-users" style="display:none;">
+      <div class="section-header">
+        <span class="section-title">Registered Students</span>
+        <span class="text-muted" style="font-size:0.84rem;">67 total</span>
+      </div>
+      <div class="search-bar mb-3">
+        <input type="text" class="form-control" placeholder="Search by name, email, or department…"/>
+        <button class="btn btn-primary">Search</button>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Dept</th><th>Sem</th><th>Role</th><th>Posts</th><th>Sessions</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Samiul Alam Joy</strong></td>
+              <td style="font-size:0.82rem;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4231232f2b372e6c28023723326f20266c272637">[email&#160;protected]</a></td>
+              <td>CSE</td><td>6th</td>
+              <td><span class="badge" style="background:#dbeafe;color:#1d4ed8;">Provider</span></td>
+              <td>5</td><td>11</td>
+              <td><button class="btn btn-danger btn-sm" onclick="alert('User deactivated.')">Deactivate</button></td>
+            </tr>
+            <tr>
+              <td><strong>Tanjida Khatun</strong></td>
+              <td style="font-size:0.82rem;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7d091c131714191c53163d081c0d501f1953181908">[email&#160;protected]</a></td>
+              <td>CSE</td><td>6th</td>
+              <td><span class="badge" style="background:#ede9fe;color:#6d28d9;">Both</span></td>
+              <td>3</td><td>7</td>
+              <td><button class="btn btn-danger btn-sm" onclick="alert('User deactivated.')">Deactivate</button></td>
+            </tr>
+            <tr>
+              <td><strong>Khadija Akter Esha</strong></td>
+              <td style="font-size:0.82rem;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cbaeb8a3aae5a08bbeaabbe6a9afe5aeafbe">[email&#160;protected]</a></td>
+              <td>CSE</td><td>6th</td>
+              <td><span class="badge" style="background:#dbeafe;color:#1d4ed8;">Provider</span></td>
+              <td>2</td><td>6</td>
+              <td><button class="btn btn-danger btn-sm" onclick="alert('User deactivated.')">Deactivate</button></td>
+            </tr>
+            <tr>
+              <td><strong>Rima Akter</strong></td>
+              <td style="font-size:0.82rem;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d2f34303c733c1d283c2d703f3973383928">[email&#160;protected]</a></td>
+              <td>CSE</td><td>2nd</td>
+              <td><span class="badge" style="background:#d1fae5;color:#065f46;">Seeker</span></td>
+              <td>0</td><td>4</td>
+              <td><button class="btn btn-danger btn-sm" onclick="alert('User deactivated.')">Deactivate</button></td>
+            </tr>
+            <tr>
+              <td><strong>Mohidul Hasan</strong></td>
+              <td style="font-size:0.82rem;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="513c3e393835243d7f39112430217c33357f343524">[email&#160;protected]</a>
+</td>
+              <td>EEE</td><td>3rd</td>
+              <td><span class="badge" style="background:#d1fae5;color:#065f46;">Seeker</span></td>
+              <td>0</td><td>3</td>
+              <td><button class="btn btn-danger btn-sm" onclick="alert('User deactivated.')">Deactivate</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer-note">
+  <span>UniSkills</span> — University of Asia Pacific &nbsp;|&nbsp; Admin Panel
+</footer>
+<script>
+function switchAdminTab(tab) {
+  ['skills','alumni','users'].forEach(t => {
+    document.getElementById('admpanel-'+t).style.display = t===tab ? 'block' : 'none';
+    document.getElementById('admtab-'+t).classList.toggle('active', t===tab);
+  });
+}
+</script>
+</body>
+</html>

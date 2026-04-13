@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — UniSkills</title>
+  <link rel="stylesheet" href="./style.css"/>
+  <style>
+    .dash-cols { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    @media(max-width:700px){ .dash-cols{grid-template-columns:1fr!important;} }
+    .quick-action-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:14px; }
+    .quick-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px 16px; text-align:center; cursor:pointer; transition:all var(--transition); text-decoration:none; display:block; }
+    .quick-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); text-decoration:none; border-color:var(--amber); }
+    .quick-card .qc-icon { font-size:1.9rem; margin-bottom:8px; }
+    .quick-card h4 { font-size:0.92rem; color:var(--navy); margin-bottom:3px; }
+    .quick-card p { font-size:0.78rem; color:var(--text-muted); }
+    .alumni-mini { display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--border); }
+    .alumni-mini:last-child { border-bottom:none; }
+    .alumni-mini .avatar-sm { flex-shrink:0; background:var(--navy); color:var(--amber); }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand">
+      <img src="./1776022356294_image.png" alt="" onerror="this.style.display='none'"/>
+      Uni<span>Skills</span>
+    </a>
+    <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
+    <ul class="navbar-links" id="navLinks">
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="skills.html">Browse Skills</a></li>
+      <li><a href="bookings.html">Bookings</a></li>
+      <li><a href="alumni.html">Alumni</a></li>
+      <li><a href="profile.html">Profile</a></li>
+    </ul>
+    <div class="navbar-user">
+      <div class="avatar-sm">TK</div>
+      <span class="nav-name">Tanjida K.</span>
+      <a href="index.html" class="nav-logout" style="color:#7a94b0;font-size:0.8rem;margin-left:4px;">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-banner">
+  <div class="container">
+    <div>
+      <h1>Welcome back, Tanjida! 👋</h1>
+      <p>CSE · 6th Semester · University of Asia Pacific</p>
+    </div>
+    <span class="hero-badge">Seeker + Provider</span>
+  </div>
+</section>
+
+<main>
+  <div class="container">
+
+    <!-- Stats -->
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Skill Posts</div></div>
+      <div class="stat-card"><div class="stat-num">7</div><div class="stat-label">Sessions Booked</div></div>
+      <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Completed</div></div>
+      <div class="stat-card"><div class="stat-num">4.6</div><div class="stat-label">Avg. Rating</div></div>
+      <div class="stat-card"><div class="stat-num">12</div><div class="stat-label">Alumni Posts</div></div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="section-header">
+      <span class="section-title">Quick Actions</span>
+    </div>
+    <div class="quick-action-grid mb-3">
+      <a href="skills.html" class="quick-card">
+        <div class="qc-icon">🔍</div>
+        <h4>Browse Skills</h4>
+        <p>Find a skill to learn</p>
+      </a>
+      <a href="skills.html#create" class="quick-card">
+        <div class="qc-icon">✏️</div>
+        <h4>Post a Skill</h4>
+        <p>Teach what you know</p>
+      </a>
+      <a href="bookings.html" class="quick-card">
+        <div class="qc-icon">📅</div>
+        <h4>My Bookings</h4>
+        <p>View session history</p>
+      </a>
+      <a href="alumni.html" class="quick-card">
+        <div class="qc-icon">🎓</div>
+        <h4>Alumni Network</h4>
+        <p>Connect with graduates</p>
+      </a>
+      <a href="rating.html" class="quick-card">
+        <div class="qc-icon">⭐</div>
+        <h4>Rate a Session</h4>
+        <p>Leave your feedback</p>
+      </a>
+      <a href="profile.html" class="quick-card">
+        <div class="qc-icon">👤</div>
+        <h4>My Profile</h4>
+        <p>Edit your details</p>
+      </a>
+    </div>
+
+    <div class="dash-cols">
+      <!-- Recent Bookings -->
+      <div>
+        <div class="section-header">
+          <span class="section-title">Recent Bookings</span>
+          <a href="bookings.html" class="btn btn-ghost btn-sm">View All</a>
+        </div>
+        <div class="booking-item" style="border-left:3px solid var(--success);">
+          <div class="booking-left">
+            <h4>Python for Beginners</h4>
+            <p>Provider: Samiul Joy &nbsp;·&nbsp; Sat, 14 Jan · 3:00 PM</p>
+          </div>
+          <div class="booking-right">
+            <span class="badge badge-accepted">Accepted</span>
+            <a href="bookings.html" class="btn btn-primary btn-sm">Details</a>
+          </div>
+        </div>
+        <div class="booking-item" style="border-left:3px solid var(--amber);">
+          <div class="booking-left">
+            <h4>Figma UI Design Basics</h4>
+            <p>Provider: Esha Khadija &nbsp;·&nbsp; Mon, 16 Jan · 5:00 PM</p>
+          </div>
+          <div class="booking-right">
+            <span class="badge badge-pending">Pending</span>
+          </div>
+        </div>
+        <div class="booking-item" style="border-left:3px solid var(--info);">
+          <div class="booking-left">
+            <h4>LaTeX Report Writing</h4>
+            <p>Provider: Niloy Hasan &nbsp;·&nbsp; Wed, 10 Jan · 2:00 PM</p>
+          </div>
+          <div class="booking-right">
+            <span class="badge badge-completed">Completed</span>
+            <a href="rating.html" class="btn btn-amber btn-sm">Rate</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Skill Posts -->
+      <div>
+        <div class="section-header">
+          <span class="section-title">My Skill Posts</span>
+          <a href="skills.html#create" class="btn btn-amber btn-sm">+ New Post</a>
+        </div>
+        <div class="booking-item" style="border-left:3px solid var(--success);">
+          <div class="booking-left">
+            <h4>Django Web Development</h4>
+            <p>Technical &nbsp;·&nbsp; ৳300/session</p>
+          </div>
+          <div class="booking-right">
+            <span class="badge badge-accepted">Approved</span>
+            <span style="font-size:0.78rem;color:var(--text-muted);">2 bookings</span>
+          </div>
+        </div>
+        <div class="booking-item" style="border-left:3px solid var(--amber);">
+          <div class="booking-left">
+            <h4>English Presentation Skills</h4>
+            <p>Non-Technical &nbsp;·&nbsp; ৳150/session</p>
+          </div>
+          <div class="booking-right">
+            <span class="badge badge-review">Pending Review</span>
+          </div>
+        </div>
+        <div class="booking-item" style="border-left:3px solid var(--success);">
+          <div class="booking-left">
+            <h4>Data Structures (C++)</h4>
+            <p>Technical &nbsp;·&nbsp; ৳250/session</p>
+          </div>
+          <div class="booking-right">
+            <span class="badge badge-accepted">Approved</span>
+            <span style="font-size:0.78rem;color:var(--text-muted);">5 bookings</span>
+          </div>
+        </div>
+        <div class="alert alert-warning mt-2" style="font-size:0.82rem;">
+          <span>⏳</span> "English Presentation Skills" is pending admin approval.
+        </div>
+      </div>
+    </div>
+
+    <!-- Latest from Alumni -->
+    <hr class="divider" style="margin-top:32px;"/>
+    <div class="section-header">
+      <span class="section-title">Latest from Alumni</span>
+      <a href="alumni.html" class="btn btn-ghost btn-sm">See All</a>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="alumni-mini">
+          <div class="avatar-sm">TA</div>
+          <div>
+            <div style="font-weight:600;font-size:0.9rem;color:var(--navy);">Tanvir Ahmed</div>
+            <div style="font-size:0.77rem;color:var(--text-muted);">SWE @ BRAC IT · CSE '24</div>
+          </div>
+          <span class="badge badge-verified" style="margin-left:auto;">Verified</span>
+        </div>
+        <h4 style="font-size:0.95rem;margin-bottom:6px;color:var(--navy);">How I landed my first SWE job fresh out of UAP</h4>
+        <p style="font-size:0.84rem;color:var(--text-muted);line-height:1.55;">Resume building, DSA practice, and the 3 interview mistakes you should avoid...</p>
+        <a href="alumni.html" class="btn btn-ghost btn-sm mt-2">Read More →</a>
+      </div>
+      <div class="card">
+        <div class="alumni-mini">
+          <div class="avatar-sm" style="background:var(--navy-mid);">RK</div>
+          <div>
+            <div style="font-weight:600;font-size:0.9rem;color:var(--navy);">Rabeya Khan</div>
+            <div style="font-size:0.77rem;color:var(--text-muted);">PM @ Pathao · CSE '23</div>
+          </div>
+          <span class="badge badge-verified" style="margin-left:auto;">Verified</span>
+        </div>
+        <h4 style="font-size:0.95rem;margin-bottom:6px;color:var(--navy);">Top 5 tools every CS student should learn in 2025</h4>
+        <p style="font-size:0.84rem;color:var(--text-muted);line-height:1.55;">Git, Docker, Postman, Linux basics, and one tool that most people overlook...</p>
+        <a href="alumni.html" class="btn btn-ghost btn-sm mt-2">Read More →</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer-note">
+  <span>UniSkills</span> — University of Asia Pacific &nbsp;|&nbsp; Learn · Grow · Excel
+</footer>
+<script src="./main.js" defer></script>
+</body>
+</html>

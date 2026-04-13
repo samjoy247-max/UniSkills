@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Python for Beginners — UniSkills</title>
+  <link rel="stylesheet" href="./style.css"/>
+  <style>
+    .detail-cols { display:grid; grid-template-columns:1fr 340px; gap:28px; align-items:start; }
+    .booking-sticky { position:sticky; top:80px; }
+    .booking-summary { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:18px; font-size:0.87rem; }
+    .booking-summary-row { display:flex; justify-content:space-between; padding:5px 0; }
+    .booking-summary-row:not(:last-child) { border-bottom:1px solid var(--border); }
+    @media(max-width:820px){ .detail-cols{grid-template-columns:1fr!important;} .booking-sticky{position:static;} }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand"><img src="./1776022356294_image.png" alt="" onerror="this.style.display='none'"/>Uni<span>Skills</span></a>
+    <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
+    <ul class="navbar-links" id="navLinks">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="skills.html" class="active">Browse Skills</a></li>
+      <li><a href="bookings.html">Bookings</a></li>
+      <li><a href="alumni.html">Alumni</a></li>
+      <li><a href="profile.html">Profile</a></li>
+    </ul>
+    <div class="navbar-user">
+      <div class="avatar-sm">TK</div>
+      <span class="nav-name">Tanjida K.</span>
+      <a href="index.html" style="color:#7a94b0;font-size:0.8rem;margin-left:4px;">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-banner">
+  <div class="container">
+    <div>
+      <p style="color:#7a9bbf;font-size:0.84rem;margin-bottom:6px;"><a href="skills.html" style="color:#7a9bbf;">← Back to Skills</a></p>
+      <h1>Python for Beginners</h1>
+      <p>Technical &nbsp;·&nbsp; Online &nbsp;·&nbsp; ৳300/session</p>
+    </div>
+    <span class="hero-badge">Available</span>
+  </div>
+</section>
+
+<main>
+  <div class="container">
+    <div class="detail-cols">
+
+      <!-- LEFT -->
+      <div>
+        <div class="card mb-3">
+          <h2 style="font-size:1.15rem;margin-bottom:14px;">About This Skill</h2>
+          <p style="line-height:1.7;color:var(--text-mid);font-size:0.93rem;">
+            Learn Python programming from scratch in a structured, one-on-one session. Designed for students in their 1st or 2nd semester. By the end you will understand syntax, variables, data types, loops, conditional statements, functions, and basic OOP.
+          </p>
+          <hr class="divider"/>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;font-size:0.9rem;">
+            <div><div class="text-muted" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;">Category</div><div style="font-weight:600;margin-top:2px;">Technical — Programming</div></div>
+            <div><div class="text-muted" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;">Mode</div><div style="font-weight:600;margin-top:2px;">Online (Google Meet)</div></div>
+            <div><div class="text-muted" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;">Time Slot</div><div style="font-weight:600;margin-top:2px;">Saturday, 3:00–5:00 PM</div></div>
+            <div><div class="text-muted" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;">Fee</div><div style="font-weight:600;margin-top:2px;">৳300 per session</div></div>
+            <div><div class="text-muted" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;">Duration</div><div style="font-weight:600;margin-top:2px;">2 hours</div></div>
+            <div><div class="text-muted" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;">Status</div><span class="badge badge-accepted">Available</span></div>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <h2 style="font-size:1.05rem;margin-bottom:14px;">About the Provider</h2>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+            <div class="avatar-lg" style="width:56px;height:56px;font-size:1.3rem;">SJ</div>
+            <div>
+              <div style="font-weight:700;font-size:1rem;color:var(--navy);">Samiul Alam Joy</div>
+              <div class="text-muted" style="font-size:0.84rem;">CSE · 6th Semester · UAP</div>
+              <div class="stars mt-1">
+                <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span>
+                <span class="rating-text">4.9 avg · 11 sessions</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-muted" style="font-size:0.87rem;">Samiul is a 6th semester CSE student passionate about teaching. He has completed multiple Python projects and regularly helps juniors with lab assignments.</p>
+          <div class="alert alert-info mt-2" style="font-size:0.82rem;">
+            <span>🔒</span> Provider contact details are revealed only after your booking is accepted.
+          </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="card">
+          <div class="section-header">
+            <span class="section-title">Ratings &amp; Reviews</span>
+            <div class="stars">
+              <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span>
+              <span style="font-size:1rem;font-weight:700;color:var(--navy);margin-left:5px;">4.9</span>
+              <span class="rating-text">(11 reviews)</span>
+            </div>
+          </div>
+
+          <div style="border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+              <div class="avatar-sm" style="background:#1a3558;">RA</div>
+              <div><div style="font-weight:600;font-size:0.88rem;">Rima Akter</div><div class="text-muted" style="font-size:0.77rem;">CSE · 2nd Semester</div></div>
+              <div class="stars" style="margin-left:auto;"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span></div>
+            </div>
+            <p style="font-size:0.88rem;color:var(--text-mid);">"Excellent session! Explained everything clearly. Finally understood functions. Highly recommend for beginners."</p>
+          </div>
+
+          <div style="border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+              <div class="avatar-sm" style="background:#1e6b3f;">MH</div>
+              <div><div style="font-weight:600;font-size:0.88rem;">Mohidul Hasan</div><div class="text-muted" style="font-size:0.77rem;">EEE · 3rd Semester</div></div>
+              <div class="stars" style="margin-left:auto;"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span></div>
+            </div>
+            <p style="font-size:0.88rem;color:var(--text-mid);">"Knowledgeable and punctual. Great real-world examples. Already booked a second session!"</p>
+          </div>
+
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+              <div class="avatar-sm" style="background:#4a2a1a;">NS</div>
+              <div><div style="font-weight:600;font-size:0.88rem;">Nusrat Sharmin</div><div class="text-muted" style="font-size:0.77rem;">CSE · 1st Semester</div></div>
+              <div class="stars" style="margin-left:auto;"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span></div>
+            </div>
+            <p style="font-size:0.88rem;color:var(--text-mid);">"Good session. Basics covered very well. Would have liked more time on OOP but will come back."</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Booking -->
+      <div class="booking-sticky">
+        <div class="login-box" style="padding:24px;">
+          <h2 style="font-size:1.1rem;margin-bottom:4px;">Book This Session</h2>
+          <p class="subtitle">Payment is offline. ৳300 per session.</p>
+
+          <div class="booking-summary">
+            <div class="booking-summary-row"><span>Skill</span><span style="font-weight:600;">Python for Beginners</span></div>
+            <div class="booking-summary-row"><span>Provider</span><span style="font-weight:600;">Samiul Joy</span></div>
+            <div class="booking-summary-row"><span>Time Slot</span><span style="font-weight:600;">Sat, 3:00 PM</span></div>
+            <div class="booking-summary-row"><span>Fee</span><span style="font-weight:700;color:var(--amber-dark);">৳300</span></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Message (optional)</label>
+            <textarea class="form-control" rows="3" placeholder="Any topics you want covered? Questions for the provider?"></textarea>
+          </div>
+
+          <a href="bookings.html" class="btn btn-amber btn-block mb-2" onclick="alert('Booking request sent! The provider will accept or decline shortly.')">Send Booking Request</a>
+          <p style="font-size:0.77rem;color:var(--text-muted);text-align:center;">The provider will accept or decline. You will be notified.</p>
+          <hr class="divider"/>
+          <p style="font-size:0.77rem;color:var(--text-muted);text-align:center;">⚠️ You must be <strong>logged in</strong> to book. <a href="index.html">Login here</a></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="footer-note">
+  <span>UniSkills</span> — University of Asia Pacific &nbsp;|&nbsp; Learn · Grow · Excel
+</footer>
+<script src="./main.js" defer></script>
+</body>
+</html>
