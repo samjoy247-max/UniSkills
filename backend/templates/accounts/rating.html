@@ -1,0 +1,144 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rate Session — UniSkills</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}"/>
+  <style>
+    .star-picker { display:flex; align-items:center; gap:8px; margin-top:8px; }
+    .star-picker .star { font-size:2.4rem; cursor:pointer; transition:color 0.1s, transform 0.1s; }
+    .star-picker .star:hover, .star-picker .star.filled { color:var(--amber); transform:scale(1.1); }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="{% url 'accounts:landing' %}" class="navbar-brand"><img src="{% static '1776022356294_image.png' %}" alt="" onerror="this.style.display='none'"/>Uni<span>Skills</span></a>
+    <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
+    <ul class="navbar-links" id="navLinks">
+      <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
+      <li><a href="{% url 'accounts:skills' %}">Browse Skills</a></li>
+      <li><a href="{% url 'accounts:bookings' %}" class="active">Bookings</a></li>
+      <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
+      <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
+    </ul>
+    <div class="navbar-user">
+      <div class="avatar-sm">{{ user.username|slice:":2"|upper }}</div>
+      <span class="nav-name">{{ user.username }}</span>
+      <a href="{% url 'accounts:logout' %}" style="color:#7a94b0;font-size:0.8rem;margin-left:4px;">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-banner">
+  <div class="container">
+    <div>
+      <p style="color:#7a9bbf;font-size:0.84rem;margin-bottom:6px;"><a href="{% url 'accounts:bookings' %}" style="color:#7a9bbf;">← Back to Bookings</a></p>
+      <h1>Rate Your Session</h1>
+      <p>Your rating helps build trust in the UniSkills community.</p>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="container" style="max-width:680px;">
+
+    <div class="alert alert-info mb-3">
+      <span>ℹ️</span> Ratings are linked to completed sessions only. Each session can be rated once.
+    </div>
+
+    <!-- Session Details -->
+    <div class="card mb-3">
+      <h3 style="font-size:0.85rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;">Session Details</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;font-size:0.9rem;">
+        <div><span class="text-muted">Skill: </span><strong>LaTeX Report Writing</strong></div>
+        <div><span class="text-muted">Provider: </span><strong>Niloy Hasan</strong></div>
+        <div><span class="text-muted">Date: </span><strong>10 Jan 2025</strong></div>
+        <div><span class="text-muted">Mode: </span><strong>Online</strong></div>
+        <div><span class="text-muted">Fee: </span><strong>৳180</strong></div>
+        <div><span class="text-muted">Status: </span><span class="badge badge-completed">Completed</span></div>
+      </div>
+    </div>
+
+    <!-- Rating Form -->
+    <div class="card mb-3">
+      <h2 style="font-size:1.2rem;margin-bottom:20px;">Rate Niloy Hasan</h2>
+
+      <div class="form-group">
+        <label class="form-label">Your Rating <span style="color:var(--danger);">*</span></label>
+        <div class="star-picker" id="starPicker">
+          <span class="star" onclick="setRating(1)" id="s1">★</span>
+          <span class="star" onclick="setRating(2)" id="s2">★</span>
+          <span class="star" onclick="setRating(3)" id="s3">★</span>
+          <span class="star" onclick="setRating(4)" id="s4">★</span>
+          <span class="star" onclick="setRating(5)" id="s5">★</span>
+          <span id="ratingLabel" style="font-size:0.9rem;color:var(--text-muted);margin-left:8px;">Click to rate</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Written Review <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
+        <textarea class="form-control" rows="4" placeholder="Share your experience — what did you learn? Was the provider helpful? Would you recommend them?"></textarea>
+        <div class="form-hint">Reviews are visible on the provider's profile and skill listing.</div>
+      </div>
+
+      <div class="alert alert-warning" style="font-size:0.82rem;margin-bottom:18px;">
+        <span>⚠️</span> Once submitted, your rating cannot be edited. Rate based on your actual session.
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-amber" onclick="alert('Rating submitted! Thank you for your feedback.')">Submit Rating</button>
+        <a href="{% url 'accounts:bookings' %}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </div>
+
+    <!-- Past Ratings -->
+    <hr class="divider"/>
+    <h3 style="font-size:1.1rem;margin-bottom:18px;">Your Past Ratings</h3>
+
+    <div class="booking-item" style="border-left:4px solid var(--amber);">
+      <div class="booking-left">
+        <h4>Data Structures (C++)</h4>
+        <p>Provider: Shahin Akand &nbsp;·&nbsp; 5 Jan 2025</p>
+        <div class="stars mt-1">
+          <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span>
+          <span class="rating-text">4/5</span>
+        </div>
+        <p style="font-size:0.85rem;margin-top:6px;color:var(--text-mid);font-style:italic;">"Good session. Explained trees and graphs clearly. Would book again."</p>
+      </div>
+      <div class="booking-right"><span class="badge badge-completed">Submitted</span></div>
+    </div>
+
+    <div class="booking-item" style="border-left:4px solid var(--amber);">
+      <div class="booking-left">
+        <h4>English Presentation Skills</h4>
+        <p>Provider: Rumi Akter &nbsp;·&nbsp; 28 Dec 2024</p>
+        <div class="stars mt-1">
+          <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span>
+          <span class="rating-text">5/5</span>
+        </div>
+        <p style="font-size:0.85rem;margin-top:6px;color:var(--text-mid);font-style:italic;">"Excellent! Really helped with my project presentation. Highly recommended."</p>
+      </div>
+      <div class="booking-right"><span class="badge badge-completed">Submitted</span></div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer-note">
+  <span>UniSkills</span> — University of Asia Pacific &nbsp;|&nbsp; Learn · Grow · Excel
+</footer>
+<script src="{% static 'main.js' %}" defer></script>
+<script>
+let currentRating = 0;
+const labels = ['','Poor','Fair','Good','Very Good','Excellent'];
+function setRating(n) {
+  currentRating = n;
+  for(let i=1;i<=5;i++) document.getElementById('s'+i).classList.toggle('filled', i<=n);
+  document.getElementById('ratingLabel').textContent = labels[n] + ' (' + n + '/5)';
+}
+</script>
+</body>
+</html>

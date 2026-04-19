@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>UniSkills - Login & Registration</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}"/>
+    <style>
+        body { background: var(--navy); }
+        .auth-page {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 460px;
+            align-items: stretch;
+        }
+        .auth-left {
+            background: linear-gradient(160deg, var(--navy) 0%, #0a1c36 60%, #061328 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px 56px;
+        }
+        .auth-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 42px; }
+        .auth-brand img { width: 42px; height: 42px; border-radius: 8px; }
+        .auth-brand-name { font-family: var(--font-head); font-size: 1.6rem; color: #fff; }
+        .auth-brand-name span { color: var(--amber); }
+        .auth-headline { font-family: var(--font-head); font-size: 2.4rem; color: #fff; line-height: 1.2; margin-bottom: 16px; }
+        .auth-headline em { color: var(--amber); font-style: italic; }
+        .auth-tagline { color: #7a9bbf; font-size: 1rem; line-height: 1.6; max-width: 480px; margin-bottom: 30px; }
+        .auth-pills { display: flex; flex-wrap: wrap; gap: 10px; }
+        .auth-pill { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); color: #a8c4dc; font-size: 0.8rem; padding: 6px 14px; border-radius: 20px; }
+        .auth-right {
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 48px 40px;
+        }
+        .auth-right-inner { max-width: 380px; margin: 0 auto; width: 100%; }
+        .quick-link { display: block; margin-top: 12px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+        .admin-footer-link { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border); text-align: center; font-size: 0.8rem; color: var(--text-muted); }
+        .admin-footer-link a { color: var(--navy-mid); font-weight: 600; }
+        @media (max-width: 860px) {
+            .auth-page { grid-template-columns: 1fr; }
+            .auth-left { padding: 34px 24px; }
+            .auth-right { padding: 30px 20px; }
+            .auth-headline { font-size: 1.9rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="auth-page">
+    <div class="auth-left">
+        <div class="auth-brand">
+            <img src="{% static '1776022356294_image.png' %}" alt="UniSkills Logo" onerror="this.style.display='none'"/>
+            <div class="auth-brand-name">Uni<span>Skills</span></div>
+        </div>
+        <h1 class="auth-headline">Learn from peers,<br/><em>grow</em> with alumni.</h1>
+        <p class="auth-tagline">A peer-to-peer skill-sharing and alumni networking platform for UAP students and alumni.</p>
+        <div class="auth-pills">
+            <span class="auth-pill">Peer Tutoring</span>
+            <span class="auth-pill">Alumni Mentorship</span>
+            <span class="auth-pill">Admin Verification</span>
+            <span class="auth-pill">UAP Student Email</span>
+        </div>
+    </div>
+
+    <div class="auth-right">
+        <div class="auth-right-inner">
+            <div class="login-box">
+                <h2>Get Started</h2>
+                <p class="subtitle">Choose your entry point for Monday demo.</p>
+                <a class="btn btn-primary btn-block mb-1" href="{% url 'accounts:login' %}">Login</a>
+                <a class="btn btn-outline btn-block mb-1" href="{% url 'accounts:register_student' %}">Student Registration</a>
+                <a class="btn btn-amber btn-block" href="{% url 'accounts:register_alumni' %}">Alumni Registration</a>
+            </div>
+            <div class="admin-footer-link">
+                Admin? <a href="/admin/">Go to Admin Panel</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
