@@ -1,0 +1,132 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile - UniSkills</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}"/>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="{% url 'accounts:landing' %}" class="navbar-brand">
+      <img src="{% static '1776022356294_image.png' %}" alt="" onerror="this.style.display='none'"/>
+      Uni<span>Skills</span>
+    </a>
+    <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
+    <ul class="navbar-links" id="navLinks">
+      <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
+      <li><a href="{% url 'accounts:skills' %}">Browse Skills</a></li>
+      <li><a href="{% url 'accounts:bookings' %}">Bookings</a></li>
+      <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
+      <li><a href="{% url 'accounts:profile' %}" class="active">Profile</a></li>
+    </ul>
+    <div class="navbar-user">
+      <div class="avatar-sm">{{ user.username|slice:":2"|upper }}</div>
+      <span class="nav-name">{{ user.username }}</span>
+      <a href="{% url 'accounts:logout' %}" style="color:#7a94b0;font-size:0.8rem;margin-left:4px;">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-banner">
+  <div class="container">
+    <div>
+      <h1>My Profile</h1>
+      <p>{% if user.first_name or user.last_name %}{{ user.first_name }} {{ user.last_name }} · {% endif %}Update and save your account information.</p>
+    </div>
+    <span class="hero-badge">{{ user.role|title }} Account</span>
+  </div>
+</section>
+
+<main>
+  <div class="container">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-info mb-2">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <div class="card" style="padding:24px; max-width:900px; margin:0 auto;">
+      <h3 style="margin-bottom:14px;">Profile Information</h3>
+      <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-warning mb-2">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+          {{ form.username }}
+          {{ form.username.errors }}
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="form-group">
+            <label class="form-label" for="{{ form.first_name.id_for_label }}">First Name</label>
+            {{ form.first_name }}
+            {{ form.first_name.errors }}
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="{{ form.last_name.id_for_label }}">Last Name</label>
+            {{ form.last_name }}
+            {{ form.last_name.errors }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+          {{ form.email }}
+          {{ form.email.errors }}
+        </div>
+
+        {% if user.role == 'student' %}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-group">
+              <label class="form-label" for="{{ form.department.id_for_label }}">Department</label>
+              {{ form.department }}
+              {{ form.department.errors }}
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="{{ form.university_id.id_for_label }}">University ID</label>
+              {{ form.university_id }}
+              {{ form.university_id.errors }}
+            </div>
+          </div>
+        {% else %}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-group">
+              <label class="form-label" for="{{ form.graduation_year.id_for_label }}">Graduation Year</label>
+              {{ form.graduation_year }}
+              {{ form.graduation_year.errors }}
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="{{ form.major.id_for_label }}">Major</label>
+              {{ form.major }}
+              {{ form.major.errors }}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="{{ form.current_company.id_for_label }}">Current Company</label>
+            {{ form.current_company }}
+            {{ form.current_company.errors }}
+          </div>
+        {% endif %}
+
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button class="btn btn-primary" type="submit">Save Profile</button>
+          <a class="btn btn-outline" href="{% if user.role == 'alumni' %}{% url 'accounts:alumni_dashboard' %}{% else %}{% url 'accounts:student_dashboard' %}{% endif %}">Back</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer class="footer-note">
+  <span>UniSkills</span> - University of Asia Pacific | Learn · Grow · Excel
+</footer>
+<script src="{% static 'main.js' %}" defer></script>
+</body>
+</html>

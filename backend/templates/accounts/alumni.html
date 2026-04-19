@@ -1,0 +1,197 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Alumni Network - UniSkills</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}"/>
+  <style>
+    .alumni-card-top { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+    .alumni-card-contact { background:var(--success-bg); border:1px solid #a7f3d0; border-radius:var(--radius); padding:10px 14px; font-size:0.82rem; margin-bottom:12px; }
+    .alumni-card-contact-title { color:var(--success); font-weight:700; margin-bottom:4px; }
+    .post-card-meta { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="{% url 'accounts:landing' %}" class="navbar-brand"><img src="{% static '1776022356294_image.png' %}" alt="" onerror="this.style.display='none'"/>Uni<span>Skills</span></a>
+    <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
+    <ul class="navbar-links" id="navLinks">
+      {% if user.role == 'alumni' or user.is_staff or user.is_superuser %}
+        <li><a href="{% url 'accounts:alumni_dashboard' %}">Alumni Dashboard</a></li>
+        <li><a href="{% url 'accounts:alumni' %}">Alumni Directory</a></li>
+        <li><a href="{% url 'accounts:alumni' %}#posts" class="active">Career Posts</a></li>
+        <li><a href="{% url 'accounts:alumni_dashboard' %}#my-posts">My Posts</a></li>
+        <li><a href="{% url 'accounts:alumni_dashboard' %}#profile">My Profile</a></li>
+      {% else %}
+        <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
+        <li><a href="{% url 'accounts:skills' %}">Browse Skills</a></li>
+        <li><a href="{% url 'accounts:bookings' %}">Bookings</a></li>
+        <li><a href="{% url 'accounts:alumni' %}" class="active">Alumni</a></li>
+        <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
+      {% endif %}
+    </ul>
+    <div class="navbar-user">
+      <div class="avatar-sm">{{ user.username|slice:":2"|upper }}</div>
+      <span class="nav-name">{{ user.username }}</span>
+      <a href="{% url 'accounts:logout' %}" style="color:#7a94b0;font-size:0.8rem;margin-left:4px;">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-banner">
+  <div class="container">
+    <div>
+      <h1>Alumni Network</h1>
+      <p>Connect with verified UAP graduates. Browse career posts and reach alumni directly.</p>
+    </div>
+    <span class="hero-badge">Verified Mentors</span>
+  </div>
+</section>
+
+<main>
+  <div class="container">
+
+    <div class="role-tabs" id="alumniTabs">
+      <button class="role-tab-btn active" onclick="switchAlumniTab('profiles')" id="atab-profiles">Alumni Profiles</button>
+      <button class="role-tab-btn" onclick="switchAlumniTab('posts')" id="atab-posts">Career Posts</button>
+    </div>
+
+    <div id="apanel-profiles">
+      <div class="alert alert-info mb-3">
+        <span>🔒</span> Contact details are visible to logged-in students only. All alumni are admin-verified.
+      </div>
+      <div class="search-bar mb-3">
+        <input type="text" class="form-control" placeholder="Search alumni by name, company, or expertise..."/>
+        <button class="btn btn-primary">Search</button>
+      </div>
+
+      <div class="card-grid">
+
+        <div class="card">
+          <div class="alumni-card-top">
+            <div class="avatar-lg" style="width:60px;height:60px;font-size:1.4rem;">TA</div>
+            <div>
+              <h3 style="font-size:1rem;margin-bottom:2px;">Tanvir Ahmed</h3>
+              <div class="text-muted" style="font-size:0.82rem;">Software Engineer @ BRAC IT</div>
+              <span class="badge badge-verified" style="margin-top:5px;display:inline-block;">Verified Alumni</span>
+            </div>
+          </div>
+          <div style="font-size:0.84rem;margin-bottom:12px;">
+            <div>Graduation: CSE 2024</div>
+            <div>Company: BRAC IT</div>
+            <div style="margin-top:6px;">Expertise: Django, REST API, System Design</div>
+          </div>
+          <div class="alumni-card-contact">
+            <div class="alumni-card-contact-title">Contact Info</div>
+            <div>Email: tanvir.ahmed@example.com</div>
+            <div>Phone: 017XXXXXXXX</div>
+            <div>LinkedIn: linkedin.com/in/tanvir-ahmed</div>
+          </div>
+          <button class="btn btn-ghost btn-sm btn-block" onclick="switchAlumniTab('posts')">View Career Posts -></button>
+        </div>
+
+        <div class="card">
+          <div class="alumni-card-top">
+            <div class="avatar-lg" style="width:60px;height:60px;font-size:1.4rem;background:linear-gradient(135deg,#1a4a3a,#0f2e24);">RK</div>
+            <div>
+              <h3 style="font-size:1rem;margin-bottom:2px;">Rabeya Khan</h3>
+              <div class="text-muted" style="font-size:0.82rem;">Product Manager @ Pathao</div>
+              <span class="badge badge-verified" style="margin-top:5px;display:inline-block;">Verified Alumni</span>
+            </div>
+          </div>
+          <div style="font-size:0.84rem;margin-bottom:12px;">
+            <div>Graduation: CSE 2023</div>
+            <div>Company: Pathao</div>
+            <div style="margin-top:6px;">Expertise: Product Thinking, Agile, Career Growth</div>
+          </div>
+          <div class="alumni-card-contact">
+            <div class="alumni-card-contact-title">Contact Info</div>
+            <div>Email: rabeya.khan@example.com</div>
+            <div>Phone: 016XXXXXXXX</div>
+            <div>LinkedIn: linkedin.com/in/rabeya-khan</div>
+          </div>
+          <button class="btn btn-ghost btn-sm btn-block" onclick="switchAlumniTab('posts')">View Career Posts -></button>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="apanel-posts" style="display:none;">
+      <div class="filter-row mb-3">
+        <label>Topic:</label>
+        <select class="form-control" style="width:auto;">
+          <option>All Topics</option>
+          <option>Career Advice</option>
+          <option>Job Opportunity</option>
+          <option>Industry Insights</option>
+          <option>Mentorship</option>
+        </select>
+        <button class="btn btn-ghost btn-sm">Filter</button>
+      </div>
+
+      <div class="card-grid-2">
+
+        <div class="card">
+          <div class="post-card-meta">
+            <div class="avatar-sm" style="background:var(--navy);">TA</div>
+            <div>
+              <div style="font-weight:600;font-size:0.9rem;">Tanvir Ahmed</div>
+              <div class="text-muted" style="font-size:0.78rem;">SWE @ BRAC IT · 2 days ago</div>
+            </div>
+            <span class="badge" style="margin-left:auto;background:#dbeafe;color:#1d4ed8;">Career Advice</span>
+          </div>
+          <h3 style="font-size:1rem;margin-bottom:8px;">How I landed my first SWE job fresh out of UAP</h3>
+          <p class="text-muted" style="font-size:0.87rem;line-height:1.6;">Resume building tips, DSA practice schedule, and interview mistakes you should avoid. A step-by-step approach that worked for me.</p>
+          <div style="margin-top:12px;font-size:0.8rem;color:var(--text-muted);">Tags: Career Advice · Job Search · Interview Prep</div>
+        </div>
+
+        <div class="card">
+          <div class="post-card-meta">
+            <div class="avatar-sm" style="background:#1a4a3a;">RK</div>
+            <div>
+              <div style="font-weight:600;font-size:0.9rem;">Rabeya Khan</div>
+              <div class="text-muted" style="font-size:0.78rem;">PM @ Pathao · 5 days ago</div>
+            </div>
+            <span class="badge" style="margin-left:auto;background:#d1fae5;color:#065f46;">Industry Insights</span>
+          </div>
+          <h3 style="font-size:1rem;margin-bottom:8px;">Top 5 tools every CS student should learn in 2025</h3>
+          <p class="text-muted" style="font-size:0.87rem;line-height:1.6;">Git, Docker, Postman, Linux basics, and one overlooked tool. These are common expectations in hiring.</p>
+          <div style="margin-top:12px;font-size:0.8rem;color:var(--text-muted);">Tags: Tools · Skills · Industry</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer-note">
+  <span>UniSkills</span> - University of Asia Pacific | Learn · Grow · Excel
+</footer>
+
+<script src="{% static 'main.js' %}" defer></script>
+<script>
+function switchAlumniTab(tab) {
+  var profiles = document.getElementById('apanel-profiles');
+  var posts = document.getElementById('apanel-posts');
+  var tProfiles = document.getElementById('atab-profiles');
+  var tPosts = document.getElementById('atab-posts');
+  if (!profiles || !posts || !tProfiles || !tPosts) return;
+  profiles.style.display = tab === 'profiles' ? 'block' : 'none';
+  posts.style.display = tab === 'posts' ? 'block' : 'none';
+  tProfiles.classList.toggle('active', tab === 'profiles');
+  tPosts.classList.toggle('active', tab === 'posts');
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  if (window.location.hash === '#posts') {
+    switchAlumniTab('posts');
+  }
+});
+</script>
+</body>
+</html>
+

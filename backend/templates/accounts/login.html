@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login - UniSkills</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}"/>
+    <style>
+        body { background: var(--navy); }
+        .auth-page { min-height: 100vh; display: grid; grid-template-columns: 1fr 460px; align-items: stretch; }
+        .auth-left { background: linear-gradient(160deg, var(--navy) 0%, #0a1c36 60%, #061328 100%); display: flex; flex-direction: column; justify-content: center; padding: 60px 56px; }
+        .auth-left h1 { color: #fff; font-size: 2.2rem; margin-bottom: 10px; }
+        .auth-left p { color: #9db7ce; max-width: 460px; }
+        .auth-right { background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 30px; }
+        .auth-right-inner { width: 100%; max-width: 390px; }
+        @media (max-width: 860px) { .auth-page { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="auth-page">
+    <div class="auth-left">
+        <h1>Welcome back</h1>
+        <p>Students use your UAP account. Alumni login is available after admin verification.</p>
+    </div>
+    <div class="auth-right">
+        <div class="auth-right-inner">
+            <div class="login-box">
+                <h2>Login</h2>
+                <p class="subtitle">Use your username and password.</p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-info mb-1">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {{ field.errors }}
+                        </div>
+                    {% endfor %}
+                    <button class="btn btn-primary btn-block" type="submit">Log In</button>
+                </form>
+                <div class="divider"></div>
+                <a class="quick-link" href="{% url 'accounts:register_student' %}">New student? Create account</a>
+                <a class="quick-link" href="{% url 'accounts:register_alumni' %}">Alumni? Apply for access</a>
+                <a class="quick-link" href="{% url 'accounts:landing' %}">Back to home</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
