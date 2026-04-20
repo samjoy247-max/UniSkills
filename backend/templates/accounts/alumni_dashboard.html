@@ -25,7 +25,7 @@
       <li><a href="{% url 'accounts:alumni' %}#posts">Career Posts</a></li>
       <li><a href="{% url 'accounts:alumni' %}">Alumni Directory</a></li>
       <li><a href="{% url 'accounts:alumni_dashboard' %}#my-posts">My Posts</a></li>
-      <li><a href="{% url 'accounts:alumni_dashboard' %}#profile">My Profile</a></li>
+      <li><a href="{% url 'accounts:profile' %}">My Profile</a></li>
     </ul>
     <div class="navbar-user">
       <div class="avatar-sm">{{ user.username|slice:":2"|upper }}</div>
@@ -78,7 +78,7 @@
         <h4>Browse Published Posts</h4>
         <p>View public alumni feed</p>
       </a>
-      <a href="#profile" class="quick-card">
+      <a href="{% url 'accounts:profile' %}" class="quick-card">
         <div class="qc-icon">👤</div>
         <h4>Alumni Profile</h4>
         <p>Update profile details</p>

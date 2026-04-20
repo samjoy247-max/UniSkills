@@ -16,11 +16,18 @@
     </a>
     <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
     <ul class="navbar-links" id="navLinks">
-      <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
-      <li><a href="{% url 'accounts:skills' %}">Browse Skills</a></li>
-      <li><a href="{% url 'accounts:bookings' %}">Bookings</a></li>
-      <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
-      <li><a href="{% url 'accounts:profile' %}" class="active">Profile</a></li>
+      {% if user.role == 'alumni' %}
+        <li><a href="{% url 'accounts:alumni_dashboard' %}">Alumni Dashboard</a></li>
+        <li><a href="{% url 'accounts:alumni' %}">Alumni Directory</a></li>
+        <li><a href="{% url 'accounts:alumni' %}#posts">Career Posts</a></li>
+        <li><a href="{% url 'accounts:profile' %}" class="active">My Profile</a></li>
+      {% else %}
+        <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
+        <li><a href="{% url 'accounts:skills' %}">Browse Skills</a></li>
+        <li><a href="{% url 'accounts:bookings' %}">Bookings</a></li>
+        <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
+        <li><a href="{% url 'accounts:profile' %}" class="active">Profile</a></li>
+      {% endif %}
     </ul>
     <div class="navbar-user">
       <div class="avatar-sm">{{ user.username|slice:":2"|upper }}</div>
