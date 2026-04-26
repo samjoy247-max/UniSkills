@@ -4,14 +4,13 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Browse Skills — UniSkills</title>
+  <title>Browse Skills - UniSkills</title>
   <link rel="stylesheet" href="{% static 'style.css' %}"/>
 </head>
 <body>
 <nav class="navbar">
   <div class="navbar-inner">
-    <a href="{% url 'accounts:landing' %}" class="navbar-brand"><img src="{% static '1776022356294_image.png' %}" alt="" onerror="this.style.display='none'"/>Uni<span>Skills</span></a>
-    <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
+    <a href="{% url 'accounts:landing' %}" class="navbar-brand">Uni<span>Skills</span></a>
     <ul class="navbar-links" id="navLinks">
       <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
       <li><a href="{% url 'accounts:skills' %}" class="active">Browse Skills</a></li>
@@ -19,11 +18,6 @@
       <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
       <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
     </ul>
-    <div class="navbar-user">
-      <div class="avatar-sm">{{ user.username|slice:":2"|upper }}</div>
-      <span class="nav-name">{{ user.username }}</span>
-      <a href="{% url 'accounts:logout' %}" style="color:#7a94b0;font-size:0.8rem;margin-left:4px;">Logout</a>
-    </div>
   </div>
 </nav>
 
@@ -31,236 +25,161 @@
   <div class="container">
     <div>
       <h1>Browse Skills</h1>
-      <p>Discover admin-approved skills offered by your peers.</p>
+      <p>Discover approved skills and manage your own posts.</p>
     </div>
-    <a href="#create" class="btn btn-amber">+ Post a Skill</a>
+    {% if is_student_provider %}
+      <a href="#create" class="btn btn-amber">{% if editing_post %}Edit Skill{% else %}+ Post a Skill{% endif %}</a>
+    {% endif %}
   </div>
 </section>
 
 <main>
   <div class="container">
 
-    <!-- Search & Filter -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-info mb-2">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
     <div class="card mb-3" style="padding:20px;">
-      <div class="search-bar mb-2">
-        <input type="text" class="form-control" placeholder="Search skills e.g. Python, Figma, LaTeX…"/>
-        <button class="btn btn-primary">Search</button>
-      </div>
-      <div class="filter-row">
-        <label>Category:</label>
-        <select class="form-control"><option value="">All Categories</option><option>Technical</option><option>Non-Technical</option><option>Other</option></select>
-        <label>Mode:</label>
-        <select class="form-control"><option value="">Any Mode</option><option>Online</option><option>Offline</option><option>Both</option></select>
-        <button class="btn btn-ghost btn-sm">Clear</button>
-      </div>
+      <form method="get">
+        <div class="search-bar mb-2">
+          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search skills"/>
+          <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+        <div class="filter-row">
+          <label>Category:</label>
+          <select name="category" class="form-control">
+            <option value="">All</option>
+            {% for value, label in category_choices %}
+              <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          <label>Mode:</label>
+          <select name="mode" class="form-control">
+            <option value="">Any</option>
+            {% for value, label in mode_choices %}
+              <option value="{{ value }}" {% if selected_mode == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          <a href="{% url 'accounts:skills' %}" class="btn btn-ghost btn-sm">Clear</a>
+        </div>
+      </form>
     </div>
 
     <div class="section-header">
-      <span class="section-title">Available Skills <span style="color:var(--text-muted);font-size:0.85rem;font-family:var(--font-body);font-weight:400;">(8 results)</span></span>
+      <span class="section-title">Available Skills ({{ skill_posts|length }})</span>
     </div>
 
     <div class="card-grid">
-
-      <div class="card skill-card" onclick="location.href='{% url 'accounts:skill_detail' %}'">
-        <div class="skill-card-header">
-          <span class="skill-cat-badge cat-tech">Technical</span>
-          <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="rating-text">4.9 (11)</span></div>
+      {% for post in skill_posts %}
+        <div class="card skill-card">
+          <div class="skill-card-header">
+            <span class="skill-cat-badge">{{ post.get_category_display }}</span>
+            <span class="badge badge-accepted">{{ post.get_status_display }}</span>
+          </div>
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.description|truncatechars:120 }}</p>
+          <div class="skill-meta">
+            <span>Provider: {{ post.provider.username }}</span>
+            <span>Mode: {{ post.get_session_mode_display }}</span>
+            <span>Fee: BDT {{ post.fee }}</span>
+            <span>Time: {{ post.available_time|date:"d M Y, h:i A" }}</span>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:8px;">
+            <a href="{% url 'accounts:skill_detail' post.id %}" class="btn btn-primary btn-sm">View Detail</a>
+          </div>
         </div>
-        <h3>Python for Beginners</h3>
-        <p>Learn Python from scratch — variables, loops, functions, OOP. Perfect for 1st/2nd sem students.</p>
-        <div class="skill-meta">
-          <span>👤 Samiul Joy</span>
-          <span>🕐 Sat 3:00–5:00 PM</span>
-          <span>💰 ৳300</span>
-          <span>📍 Online</span>
-        </div>
-        <div style="margin-top:14px;display:flex;gap:8px;">
-          <a href="{% url 'accounts:skill_detail' %}" class="btn btn-primary btn-sm">View Detail</a>
-          <a href="{% url 'accounts:bookings' %}" class="btn btn-amber btn-sm">Book Session</a>
-        </div>
-      </div>
-
-      <div class="card skill-card" onclick="location.href='{% url 'accounts:skill_detail' %}'">
-        <div class="skill-card-header">
-          <span class="skill-cat-badge cat-design">Non-Technical</span>
-          <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span><span class="rating-text">4.2 (6)</span></div>
-        </div>
-        <h3>Figma UI Design Basics</h3>
-        <p>Wireframing, components, auto-layout, and creating a complete app mockup from scratch.</p>
-        <div class="skill-meta">
-          <span>👤 Khadija Esha</span>
-          <span>🕐 Mon 5:00–7:00 PM</span>
-          <span>💰 ৳200</span>
-          <span>📍 Online</span>
-        </div>
-        <div style="margin-top:14px;display:flex;gap:8px;">
-          <a href="{% url 'accounts:skill_detail' %}" class="btn btn-primary btn-sm">View Detail</a>
-          <a href="{% url 'accounts:bookings' %}" class="btn btn-amber btn-sm">Book Session</a>
-        </div>
-      </div>
-
-      <div class="card skill-card" onclick="location.href='{% url 'accounts:skill_detail' %}'">
-        <div class="skill-card-header">
-          <span class="skill-cat-badge cat-tech">Technical</span>
-          <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="rating-text">4.8 (9)</span></div>
-        </div>
-        <h3>Data Structures (C++)</h3>
-        <p>Arrays, linked lists, stacks, queues, trees, and graphs with C++ code examples.</p>
-        <div class="skill-meta">
-          <span>👤 Tanjida M.</span>
-          <span>🕐 Fri 4:00–6:00 PM</span>
-          <span>💰 ৳250</span>
-          <span>📍 Both</span>
-        </div>
-        <div style="margin-top:14px;display:flex;gap:8px;">
-          <a href="{% url 'accounts:skill_detail' %}" class="btn btn-primary btn-sm">View Detail</a>
-          <a href="{% url 'accounts:bookings' %}" class="btn btn-amber btn-sm">Book Session</a>
-        </div>
-      </div>
-
-      <div class="card skill-card" onclick="location.href='{% url 'accounts:skill_detail' %}'">
-        <div class="skill-card-header">
-          <span class="skill-cat-badge cat-lang">Non-Technical</span>
-          <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span><span class="rating-text">4.0 (4)</span></div>
-        </div>
-        <h3>Academic English Writing</h3>
-        <p>Report writing, thesis structure, and presentation skills for academic contexts.</p>
-        <div class="skill-meta">
-          <span>👤 Rumi Akter</span>
-          <span>🕐 Sun 2:00–4:00 PM</span>
-          <span>💰 ৳150</span>
-          <span>📍 Offline</span>
-        </div>
-        <div style="margin-top:14px;display:flex;gap:8px;">
-          <a href="{% url 'accounts:skill_detail' %}" class="btn btn-primary btn-sm">View Detail</a>
-          <a href="{% url 'accounts:bookings' %}" class="btn btn-amber btn-sm">Book Session</a>
-        </div>
-      </div>
-
-      <div class="card skill-card" onclick="location.href='{% url 'accounts:skill_detail' %}'">
-        <div class="skill-card-header">
-          <span class="skill-cat-badge cat-tech">Technical</span>
-          <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span><span class="rating-text">4.5 (8)</span></div>
-        </div>
-        <h3>LaTeX Report Writing</h3>
-        <p>Professional documents and academic reports using LaTeX — tables, citations, formatting.</p>
-        <div class="skill-meta">
-          <span>👤 Niloy Hasan</span>
-          <span>🕐 Tue 6:00–8:00 PM</span>
-          <span>💰 ৳180</span>
-          <span>📍 Online</span>
-        </div>
-        <div style="margin-top:14px;display:flex;gap:8px;">
-          <a href="{% url 'accounts:skill_detail' %}" class="btn btn-primary btn-sm">View Detail</a>
-          <a href="{% url 'accounts:bookings' %}" class="btn btn-amber btn-sm">Book Session</a>
-        </div>
-      </div>
-
-      <div class="card skill-card" onclick="location.href='{% url 'accounts:skill_detail' %}'">
-        <div class="skill-card-header">
-          <span class="skill-cat-badge cat-business">Other</span>
-          <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="rating-text">5.0 (3)</span></div>
-        </div>
-        <h3>Photography Basics</h3>
-        <p>Composition, lighting, and camera settings for DSLR and smartphone photography.</p>
-        <div class="skill-meta">
-          <span>👤 Arif Hossain</span>
-          <span>🕐 Thu 4:00–6:00 PM</span>
-          <span>💰 ৳120</span>
-          <span>📍 Offline</span>
-        </div>
-        <div style="margin-top:14px;display:flex;gap:8px;">
-          <a href="{% url 'accounts:skill_detail' %}" class="btn btn-primary btn-sm">View Detail</a>
-          <a href="{% url 'accounts:bookings' %}" class="btn btn-amber btn-sm">Book Session</a>
-        </div>
-      </div>
-
-      <div class="card skill-card" onclick="location.href='{% url 'accounts:skill_detail' %}'">
-        <div class="skill-card-header">
-          <span class="skill-cat-badge cat-math">Technical</span>
-          <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span><span class="rating-text">4.3 (7)</span></div>
-        </div>
-        <h3>Calculus &amp; Linear Algebra</h3>
-        <p>MATH 101/201 tutor — derivatives, integrals, matrices, vectors. Exam prep included.</p>
-        <div class="skill-meta">
-          <span>👤 Sadia Islam</span>
-          <span>🕐 Wed 3:00–5:00 PM</span>
-          <span>💰 ৳200</span>
-          <span>📍 Both</span>
-        </div>
-        <div style="margin-top:14px;display:flex;gap:8px;">
-          <a href="{% url 'accounts:skill_detail' %}" class="btn btn-primary btn-sm">View Detail</a>
-          <a href="{% url 'accounts:bookings' %}" class="btn btn-amber btn-sm">Book Session</a>
-        </div>
-      </div>
-
-      <div class="card skill-card" onclick="location.href='{% url 'accounts:skill_detail' %}'">
-        <div class="skill-card-header">
-          <span class="skill-cat-badge cat-design">Non-Technical</span>
-          <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span><span class="star">★</span><span class="rating-text">3.8 (5)</span></div>
-        </div>
-        <h3>Video Editing with DaVinci</h3>
-        <p>Video editing, color grading, and basic motion graphics using DaVinci Resolve (free).</p>
-        <div class="skill-meta">
-          <span>👤 Mahfuz Karim</span>
-          <span>🕐 Sat 5:00–7:00 PM</span>
-          <span>💰 ৳250</span>
-          <span>📍 Online</span>
-        </div>
-        <div style="margin-top:14px;display:flex;gap:8px;">
-          <a href="{% url 'accounts:skill_detail' %}" class="btn btn-primary btn-sm">View Detail</a>
-          <a href="{% url 'accounts:bookings' %}" class="btn btn-amber btn-sm">Book Session</a>
-        </div>
-      </div>
-
+      {% empty %}
+        <div class="card"><p>No approved skill posts yet.</p></div>
+      {% endfor %}
     </div>
 
-    <!-- Create Skill Post -->
-    <hr class="divider" id="create" style="margin-top:40px;"/>
-    <div class="section-header">
-      <span class="section-title">Post a New Skill</span>
-    </div>
-    <div class="alert alert-info mb-3">
-      <span>ℹ️</span> Your post is sent to admin for review. It becomes visible only after approval.
-    </div>
-    <div class="card" style="max-width:640px;">
-      <div class="form-group">
-        <label class="form-label">Skill Title <span style="color:var(--danger)">*</span></label>
-        <input type="text" class="form-control" placeholder="e.g. Python for Beginners"/>
+    {% if is_student_provider %}
+      <hr class="divider" style="margin-top:36px;"/>
+      <div class="section-header">
+        <span class="section-title">My Skill Posts</span>
       </div>
-      <div class="form-group">
-        <label class="form-label">Description <span style="color:var(--danger)">*</span></label>
-        <textarea class="form-control" rows="3" placeholder="What will you teach? Who is it for? What will the student learn?"></textarea>
+      <div class="card mb-3" style="overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+          <thead>
+            <tr style="text-align:left;border-bottom:1px solid var(--border);">
+              <th style="padding:10px;">Title</th>
+              <th style="padding:10px;">Status</th>
+              <th style="padding:10px;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for post in my_skill_posts %}
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px;">{{ post.title }}</td>
+                <td style="padding:10px;">{{ post.get_status_display }}</td>
+                <td style="padding:10px;display:flex;gap:8px;">
+                  <a href="{% url 'accounts:skills' %}?edit={{ post.id }}#create" class="btn btn-primary btn-sm">Edit</a>
+                  <form method="post" action="{% url 'accounts:delete_skill_post' post.id %}" onsubmit="return confirm('Delete this skill post?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-ghost btn-sm">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="3" style="padding:10px;">No posts yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-        <div class="form-group">
-          <label class="form-label">Category <span style="color:var(--danger)">*</span></label>
-          <select class="form-control"><option value="">Select category</option><option>Technical</option><option>Non-Technical</option><option>Other</option></select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Session Mode <span style="color:var(--danger)">*</span></label>
-          <select class="form-control"><option value="">Select mode</option><option>Online</option><option>Offline</option><option>Both</option></select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Available Time Slot <span style="color:var(--danger)">*</span></label>
-          <input type="datetime-local" class="form-control"/>
-          <div class="form-hint">When are you available to teach?</div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Fee (BDT) <span style="color:var(--danger)">*</span></label>
-          <input type="number" class="form-control" placeholder="e.g. 300" min="0"/>
-          <div class="form-hint">Payment handled offline between parties.</div>
-        </div>
-      </div>
-      <button class="btn btn-amber" onclick="alert('Skill post submitted for admin review!')">Submit for Review</button>
-    </div>
 
+      <hr class="divider" id="create" style="margin-top:36px;"/>
+      <div class="section-header">
+        <span class="section-title">{% if editing_post %}Edit Skill Post{% else %}Post a New Skill{% endif %}</span>
+      </div>
+
+      <form method="post" class="card" style="max-width:760px;">
+        {% csrf_token %}
+        {% if editing_post %}<input type="hidden" name="post_id" value="{{ editing_post.id }}"/>{% endif %}
+
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          {{ skill_form.title }}
+          {{ skill_form.title.errors }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          {{ skill_form.description }}
+          {{ skill_form.description.errors }}
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            {{ skill_form.category }}
+            {{ skill_form.category.errors }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Session Mode</label>
+            {{ skill_form.session_mode }}
+            {{ skill_form.session_mode.errors }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Available Time</label>
+            {{ skill_form.available_time }}
+            {{ skill_form.available_time.errors }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fee (BDT)</label>
+            {{ skill_form.fee }}
+            {{ skill_form.fee.errors }}
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-amber">{% if editing_post %}Update and Resubmit{% else %}Submit for Review{% endif %}</button>
+      </form>
+    {% endif %}
   </div>
 </main>
 
-<footer class="footer-note">
-  <span>UniSkills</span> — University of Asia Pacific &nbsp;|&nbsp; Learn · Grow · Excel
-</footer>
 <script src="{% static 'main.js' %}" defer></script>
 </body>
 </html>
