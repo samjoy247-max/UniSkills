@@ -3,9 +3,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
-from django.shortcuts import redirect, render
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect, render
 
-from ..models import CustomUser
+from ..models import CustomUser, SkillPost
 
 
 class StudentRegistrationForm(UserCreationForm):
@@ -63,7 +64,50 @@ def student_dashboard(request):
 
 @login_required
 def skills_page(request):
-    return render(request, "accounts/skills.html", {"active_page": "skills"})
+    query = request.GET.get("q", "").strip()
+    category = request.GET.get("category", "").strip()
+    mode = request.GET.get("mode", "").strip()
+
+    skill_posts = SkillPost.objects.select_related("provider").filter(status=SkillPost.STATUS_APPROVED)
+
+    if query:
+        skill_posts = skill_posts.filter(
+            Q(title__icontains=query)
+            | Q(description__icontains=query)
+            | Q(provider__username__icontains=query)
+        )
+    if category:
+        skill_posts = skill_posts.filter(category=category)
+    if mode:
+        skill_posts = skill_posts.filter(session_mode=mode)
+
+    context = {
+        "active_page": "skills",
+        "skill_posts": skill_posts,
+        "search_query": query,
+        "selected_category": category,
+        "selected_mode": mode,
+        "category_choices": SkillPost.CATEGORY_CHOICES,
+        "mode_choices": SkillPost.MODE_CHOICES,
+    }
+    return render(request, "accounts/skills.html", context)
+
+
+@login_required
+def skill_detail_page(request, post_id):
+    skill_post = get_object_or_404(
+        SkillPost.objects.select_related("provider"),
+        id=post_id,
+        status=SkillPost.STATUS_APPROVED,
+    )
+    return render(
+        request,
+        "accounts/skill-detail.html",
+        {
+            "active_page": "skills",
+            "skill_post": skill_post,
+        },
+    )
 
 
 @login_required

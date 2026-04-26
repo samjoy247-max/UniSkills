@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import CustomUser
+from .models import CustomUser, SkillPost
 
 
 @admin.register(CustomUser)
@@ -52,3 +52,19 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
+
+
+@admin.register(SkillPost)
+class SkillPostAdmin(admin.ModelAdmin):
+    list_display = (
+        "title",
+        "provider",
+        "category",
+        "session_mode",
+        "fee",
+        "status",
+        "available_time",
+        "created_at",
+    )
+    list_filter = ("status", "category", "session_mode")
+    search_fields = ("title", "description", "provider__username", "provider__email")

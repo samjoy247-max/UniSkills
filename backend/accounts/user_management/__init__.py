@@ -1,7 +1,14 @@
 from .admin_access import UniSkillsAuthenticationForm, dashboard, landing, login_user, logout_user
 from .alumni import AlumniRegistrationForm, alumni_dashboard, alumni_page, register_alumni
-from .profile import ProfileUpdateForm, profile_page, rating_page, skill_detail_page
-from .student import StudentRegistrationForm, bookings_page, register_student, skills_page, student_dashboard
+from .profile import ProfileUpdateForm, profile_page, rating_page
+from .student import (
+    StudentRegistrationForm,
+    bookings_page,
+    register_student,
+    skill_detail_page,
+    skills_page,
+    student_dashboard,
+)
 
 __all__ = [
     "StudentRegistrationForm",
