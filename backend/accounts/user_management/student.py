@@ -154,34 +154,3 @@ def skills_page(request):
     return render(request, "accounts/skills.html", context)
 
 
-@login_required
-def delete_skill_post(request, post_id):
-    if request.method != "POST":
-        return redirect("accounts:skills")
-
-    post = get_object_or_404(SkillPost, id=post_id, provider=request.user)
-    post.delete()
-    messages.success(request, "Skill post deleted.")
-    return redirect("accounts:skills")
-
-
-@login_required
-def skill_detail_page(request, post_id):
-    skill_post = get_object_or_404(
-        SkillPost.objects.select_related("provider"),
-        id=post_id,
-        status=SkillPost.STATUS_APPROVED,
-    )
-    return render(
-        request,
-        "accounts/skill-detail.html",
-        {
-            "active_page": "skills",
-            "skill_post": skill_post,
-        },
-    )
-
-
-@login_required
-def bookings_page(request):
-    return render(request, "accounts/bookings.html", {"active_page": "bookings"})
