@@ -1,0 +1,58 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Moderation Dashboard - UniSkills{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Moderation Dashboard</h1>
+    <p class="text-muted">Review and approve/reject pending skill posts</p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if pending_posts %}
+        <div class="table-responsive mt-4">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Title</th>
+                        <th>Provider</th>
+                        <th>Category</th>
+                        <th>Mode</th>
+                        <th>Fee (BDT)</th>
+                        <th>Created</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in pending_posts %}
+                        <tr>
+                            <td><strong>{{ post.title }}</strong></td>
+                            <td>{{ post.provider.username }}</td>
+                            <td>{{ post.get_category_display }}</td>
+                            <td>{{ post.get_session_mode_display }}</td>
+                            <td>{{ post.fee }}</td>
+                            <td>{{ post.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <a href="{% url 'accounts:moderate_post' post.id %}" class="btn btn-sm btn-primary">
+                                    Review
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info mt-4" role="alert">
+            <strong>No pending posts!</strong> All posts have been moderated.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
