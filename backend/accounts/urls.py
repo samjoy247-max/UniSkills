@@ -15,6 +15,7 @@ urlpatterns = [
     path("dashboard.html", views.student_dashboard, name="student_dashboard"),
     path("alumni-dashboard.html", views.alumni_dashboard, name="alumni_dashboard"),
     path("skills.html", views.skills_page, name="skills"),
+    path("skills/<int:post_id>/delete/", views.delete_skill_post, name="delete_skill_post"),
     path("skills/<int:post_id>/", views.skill_detail_page, name="skill_detail"),
     path("bookings.html", views.bookings_page, name="bookings"),
     path("alumni.html", views.alumni_page, name="alumni"),

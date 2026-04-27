@@ -113,3 +113,15 @@ def skill_detail_page(request, post_id):
 @login_required
 def bookings_page(request):
     return render(request, "accounts/bookings.html", {"active_page": "bookings"})
+
+
+@login_required
+def delete_skill_post(request, post_id):
+    skill_post = get_object_or_404(SkillPost, id=post_id)
+    if request.user != skill_post.provider and not (request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "You do not have permission to delete this skill post.")
+        return redirect("accounts:skills")
+    if request.method == "POST":
+        skill_post.delete()
+        messages.success(request, "Skill post deleted successfully.")
+    return redirect("accounts:skills")

@@ -4,6 +4,7 @@ from .profile import ProfileUpdateForm, profile_page, rating_page
 from .student import (
     StudentRegistrationForm,
     bookings_page,
+    delete_skill_post,
     register_student,
     skill_detail_page,
     skills_page,
@@ -24,6 +25,7 @@ __all__ = [
     "student_dashboard",
     "alumni_dashboard",
     "skills_page",
+    "delete_skill_post",
     "bookings_page",
     "alumni_page",
     "profile_page",
