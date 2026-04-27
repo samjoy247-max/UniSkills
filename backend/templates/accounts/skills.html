@@ -1,4 +1,4 @@
-{% load static %}
+﻿{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,17 +25,27 @@
   <div class="container">
     <div>
       <h1>Browse Skills</h1>
-      <p>Search and filter approved skills quickly.</p>
+      <p>Discover approved skills and manage your own posts.</p>
     </div>
+    {% if is_student_provider %}
+      <a href="#create" class="btn btn-amber">{% if editing_post %}Edit Skill{% else %}+ Post a Skill{% endif %}</a>
+    {% endif %}
   </div>
 </section>
 
 <main>
   <div class="container">
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-info mb-2">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
     <div class="card mb-3" style="padding:20px;">
       <form method="get">
         <div class="search-bar mb-2">
-          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by title, description or provider"/>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search skills"/>
           <button type="submit" class="btn btn-primary">Search</button>
         </div>
         <div class="filter-row">
@@ -46,7 +56,6 @@
               <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>{{ label }}</option>
             {% endfor %}
           </select>
-
           <label>Mode:</label>
           <select name="mode" class="form-control">
             <option value="">Any</option>
@@ -54,7 +63,6 @@
               <option value="{{ value }}" {% if selected_mode == value %}selected{% endif %}>{{ label }}</option>
             {% endfor %}
           </select>
-
           <a href="{% url 'accounts:skills' %}" class="btn btn-ghost btn-sm">Clear</a>
         </div>
       </form>
@@ -84,9 +92,91 @@
           </div>
         </div>
       {% empty %}
-        <div class="card"><p>No approved skill posts found for your search/filter.</p></div>
+        <div class="card"><p>No approved skill posts yet.</p></div>
       {% endfor %}
     </div>
+
+    {% if is_student_provider %}
+      <hr class="divider" style="margin-top:36px;"/>
+      <div class="section-header">
+        <span class="section-title">My Skill Posts</span>
+      </div>
+      <div class="card mb-3" style="overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+          <thead>
+            <tr style="text-align:left;border-bottom:1px solid var(--border);">
+              <th style="padding:10px;">Title</th>
+              <th style="padding:10px;">Status</th>
+              <th style="padding:10px;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for post in my_skill_posts %}
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px;">{{ post.title }}</td>
+                <td style="padding:10px;">{{ post.get_status_display }}</td>
+                <td style="padding:10px;display:flex;gap:8px;">
+                  <a href="{% url 'accounts:skills' %}?edit={{ post.id }}#create" class="btn btn-primary btn-sm">Edit</a>
+                  <form method="post" action="{% url 'accounts:delete_skill_post' post.id %}" onsubmit="return confirm('Delete this skill post?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-ghost btn-sm">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="3" style="padding:10px;">No posts yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="divider" id="create" style="margin-top:36px;"/>
+      <div class="section-header">
+        <span class="section-title">{% if editing_post %}Edit Skill Post{% else %}Post a New Skill{% endif %}</span>
+      </div>
+
+      <form method="post" class="card" style="max-width:760px;">
+        {% csrf_token %}
+        {% if editing_post %}<input type="hidden" name="post_id" value="{{ editing_post.id }}"/>{% endif %}
+
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          {{ skill_form.title }}
+          {{ skill_form.title.errors }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          {{ skill_form.description }}
+          {{ skill_form.description.errors }}
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            {{ skill_form.category }}
+            {{ skill_form.category.errors }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Session Mode</label>
+            {{ skill_form.session_mode }}
+            {{ skill_form.session_mode.errors }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Available Time</label>
+            {{ skill_form.available_time }}
+            {{ skill_form.available_time.errors }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fee (BDT)</label>
+            {{ skill_form.fee }}
+            {{ skill_form.fee.errors }}
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-amber">{% if editing_post %}Update and Resubmit{% else %}Submit for Review{% endif %}</button>
+      </form>
+    {% endif %}
   </div>
 </main>
 
