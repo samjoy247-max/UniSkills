@@ -3,8 +3,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 
 from ..models import CustomUser, SkillPost
 
@@ -39,8 +39,6 @@ class StudentRegistrationForm(UserCreationForm):
         return user
 
 
-
-
 def register_student(request):
     if request.user.is_authenticated:
         return redirect("accounts:dashboard")
@@ -64,20 +62,66 @@ def student_dashboard(request):
     return render(request, "accounts/student_dashboard.html", {"active_page": "dashboard"})
 
 
+@login_required
+def skills_page(request):
+    query = request.GET.get("q", "").strip()
+    category = request.GET.get("category", "").strip()
+    mode = request.GET.get("mode", "").strip()
+
+    skill_posts = SkillPost.objects.select_related("provider").filter(status=SkillPost.STATUS_APPROVED)
+
+    if query:
+        skill_posts = skill_posts.filter(
+            Q(title__icontains=query)
+            | Q(description__icontains=query)
+            | Q(provider__username__icontains=query)
+        )
+    if category:
+        skill_posts = skill_posts.filter(category=category)
+    if mode:
+        skill_posts = skill_posts.filter(session_mode=mode)
 
     context = {
         "active_page": "skills",
-        "skill_posts": approved_posts,
-        "my_skill_posts": my_posts,
-        "skill_form": form,
-        "editing_post": edit_post,
+        "skill_posts": skill_posts,
         "search_query": query,
         "selected_category": category,
         "selected_mode": mode,
         "category_choices": SkillPost.CATEGORY_CHOICES,
         "mode_choices": SkillPost.MODE_CHOICES,
-        "is_student_provider": is_student,
     }
     return render(request, "accounts/skills.html", context)
 
 
+@login_required
+def skill_detail_page(request, post_id):
+    skill_post = get_object_or_404(
+        SkillPost.objects.select_related("provider"),
+        id=post_id,
+        status=SkillPost.STATUS_APPROVED,
+    )
+    return render(
+        request,
+        "accounts/skill-detail.html",
+        {
+            "active_page": "skills",
+            "skill_post": skill_post,
+        },
+    )
+
+
+@login_required
+def bookings_page(request):
+    return render(request, "accounts/bookings.html", {"active_page": "bookings"})
+
+
+@login_required
+def delete_skill_post(request, post_id):
+    skill_post = get_object_or_404(SkillPost, id=post_id)
+    if request.user != skill_post.provider and not (request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "You do not have permission to delete this skill post.")
+        return redirect("accounts:skills")
+    if request.method == "POST":
+        skill_post.delete()
+        messages.success(request, "Skill post deleted successfully.")
+    return redirect("accounts:skills")

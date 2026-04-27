@@ -54,3 +54,17 @@ class CustomUserAdmin(UserAdmin):
     )
 
 
+@admin.register(SkillPost)
+class SkillPostAdmin(admin.ModelAdmin):
+    list_display = (
+        "title",
+        "provider",
+        "category",
+        "session_mode",
+        "fee",
+        "status",
+        "available_time",
+        "created_at",
+    )
+    list_filter = ("status", "category", "session_mode")
+    search_fields = ("title", "description", "provider__username", "provider__email")
