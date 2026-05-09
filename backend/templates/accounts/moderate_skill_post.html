@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Moderate Skill Post - UniSkills{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2>{{ page_title }}</h2>
+            <hr>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ skill_post.title }}</h5>
+                    <p class="card-text">{{ skill_post.description }}</p>
+                    
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Provider:</strong> {{ skill_post.provider.username }}</li>
+                        <li class="list-group-item"><strong>Category:</strong> {{ skill_post.get_category_display }}</li>
+                        <li class="list-group-item"><strong>Session Mode:</strong> {{ skill_post.get_session_mode_display }}</li>
+                        <li class="list-group-item"><strong>Fee:</strong> ৳{{ skill_post.fee }}</li>
+                        <li class="list-group-item"><strong>Available Time:</strong> {{ skill_post.available_time }}</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <form method="post" class="border p-4 rounded">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label class="form-label"><strong>Action:</strong></label>
+                    <div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="action" value="approve" id="approve" required>
+                            <label class="form-check-label" for="approve">
+                                ✓ Approve Post
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="action" value="reject" id="reject" required>
+                            <label class="form-check-label" for="reject">
+                                ✗ Reject Post
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="reason" class="form-label">Rejection Reason (if rejecting):</label>
+                    <textarea class="form-control" id="reason" name="reason" rows="3" placeholder="Explain why this post is rejected..."></textarea>
+                </div>
+                
+                <div>
+                    <button type="submit" class="btn btn-primary btn-lg">Submit Decision</button>
+                    <a href="{% url 'accounts:moderation' %}" class="btn btn-secondary btn-lg">Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

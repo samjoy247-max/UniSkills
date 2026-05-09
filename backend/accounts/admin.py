@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import CustomUser, SkillPost
+from .models import CustomUser, SkillCategory, SkillModerationLog, SkillPost, SkillSearchFilter, SkillSlot
 
 
 @admin.register(CustomUser)
@@ -67,4 +67,61 @@ class SkillPostAdmin(admin.ModelAdmin):
         "created_at",
     )
     list_filter = ("status", "category", "session_mode")
-    search_fields = ("title", "provider__username", "provider__email")
+    search_fields = ("title", "description", "provider__username", "provider__email")
+
+
+@admin.register(SkillCategory)
+class SkillCategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "icon", "created_at")
+    search_fields = ("name", "description")
+    ordering = ("name",)
+
+
+@admin.register(SkillModerationLog)
+class SkillModerationLogAdmin(admin.ModelAdmin):
+    list_display = ("skill_post", "moderator", "action", "created_at")
+    list_filter = ("action", "created_at")
+    search_fields = ("skill_post__title", "moderator__username", "reason")
+    readonly_fields = ("created_at",)
+
+
+@admin.register(SkillSearchFilter)
+class SkillSearchFilterAdmin(admin.ModelAdmin):
+    list_display = ("filter_name", "user", "category", "session_mode", "is_favorite", "created_at")
+    list_filter = ("category", "session_mode", "is_favorite", "created_at")
+    search_fields = ("user__username", "filter_name", "keyword")
+
+
+@admin.register(SkillSlot)
+class SkillSlotAdmin(admin.ModelAdmin):
+    list_display = ("skill_post", "start_time", "end_time", "max_students", "booked_students", "is_available")
+    list_filter = ("is_available", "start_time")
+    search_fields = ("skill_post__title",)
+    readonly_fields = ("created_at",)
+category", "session_mode")
+    search_fields = ("title", "description", "provider__username", "provider__email")
+>>>>>>> esha
+             ),
+            },
+        ),
+    )
+
+
+_alumni_verified",
+                ),
+            },
+        ),
+    )
+
+
+>>>>>>> 7433697109e440971d04bb69a3ce43789e8ede5f
+  search_fields = ("title", "provider__username", "provider__email")
+_alumni_verified",
+                ),
+            },
+        ),
+    )
+
+
+>>>>>>> 7433697109e440971d04bb69a3ce43789e8ede5f
+ = ("title", "description", "provider__username", "provider__email")

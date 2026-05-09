@@ -63,8 +63,3 @@ def profile_page(request):
 @login_required
 def rating_page(request):
     return render(request, "accounts/rating.html", {"active_page": "rating"})
-
-
-@login_required
-def skill_detail_page(request):
-    return render(request, "accounts/skill-detail.html", {"active_page": "skills"})
