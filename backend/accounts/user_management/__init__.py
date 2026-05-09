@@ -3,8 +3,13 @@ from .alumni import AlumniRegistrationForm, alumni_dashboard, alumni_page, regis
 from .profile import ProfileUpdateForm, profile_page, rating_page
 from .student import (
     StudentRegistrationForm,
+    SkillPostForm,
     bookings_page,
+    create_skill_post,
+    edit_skill_post,
     delete_skill_post,
+    moderation_dashboard,
+    moderate_skill_post,
     register_student,
     skill_detail_page,
     skills_page,
@@ -13,6 +18,7 @@ from .student import (
 
 __all__ = [
     "StudentRegistrationForm",
+    "SkillPostForm",
     "AlumniRegistrationForm",
     "UniSkillsAuthenticationForm",
     "ProfileUpdateForm",
@@ -25,10 +31,14 @@ __all__ = [
     "student_dashboard",
     "alumni_dashboard",
     "skills_page",
+    "skill_detail_page",
+    "create_skill_post",
+    "edit_skill_post",
     "delete_skill_post",
+    "moderation_dashboard",
+    "moderate_skill_post",
     "bookings_page",
     "alumni_page",
     "profile_page",
     "rating_page",
-    "skill_detail_page",
 ]
