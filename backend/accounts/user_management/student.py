@@ -5,9 +5,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
+from django.http import HttpResponseForbidden
 
 from ..models import CustomUser, SkillPost
+from ..otp_utils import create_and_send_otp
 
 
 class StudentRegistrationForm(UserCreationForm):
@@ -41,113 +42,60 @@ class StudentRegistrationForm(UserCreationForm):
 
 
 class SkillPostForm(forms.ModelForm):
+    """Form for creating/editing skill posts"""
+    
+    category = forms.ChoiceField(
+        choices=SkillPost.CATEGORY_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        help_text="Select skill category"
+    )
+    
+    session_mode = forms.ChoiceField(
+        choices=SkillPost.MODE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        help_text="How will you conduct the session?"
+    )
+    
+    available_time = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
+        help_text="When is your skill session available?"
+    )
+    
+    fee = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        min_value=0,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '500.00'}),
+        help_text="Session fee in Taka (BDT)"
+    )
+    
     class Meta:
         model = SkillPost
-        fields = ["title", "description", "category", "session_mode", "available_time", "fee"]
+        fields = ['title', 'description', 'category', 'session_mode', 'available_time', 'fee']
         widgets = {
-            "available_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'e.g., Advanced Django Development'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,
+                'placeholder': 'Describe your skill in detail...'
+            }),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs["class"] = "form-control"
-
+    
     def clean_available_time(self):
-        available_time = self.cleaned_data["available_time"]
-        if available_time <= timezone.now():
-            raise ValidationError("Available time must be in the future.")
+        from datetime import datetime
+        available_time = self.cleaned_data.get('available_time')
+        if available_time and available_time < datetime.now():
+            raise ValidationError("Available time must be in the future")
         return available_time
-
+    
     def clean_fee(self):
-        fee = self.cleaned_data["fee"]
-        if fee < 0:
-            raise ValidationError("Fee cannot be negative.")
+        fee = self.cleaned_data.get('fee')
+        if fee and fee < 0:
+            raise ValidationError("Fee cannot be negative")
         return fee
-
-
-class ModerationForm(forms.Form):
-    ACTION_CHOICES = [
-        ("approve", "Approve"),
-        ("reject", "Reject"),
-    ]
-    action = forms.ChoiceField(choices=ACTION_CHOICES, widget=forms.RadioSelect())
-    rejection_reason = forms.CharField(
-        required=False,
-        widget=forms.Textarea(attrs={"rows": 3, "placeholder": "Reason for rejection (required if rejecting)"}),
-    )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs["class"] = "form-control"
-
-    def clean(self):
-        cleaned_data = super().clean()
-        action = cleaned_data.get("action")
-        reason = cleaned_data.get("rejection_reason", "").strip()
-
-        if action == "reject" and not reason:
-            raise ValidationError("Rejection reason is required when rejecting a post.")
-        return cleaned_data
-
-
-def get_skill_filter_inputs(request):
-    query = request.GET.get("q", "").strip()
-    category = request.GET.get("category", "").strip()
-    mode = request.GET.get("mode", "").strip()
-    return query, category, mode
-
-
-def apply_keyword_filter(skill_posts, query):
-    if query:
-        skill_posts = skill_posts.filter(
-            Q(title__icontains=query)
-            | Q(description__icontains=query)
-            | Q(provider__username__icontains=query)
-        )
-    return skill_posts
-
-
-def apply_category_filter(skill_posts, category):
-    if category:
-        skill_posts = skill_posts.filter(category=category)
-    return skill_posts
-
-
-def apply_mode_filter(skill_posts, mode):
-    if mode:
-        skill_posts = skill_posts.filter(session_mode=mode)
-    return skill_posts
-
-
-def build_skill_filter_context(query, category, mode):
-    return {
-        "search_query": query,
-        "selected_category": category,
-        "selected_mode": mode,
-        "category_choices": SkillPost.CATEGORY_CHOICES,
-        "mode_choices": SkillPost.MODE_CHOICES,
-    }
-
-
-def get_approved_skill_feed():
-    return SkillPost.objects.select_related("provider").filter(status=SkillPost.STATUS_APPROVED)
-
-
-def hide_unavailable_skill_slots(skill_posts):
-    return skill_posts.filter(available_time__gt=timezone.now())
-
-
-def order_skill_feed(skill_posts):
-    return skill_posts.order_by("available_time", "-created_at")
-
-
-def get_browse_skill_feed():
-    skill_posts = get_approved_skill_feed()
-    skill_posts = hide_unavailable_skill_slots(skill_posts)
-    skill_posts = order_skill_feed(skill_posts)
-    return skill_posts
 
 
 def register_student(request):
@@ -157,8 +105,10 @@ def register_student(request):
     if request.method == "POST":
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Student registration successful. Please log in.")
+            new_user = form.save()
+            # Send OTP email
+            create_and_send_otp(new_user.email)
+            messages.success(request, "Student registration successful! OTP sent to your email. Please log in.")
             return redirect("accounts:login")
     else:
         form = StudentRegistrationForm()
@@ -175,73 +125,39 @@ def student_dashboard(request):
 
 @login_required
 def skills_page(request):
-    query, category, mode = get_skill_filter_inputs(request)
+    """Browse all approved skill posts with filtering"""
+    query = request.GET.get("q", "").strip()
+    category = request.GET.get("category", "").strip()
+    mode = request.GET.get("mode", "").strip()
 
-    skill_posts = get_browse_skill_feed()
-    skill_posts = apply_keyword_filter(skill_posts, query)
-    skill_posts = apply_category_filter(skill_posts, category)
-    skill_posts = apply_mode_filter(skill_posts, mode)
+    skill_posts = SkillPost.objects.select_related("provider").filter(status=SkillPost.STATUS_APPROVED)
 
-    form = None
-    edit_post = None
-    my_posts = SkillPost.objects.none()
-    is_student = request.user.role == "student"
-
-    if is_student:
-        my_posts = SkillPost.objects.filter(provider=request.user)
-
-        if request.method == "POST":
-            post_id = request.POST.get("post_id")
-            instance = None
-            if post_id:
-                instance = get_object_or_404(SkillPost, id=post_id, provider=request.user)
-
-            form = SkillPostForm(request.POST, instance=instance)
-            if form.is_valid():
-                post = form.save(commit=False)
-                post.provider = request.user
-                post.status = SkillPost.STATUS_PENDING
-                post.rejection_reason = ""
-                post.save()
-                if instance:
-                    messages.success(request, "Skill post updated and sent for admin review.")
-                else:
-                    messages.success(request, "Skill post created and sent for admin review.")
-                return redirect("accounts:skills")
-            messages.error(request, "Please fix the errors in the form.")
-        else:
-            edit_id = request.GET.get("edit")
-            if edit_id:
-                edit_post = get_object_or_404(SkillPost, id=edit_id, provider=request.user)
-                form = SkillPostForm(instance=edit_post)
-            else:
-                form = SkillPostForm()
+    if query:
+        skill_posts = skill_posts.filter(
+            Q(title__icontains=query)
+            | Q(description__icontains=query)
+            | Q(provider__username__icontains=query)
+        )
+    if category:
+        skill_posts = skill_posts.filter(category=category)
+    if mode:
+        skill_posts = skill_posts.filter(session_mode=mode)
 
     context = {
         "active_page": "skills",
         "skill_posts": skill_posts,
-        "my_skill_posts": my_posts,
-        "skill_form": form,
-        "editing_post": edit_post,
-        "is_student_provider": is_student,
+        "search_query": query,
+        "selected_category": category,
+        "selected_mode": mode,
+        "category_choices": SkillPost.CATEGORY_CHOICES,
+        "mode_choices": SkillPost.MODE_CHOICES,
     }
-    context.update(build_skill_filter_context(query, category, mode))
     return render(request, "accounts/skills.html", context)
 
 
 @login_required
-def delete_skill_post(request, post_id):
-    if request.method != "POST":
-        return redirect("accounts:skills")
-
-    post = get_object_or_404(SkillPost, id=post_id, provider=request.user)
-    post.delete()
-    messages.success(request, "Skill post deleted.")
-    return redirect("accounts:skills")
-
-
-@login_required
 def skill_detail_page(request, post_id):
+    """Show individual skill post details"""
     skill_post = get_object_or_404(
         SkillPost.objects.select_related("provider"),
         id=post_id,
@@ -259,55 +175,120 @@ def skill_detail_page(request, post_id):
 
 @login_required
 def bookings_page(request):
+    """Student bookings list"""
     return render(request, "accounts/bookings.html", {"active_page": "bookings"})
 
 
+# ==================== UN-44: SKILL POST CRUD ====================
+
+@login_required
+def create_skill_post(request):
+    """Create a new skill post"""
+    if request.method == "POST":
+        form = SkillPostForm(request.POST)
+        if form.is_valid():
+            skill_post = form.save(commit=False)
+            skill_post.provider = request.user
+            skill_post.status = SkillPost.STATUS_PENDING  # Pending moderation
+            skill_post.save()
+            messages.success(request, "Skill post created! Waiting for moderation approval.")
+            return redirect("accounts:skills_page")
+    else:
+        form = SkillPostForm()
+    
+    return render(request, "accounts/create_skill_post.html", {
+        "form": form,
+        "page_title": "Post a New Skill"
+    })
+
+
+@login_required
+def edit_skill_post(request, post_id):
+    """Edit an existing skill post"""
+    skill_post = get_object_or_404(SkillPost, id=post_id)
+    
+    # Only provider or admin can edit
+    if request.user != skill_post.provider and not request.user.is_staff:
+        return HttpResponseForbidden("You cannot edit this post")
+    
+    if request.method == "POST":
+        form = SkillPostForm(request.POST, instance=skill_post)
+        if form.is_valid():
+            skill_post = form.save(commit=False)
+            skill_post.status = SkillPost.STATUS_PENDING  # Reset to pending for re-review
+            skill_post.save()
+            messages.success(request, "Skill post updated! Resubmitted for moderation.")
+            return redirect("accounts:skills_page")
+    else:
+        form = SkillPostForm(instance=skill_post)
+    
+    return render(request, "accounts/edit_skill_post.html", {
+        "form": form,
+        "skill_post": skill_post,
+        "page_title": f"Edit: {skill_post.title}"
+    })
+
+
+@login_required
+def delete_skill_post(request, post_id):
+    """Delete a skill post with confirmation"""
+    skill_post = get_object_or_404(SkillPost, id=post_id)
+    
+    # Only provider or admin can delete
+    if request.user != skill_post.provider and not request.user.is_staff:
+        return HttpResponseForbidden("You cannot delete this post")
+    
+    if request.method == "POST":
+        skill_post.delete()
+        messages.success(request, "Skill post deleted successfully")
+        return redirect("accounts:skills_page")
+    
+    return render(request, "accounts/delete_skill_post_confirm.html", {
+        "skill_post": skill_post,
+        "page_title": "Confirm Delete"
+    })
+
+
+# ==================== MODERATION ====================
+
 @login_required
 def moderation_dashboard(request):
-    if not (request.user.is_staff or request.user.is_superuser):
-        return redirect("accounts:skills")
-
-    pending_posts = SkillPost.objects.select_related("provider").filter(
-        status=SkillPost.STATUS_PENDING
-    ).order_by("-created_at")
-
-    context = {
-        "active_page": "moderation",
+    """Admin moderation dashboard for skill posts"""
+    if not request.user.is_staff:
+        return HttpResponseForbidden("Only admins can access moderation")
+    
+    pending_posts = SkillPost.objects.filter(status=SkillPost.STATUS_PENDING).select_related("provider")
+    
+    return render(request, "accounts/moderation_dashboard.html", {
         "pending_posts": pending_posts,
-    }
-    return render(request, "accounts/moderation.html", context)
+        "page_title": "Skill Post Moderation"
+    })
 
 
 @login_required
 def moderate_skill_post(request, post_id):
-    if not (request.user.is_staff or request.user.is_superuser):
-        return redirect("accounts:skills")
-
-    post = get_object_or_404(SkillPost, id=post_id, status=SkillPost.STATUS_PENDING)
-
+    """Approve or reject a skill post"""
+    if not request.user.is_staff:
+        return HttpResponseForbidden("Only admins can moderate")
+    
+    skill_post = get_object_or_404(SkillPost, id=post_id)
+    
     if request.method == "POST":
-        form = ModerationForm(request.POST)
-        if form.is_valid():
-            action = form.cleaned_data["action"]
-            if action == "approve":
-                post.status = SkillPost.STATUS_APPROVED
-                post.rejection_reason = ""
-                post.save()
-                messages.success(request, f"Post '{post.title}' approved successfully.")
-            elif action == "reject":
-                reason = form.cleaned_data["rejection_reason"].strip()
-                post.status = SkillPost.STATUS_REJECTED
-                post.rejection_reason = reason
-                post.save()
-                messages.success(request, f"Post '{post.title}' rejected with reason provided.")
-            return redirect("accounts:moderation")
-        messages.error(request, "Please fix the errors in the form.")
-    else:
-        form = ModerationForm()
-
-    context = {
-        "active_page": "moderation",
-        "post": post,
-        "form": form,
-    }
-    return render(request, "accounts/moderate_post.html", context)
+        action = request.POST.get("action")  # approve or reject
+        reason = request.POST.get("reason", "")
+        
+        if action == "approve":
+            skill_post.status = SkillPost.STATUS_APPROVED
+            messages.success(request, f"Skill post '{skill_post.title}' approved!")
+        elif action == "reject":
+            skill_post.status = SkillPost.STATUS_REJECTED
+            skill_post.rejection_reason = reason
+            messages.warning(request, f"Skill post '{skill_post.title}' rejected.")
+        
+        skill_post.save()
+        return redirect("accounts:moderation_dashboard")
+    
+    return render(request, "accounts/moderate_skill_post.html", {
+        "skill_post": skill_post,
+        "page_title": f"Moderate: {skill_post.title}"
+    })
