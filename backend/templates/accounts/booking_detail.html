@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Booking Details - UniSkills{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2>{{ page_title }}</h2>
+            <hr>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>{{ booking.skill_post.title }}</h5>
+                    <span class="badge bg-{% if booking.status == 'pending' %}warning{% elif booking.status == 'accepted' %}success{% elif booking.status == 'declined' %}danger{% else %}secondary{% endif %}">
+                        {{ booking.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Student:</dt>
+                        <dd class="col-sm-9">{{ booking.student.get_full_name }} ({{ booking.student.username }})</dd>
+                        
+                        <dt class="col-sm-3">Instructor:</dt>
+                        <dd class="col-sm-9">{{ booking.skill_post.provider.get_full_name }}</dd>
+                        
+                        <dt class="col-sm-3">Category:</dt>
+                        <dd class="col-sm-9">{{ booking.skill_post.get_category_display }}</dd>
+                        
+                        <dt class="col-sm-3">Fee:</dt>
+                        <dd class="col-sm-9">৳{{ booking.skill_post.fee }}</dd>
+                        
+                        <dt class="col-sm-3">Requested Date:</dt>
+                        <dd class="col-sm-9">{{ booking.requested_date|date:"F d, Y H:i" }}</dd>
+                        
+                        {% if booking.message %}
+                        <dt class="col-sm-3">Message:</dt>
+                        <dd class="col-sm-9">{{ booking.message }}</dd>
+                        {% endif %}
+                        
+                        {% if booking.decline_reason %}
+                        <dt class="col-sm-3">Decline Reason:</dt>
+                        <dd class="col-sm-9 text-danger">{{ booking.decline_reason }}</dd>
+                        {% endif %}
+                        
+                        <dt class="col-sm-3">Created:</dt>
+                        <dd class="col-sm-9">{{ booking.created_at|date:"F d, Y H:i" }}</dd>
+                    </dl>
+                    
+                    {% if booking.status == 'pending' and user == booking.student %}
+                    <div class="mt-4">
+                        <a href="{% url 'accounts:cancel_booking' booking.id %}" class="btn btn-danger">Cancel Request</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

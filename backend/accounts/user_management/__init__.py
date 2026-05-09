@@ -4,7 +4,6 @@ from .profile import ProfileUpdateForm, profile_page, rating_page
 from .student import (
     StudentRegistrationForm,
     SkillPostForm,
-    bookings_page,
     create_skill_post,
     edit_skill_post,
     delete_skill_post,
@@ -15,10 +14,22 @@ from .student import (
     skills_page,
     student_dashboard,
 )
+from .booking import (
+    BookingForm,
+    BookingDecisionForm,
+    create_booking,
+    respond_booking,
+    bookings_page,
+    booking_detail,
+    cancel_booking,
+    mark_session_complete,
+)
 
 __all__ = [
     "StudentRegistrationForm",
     "SkillPostForm",
+    "BookingForm",
+    "BookingDecisionForm",
     "AlumniRegistrationForm",
     "UniSkillsAuthenticationForm",
     "ProfileUpdateForm",
@@ -37,7 +48,12 @@ __all__ = [
     "delete_skill_post",
     "moderation_dashboard",
     "moderate_skill_post",
+    "create_booking",
+    "respond_booking",
     "bookings_page",
+    "booking_detail",
+    "cancel_booking",
+    "mark_session_complete",
     "alumni_page",
     "profile_page",
     "rating_page",

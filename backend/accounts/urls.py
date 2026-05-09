@@ -29,8 +29,13 @@ urlpatterns = [
     path("moderation.html", views.moderation_dashboard, name="moderation"),
     path("moderation/<int:post_id>/", views.moderate_skill_post, name="moderate_skill_post"),
     
-    # Bookings
+    # Bookings - UN-60, UN-64
     path("bookings.html", views.bookings_page, name="bookings"),
+    path("booking/create/<int:post_id>/", views.create_booking, name="create_booking"),
+    path("booking/<int:booking_id>/", views.booking_detail, name="booking_detail"),
+    path("booking/<int:booking_id>/respond/", views.respond_booking, name="respond_booking"),
+    path("booking/<int:booking_id>/cancel/", views.cancel_booking, name="cancel_booking"),
+    path("booking/<int:booking_id>/complete/", views.mark_session_complete, name="mark_session_complete"),
     
     # Alumni
     path("alumni.html", views.alumni_page, name="alumni"),
