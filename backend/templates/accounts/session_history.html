@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Session History — UniSkills</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}"/>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="{% url 'accounts:landing' %}" class="navbar-brand">Uni<span>Skills</span></a>
+    <ul class="navbar-links">
+      <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
+      <li><a href="{% url 'accounts:booking_list' %}">Bookings</a></li>
+      <li><a href="{% url 'accounts:session_history' %}" class="active">Sessions</a></li>
+      <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
+    </ul>
+    <div class="navbar-user">
+      <div class="avatar-sm">{{ user.username|slice:":2"|upper }}</div>
+      <span class="nav-name">{{ user.username }}</span>
+      <a href="{% url 'accounts:logout' %}" style="color:#7a94b0;font-size:0.8rem;margin-left:4px;">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-banner">
+  <div class="container">
+    <div>
+      <h1>{{ page_title }}</h1>
+      <p>A record of all your completed UniSkills sessions.</p>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="container">
+
+    <!-- Stats -->
+    <div style="display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;">
+      <div style="background:var(--surface);border-radius:10px;padding:16px 24px;flex:1;min-width:100px;">
+        <div style="font-size:1.6rem;font-weight:700;color:var(--accent);">{{ total_sessions }}</div>
+        <div style="font-size:0.85rem;color:var(--muted);">Total Sessions</div>
+      </div>
+      <div style="background:var(--surface);border-radius:10px;padding:16px 24px;flex:1;min-width:100px;">
+        <div style="font-size:1.6rem;font-weight:700;color:var(--success);">{{ attended_count }}</div>
+        <div style="font-size:0.85rem;color:var(--muted);">Attended</div>
+      </div>
+    </div>
+
+    {% if sessions %}
+      {% for session in sessions %}
+        <div class="booking-item" style="border-left: 4px solid
+          {% if session.attendance_status == 'attended' %}var(--success)
+          {% elif session.attendance_status == 'no_show' %}var(--danger)
+          {% elif session.attendance_status == 'cancelled' %}var(--border)
+          {% else %}var(--amber){% endif %};">
+
+          <div class="booking-left">
+            <h4>{{ session.booking.skill_post.title }}</h4>
+            <p>
+              {% if user.role == 'student' %}
+                Instructor: <strong>{{ session.booking.skill_post.provider.get_full_name|default:session.booking.skill_post.provider.username }}</strong>
+              {% else %}
+                Student: <strong>{{ session.booking.student.get_full_name|default:session.booking.student.username }}</strong>
+              {% endif %}
+            </p>
+            <p>Scheduled: <strong>{{ session.scheduled_date|date:"D, d M Y · H:i" }}</strong></p>
+            <p>Duration: {{ session.duration_minutes }} minutes</p>
+            {% if session.notes %}
+              <p style="font-style:italic;font-size:0.85rem;color:var(--muted);">{{ session.notes }}</p>
+            {% endif %}
+          </div>
+
+          <div class="booking-right">
+            <span class="badge
+              {% if session.attendance_status == 'attended' %}badge-accepted
+              {% elif session.attendance_status == 'no_show' %}badge-cancelled
+              {% elif session.attendance_status == 'cancelled' %}badge-cancelled
+              {% else %}badge-pending{% endif %}">
+              {{ session.get_attendance_status_display|default:"Scheduled" }}
+            </span>
+
+            {% if user.role == 'student' and session.attendance_status == 'attended' %}
+              <a href="{% url 'accounts:submit_rating' session.booking.skill_post.id %}" class="btn btn-amber btn-sm">
+                ⭐ Rate Session
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div style="text-align:center;padding:60px 24px;">
+        <div style="font-size:3rem;margin-bottom:16px;">📅</div>
+        <h3>No sessions yet</h3>
+        <p style="color:var(--muted);margin-bottom:20px;">Your completed sessions will appear here.</p>
+        <a href="{% url 'accounts:skills' %}" class="btn btn-primary">Browse Skills</a>
+      </div>
+    {% endif %}
+
+  </div>
+</main>
+
+<footer class="footer-note">
+  <span>UniSkills</span> — University of Asia Pacific &nbsp;|&nbsp; Learn · Grow · Excel
+</footer>
+<script src="{% static 'main.js' %}" defer></script>
+</body>
+</html>
