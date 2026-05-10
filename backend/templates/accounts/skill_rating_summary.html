@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Skill Ratings Summary - UniSkills{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <h2 class="mb-4">Skill Ratings Summary</h2>
+            
+            {% if skills %}
+            <div class="row">
+                {% for skill in skills %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ skill.title }}</h5>
+                            <p class="card-text text-muted">by {{ skill.provider.username }}</p>
+                            
+                            <div class="mb-3">
+                                <h6>Average Rating:</h6>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-success me-2">{{ skill.average_rating|floatformat:2 }}/5</span>
+                                    <span class="text-muted">({{ skill.rating_count }} ratings)</span>
+                                </div>
+                            </div>
+                            
+                            <div class="progress">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ skill.average_rating|mul:20 }}%" 
+                                     aria-valuenow="{{ skill.average_rating }}" 
+                                     aria-valuemin="0" aria-valuemax="5"></div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'skill_detail' skill.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">No rated skills found.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
