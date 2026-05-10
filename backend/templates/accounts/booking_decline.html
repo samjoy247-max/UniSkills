@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Decline Booking — UniSkills</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}"/>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="{% url 'accounts:landing' %}" class="navbar-brand">Uni<span>Skills</span></a>
+    <ul class="navbar-links">
+      <li><a href="{% url 'accounts:booking_list' %}" class="active">Bookings</a></li>
+    </ul>
+    <div class="navbar-user">
+      <div class="avatar-sm">{{ user.username|slice:":2"|upper }}</div>
+      <span class="nav-name">{{ user.username }}</span>
+      <a href="{% url 'accounts:logout' %}" style="color:#7a94b0;font-size:0.8rem;margin-left:4px;">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container" style="max-width:580px;margin-top:48px;">
+    <div class="login-box">
+      <h2 style="color:var(--danger);">✗ Decline Booking</h2>
+      <p class="subtitle">
+        Declining request from <strong>{{ booking.student.get_full_name|default:booking.student.username }}</strong>
+        for <strong>{{ booking.skill_post.title }}</strong>.
+      </p>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}info{% endif %} mb-1">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label">Reason for Declining (optional)</label>
+          <textarea name="decline_reason" rows="4" class="form-control"
+            placeholder="e.g. I'm unavailable during the requested time period..."></textarea>
+          <small style="color:var(--muted);">This will be shared with the student.</small>
+        </div>
+
+        <div style="display:flex;gap:12px;">
+          <button type="submit" class="btn btn-ghost btn-block" style="color:var(--danger);border-color:var(--danger);">
+            Confirm Decline
+          </button>
+          <a href="{% url 'accounts:booking_list' %}" class="btn btn-ghost btn-block">Go Back</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer class="footer-note">
+  <span>UniSkills</span> — University of Asia Pacific &nbsp;|&nbsp; Learn · Grow · Excel
+</footer>
+<script src="{% static 'main.js' %}" defer></script>
+</body>
+</html>
