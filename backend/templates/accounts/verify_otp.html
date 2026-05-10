@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Verify Email - UniSkills</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}"/>
+    <style>
+        body { background: var(--navy); }
+        .auth-page { min-height: 100vh; display: grid; grid-template-columns: 1fr 520px; }
+        .auth-left { background: linear-gradient(160deg, var(--navy) 0%, #0a1c36 60%, #061328 100%); padding: 60px 56px; display: flex; flex-direction: column; justify-content: center; }
+        .auth-left h1 { color: #fff; font-size: 2rem; margin-bottom: 12px; }
+        .auth-left p { color: #9db7ce; line-height: 1.7; }
+        .auth-left .email-highlight { color: #4fc3f7; font-weight: 600; }
+        .auth-right { background: var(--bg); padding: 34px 28px; overflow-y: auto; display: flex; align-items: center; }
+        .auth-right-inner { max-width: 420px; margin: 0 auto; width: 100%; }
+        .otp-inputs { display: flex; gap: 10px; justify-content: center; margin: 24px 0; }
+        .otp-inputs input { width: 52px; height: 60px; text-align: center; font-size: 1.6rem; font-weight: 700; border: 2px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); outline: none; transition: border-color 0.2s; }
+        .otp-inputs input:focus { border-color: var(--accent); }
+        #otp_code { display: none; }
+        .resend-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+        .resend-link:hover { text-decoration: underline; }
+        @media (max-width: 900px) { .auth-page { grid-template-columns: 1fr; } .auth-left { padding: 32px 24px; } }
+    </style>
+</head>
+<body>
+<div class="auth-page">
+    <div class="auth-left">
+        <h1>📧 Check Your Email</h1>
+        <p>
+            We've sent a <strong>6-digit OTP</strong> to<br/>
+            <span class="email-highlight">{{ email }}</span>
+        </p>
+        <br/>
+        <p>Enter the code below to verify your UAP email and activate your UniSkills account.</p>
+        <br/>
+        <p style="color:#6b8eaa; font-size: 0.9rem;">
+            ⏱ The OTP expires in <strong>10 minutes</strong>.<br/>
+            Check your spam folder if you don't see it.
+        </p>
+    </div>
+    <div class="auth-right">
+        <div class="auth-right-inner">
+            <div class="login-box">
+                <h2>Enter OTP</h2>
+                <p class="subtitle">Type the 6-digit code from your email.</p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% else %}info{% endif %} mb-1">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" id="otp-form">
+                    {% csrf_token %}
+
+                    <!-- Hidden actual input that gets filled from boxes -->
+                    <input type="hidden" name="otp_code" id="otp_code"/>
+
+                    <!-- 6 visible digit boxes -->
+                    <div class="otp-inputs">
+                        <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]" autocomplete="off"/>
+                        <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]" autocomplete="off"/>
+                        <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]" autocomplete="off"/>
+                        <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]" autocomplete="off"/>
+                        <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]" autocomplete="off"/>
+                        <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]" autocomplete="off"/>
+                    </div>
+
+                    <button class="btn btn-primary btn-block" type="submit" id="verify-btn">
+                        Verify & Activate Account
+                    </button>
+                </form>
+
+                <div class="divider"></div>
+                <p style="text-align: center; font-size: 0.9rem; color: var(--muted);">
+                    Didn't receive the code?
+                    <a href="{% url 'accounts:resend_otp' email=email %}" class="resend-link">Resend OTP</a>
+                </p>
+                <a class="quick-link" href="{% url 'accounts:register_student' %}">← Back to Registration</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-move to next box when a digit is typed
+    const digits = document.querySelectorAll('.otp-digit');
+    const hiddenInput = document.getElementById('otp_code');
+
+    digits.forEach((box, index) => {
+        box.addEventListener('input', function () {
+            // Only allow digits
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value && index < digits.length - 1) {
+                digits[index + 1].focus();
+            }
+            updateHidden();
+        });
+
+        box.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace' && !this.value && index > 0) {
+                digits[index - 1].focus();
+            }
+        });
+    });
+
+    function updateHidden() {
+        hiddenInput.value = Array.from(digits).map(d => d.value).join('');
+    }
+
+    // Focus first box on load
+    digits[0].focus();
+</script>
+</body>
+</html>
