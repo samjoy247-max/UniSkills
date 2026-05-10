@@ -1,0 +1,424 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Rating & Feedback Dashboard - UniSkills{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --rating-primary: #ffc107;
+        --rating-secondary: #ff6b6b;
+        --success: #28a745;
+        --light-bg: #f8f9fa;
+        --border-radius: 0.5rem;
+        --transition: all 0.3s ease;
+    }
+    
+    .dashboard-header {
+        background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%);
+        color: white;
+        padding: 2.5rem 2rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+        box-shadow: 0 0.5rem 1rem rgba(255, 152, 0, 0.3);
+    }
+    
+    .dashboard-header h1 {
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
+        font-size: 2rem;
+    }
+    
+    .dashboard-header p {
+        margin-bottom: 0;
+        opacity: 0.95;
+        font-size: 1rem;
+    }
+    
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .metric-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        transition: var(--transition);
+        border-top: 4px solid var(--rating-primary);
+    }
+    
+    .metric-card:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        transform: translateY(-4px);
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--rating-primary);
+        margin-bottom: 0.5rem;
+        line-height: 1;
+    }
+    
+    .metric-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    
+    .metric-card.secondary {
+        border-top-color: var(--rating-secondary);
+    }
+    
+    .metric-card.secondary .metric-value {
+        color: var(--rating-secondary);
+    }
+    
+    .metric-card.success {
+        border-top-color: var(--success);
+    }
+    
+    .metric-card.success .metric-value {
+        color: var(--success);
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--light-bg);
+    }
+    
+    .rating-card {
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: var(--transition);
+        border-left: 4px solid var(--rating-primary);
+    }
+    
+    .rating-card:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        transform: translateX(4px);
+    }
+    
+    .rating-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    
+    .rating-skill-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 0.25rem;
+    }
+    
+    .rating-student {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .rating-stars {
+        display: flex;
+        gap: 0.25rem;
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .star {
+        color: var(--rating-primary);
+    }
+    
+    .star.empty {
+        color: #ddd;
+    }
+    
+    .rating-value {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--rating-primary);
+    }
+    
+    .rating-feedback {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.375rem;
+        margin-top: 1rem;
+        color: #495057;
+        line-height: 1.6;
+        font-style: italic;
+    }
+    
+    .rating-feedback::before {
+        content: '"';
+        font-size: 2rem;
+        color: var(--rating-primary);
+        opacity: 0.3;
+    }
+    
+    .rating-meta {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .skill-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .skill-summary-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        transition: var(--transition);
+        border-top: 3px solid var(--rating-primary);
+    }
+    
+    .skill-summary-card:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        transform: scale(1.03);
+    }
+    
+    .skill-name {
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+    
+    .skill-provider {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+    
+    .average-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    .rating-badge {
+        background-color: var(--rating-primary);
+        color: white;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.375rem;
+        font-weight: 700;
+        min-width: 60px;
+        text-align: center;
+    }
+    
+    .rating-count {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .progress-container {
+        margin-top: 0.75rem;
+    }
+    
+    .progress-bar-custom {
+        height: 8px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff9800, #ffc107);
+        transition: var(--transition);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background-color: var(--light-bg);
+        border-radius: var(--border-radius);
+        color: #6c757d;
+    }
+    
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    
+    .btn-view {
+        background-color: #0066cc;
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: var(--transition);
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+    
+    .btn-view:hover {
+        background-color: #004aa3;
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .metrics-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .rating-header {
+            flex-direction: column;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <h1>Rating & Feedback Dashboard</h1>
+        <p>Monitor skill ratings, student feedback, and quality metrics across your platform</p>
+    </div>
+    
+    <!-- Key Metrics -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-value">{{ total_ratings|default:0 }}</div>
+            <div class="metric-label">Total Ratings Submitted</div>
+        </div>
+        <div class="metric-card secondary">
+            <div class="metric-value">{{ average_all|floatformat:2|default:"0.00" }}</div>
+            <div class="metric-label">Platform Average Rating</div>
+        </div>
+        <div class="metric-card success">
+            <div class="metric-value">{{ five_star_count|default:0 }}</div>
+            <div class="metric-label">Five-Star Ratings</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">{{ rated_skill_count|default:0 }}</div>
+            <div class="metric-label">Rated Skills</div>
+        </div>
+    </div>
+    
+    <!-- Skill Ratings Summary -->
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="section-title">Skills Performance by Rating</h2>
+            
+            {% if skills %}
+            <div class="skill-summary">
+                {% for skill in skills %}
+                <div class="skill-summary-card">
+                    <div class="skill-name">{{ skill.title }}</div>
+                    <div class="skill-provider">👨‍🏫 {{ skill.provider.username }}</div>
+                    
+                    <div class="average-rating">
+                        <div class="rating-badge">{{ skill.average_rating|floatformat:2 }}</div>
+                        <div>
+                            <div class="rating-count">{{ skill.rating_count }} rating{{ skill.rating_count|pluralize }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar-custom">
+                            <div class="progress-fill" style="width: {{ skill.average_rating|mul:20 }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📊</div>
+                <p>No rated skills yet. Start collecting feedback to see performance metrics.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Recent Ratings -->
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <h2 class="section-title">Recent Feedback</h2>
+            
+            {% if recent_ratings %}
+            <div>
+                {% for rating in recent_ratings %}
+                <div class="rating-card">
+                    <div class="rating-header">
+                        <div>
+                            <div class="rating-skill-title">{{ rating.skill_post.title }}</div>
+                            <div class="rating-student">Rated by: <strong>{{ rating.student.username }}</strong></div>
+                        </div>
+                        <div class="rating-value">{{ rating.rating }}/5 ⭐</div>
+                    </div>
+                    
+                    <div class="rating-stars">
+                        {% for i in "12345" %}
+                            {% if i|stringformat:"d" <= rating.rating|floatformat:0 %}
+                                <span class="star">★</span>
+                            {% else %}
+                                <span class="star empty">☆</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                    {% if rating.feedback %}
+                    <div class="rating-feedback">{{ rating.feedback }}</div>
+                    {% endif %}
+                    
+                    <div class="rating-meta">
+                        📅 {{ rating.created_at|date:"Y-m-d H:i" }} 
+                        {% if rating.booking %}
+                        • Session: {{ rating.booking.created_at|date:"Y-m-d" }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="{% url 'rating_detail' rating.id %}" class="btn-view">View Full Details</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">💬</div>
+                <p>No ratings submitted yet. Once students rate skills, feedback will appear here.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
