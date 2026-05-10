@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Alumni Moderation Dashboard - UniSkills{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mb-4">Alumni Post Moderation</h2>
+            
+            <ul class="nav nav-tabs mb-4" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
+                        Pending <span class="badge bg-warning">{{ pending_count }}</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="approved-tab" data-bs-toggle="tab" data-bs-target="#approved" type="button" role="tab">
+                        Approved <span class="badge bg-success">{{ approved_count }}</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="rejected-tab" data-bs-toggle="tab" data-bs-target="#rejected" type="button" role="tab">
+                        Rejected <span class="badge bg-danger">{{ rejected_count }}</span>
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content">
+                <!-- Pending Posts -->
+                <div class="tab-pane fade show active" id="pending" role="tabpanel">
+                    {% if pending_posts %}
+                    <div class="list-group">
+                        {% for post in pending_posts %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1">{{ post.title }}</h5>
+                                    <p class="mb-2">{{ post.content }}</p>
+                                    <small class="text-muted">By {{ post.author.username }} on {{ post.created_at|date:"Y-m-d" }}</small>
+                                </div>
+                                <form method="POST" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="approve">
+                                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form method="POST" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="reject">
+                                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">No pending posts.</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Approved Posts -->
+                <div class="tab-pane fade" id="approved" role="tabpanel">
+                    {% if approved_posts %}
+                    <div class="list-group">
+                        {% for post in approved_posts %}
+                        <div class="list-group-item">
+                            <h5 class="mb-1">{{ post.title }}</h5>
+                            <small class="text-muted">By {{ post.author.username }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">No approved posts.</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Rejected Posts -->
+                <div class="tab-pane fade" id="rejected" role="tabpanel">
+                    {% if rejected_posts %}
+                    <div class="list-group">
+                        {% for post in rejected_posts %}
+                        <div class="list-group-item">
+                            <h5 class="mb-1">{{ post.title }}</h5>
+                            <small class="text-muted">By {{ post.author.username }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">No rejected posts.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
