@@ -98,30 +98,3 @@ class SkillSlotAdmin(admin.ModelAdmin):
     list_filter = ("is_available", "start_time")
     search_fields = ("skill_post__title",)
     readonly_fields = ("created_at",)
-category", "session_mode")
-    search_fields = ("title", "description", "provider__username", "provider__email")
->>>>>>> esha
-             ),
-            },
-        ),
-    )
-
-
-_alumni_verified",
-                ),
-            },
-        ),
-    )
-
-
->>>>>>> 7433697109e440971d04bb69a3ce43789e8ede5f
-  search_fields = ("title", "provider__username", "provider__email")
-_alumni_verified",
-                ),
-            },
-        ),
-    )
-
-
->>>>>>> 7433697109e440971d04bb69a3ce43789e8ede5f
- = ("title", "description", "provider__username", "provider__email")
