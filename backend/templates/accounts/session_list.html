@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Your Sessions - UniSkills{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <h2 class="mb-4">Session History</h2>
+            
+            {% if sessions %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Skill</th>
+                            <th>{% if is_student %}Provider{% else %}Student{% endif %}</th>
+                            <th>Date</th>
+                            <th>Attendance</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in sessions %}
+                        <tr>
+                            <td>{{ session.booking.skill_post.title }}</td>
+                            <td>
+                                {% if is_student %}
+                                    {{ session.booking.skill_post.provider.username }}
+                                {% else %}
+                                    {{ session.booking.student.username }}
+                                {% endif %}
+                            </td>
+                            <td>{{ session.created_at|date:"Y-m-d" }}</td>
+                            <td>
+                                <span class="badge bg-{% if session.attendance == 'attended' %}success{% else %}warning{% endif %}">
+                                    {{ session.attendance|upper }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'session_detail' session.id %}" class="btn btn-sm btn-info">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">No sessions found.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

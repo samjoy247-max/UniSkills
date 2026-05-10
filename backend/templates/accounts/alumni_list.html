@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Alumni Posts - UniSkills{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <h2 class="mb-4">All Alumni Posts</h2>
+            
+            {% if alumni_posts %}
+            <div class="list-group">
+                {% for post in alumni_posts %}
+                <a href="{% url 'alumni_post_detail' post.id %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="mb-1">{{ post.title }}</h5>
+                        <span class="badge bg-{% if post.status == 'approved' %}success{% elif post.status == 'pending' %}warning{% else %}danger{% endif %}">
+                            {{ post.status|upper }}
+                        </span>
+                    </div>
+                    <p class="mb-1">{{ post.content|truncatewords:20 }}</p>
+                    <small class="text-muted">By {{ post.author.username }} on {{ post.created_at|date:"Y-m-d" }}</small>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">No alumni posts found.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

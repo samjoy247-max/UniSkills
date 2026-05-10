@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Session Details - UniSkills{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">Session Details</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Skill</h6>
+                            <p><strong>{{ session.booking.skill_post.title }}</strong></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Status</h6>
+                            <p><span class="badge bg-{% if session.attendance == 'attended' %}success{% else %}warning{% endif %}">{{ session.attendance|upper }}</span></p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Student</h6>
+                            <p>{{ session.booking.student.username }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Provider</h6>
+                            <p>{{ session.booking.skill_post.provider.username }}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Date</h6>
+                            <p>{{ session.created_at|date:"Y-m-d H:i" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Notes</h6>
+                            <p>{{ session.notes|default:"No notes" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
