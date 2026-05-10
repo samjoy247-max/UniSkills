@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniSkills API VIVA - Final Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            padding: 50px;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 2.8em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.15em;
+        }
+
+        .module-title {
+            color: #667eea;
+            font-size: 1.8em;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+            margin-top: 50px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .endpoint-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 0%);
+            border: 3px solid #667eea;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .endpoint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .endpoint-name {
+            color: #667eea;
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 0.8em;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .method-get {
+            background: #3b82f6;
+        }
+
+        .method-post {
+            background: #10b981;
+        }
+
+        .method-multi {
+            background: #8b5cf6;
+        }
+
+        .auth-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            font-weight: bold;
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .endpoint-url {
+            background: #0f172a;
+            color: #10b981;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            margin: 12px 0;
+            word-break: break-all;
+            font-size: 0.95em;
+        }
+
+        .endpoint-description {
+            color: #555;
+            margin: 15px 0;
+            font-size: 0.98em;
+            line-height: 1.6;
+        }
+
+        .info-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f9fafb;
+            border-left: 5px solid #667eea;
+            border-radius: 6px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .info-value {
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        .key-point {
+            background: #eff6ff;
+            border-left: 5px solid #3b82f6;
+            padding: 12px 15px;
+            margin: 12px 0;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .form-data-explain {
+            background: #fef3c7;
+            border-left: 5px solid #f59e0b;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+
+        .form-data-explain strong {
+            color: #d97706;
+        }
+
+        .fields-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .fields-table th {
+            background: #667eea;
+            color: white;
+            padding: 14px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        .fields-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.9em;
+        }
+
+        .fields-table tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .field-name {
+            font-weight: bold;
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+        }
+
+        .required {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .optional {
+            color: #059669;
+            font-weight: bold;
+        }
+
+        .response-section {
+            margin-top: 18px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .response-title {
+            font-weight: bold;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .success-response {
+            background: #f0fdf4;
+            border-left: 5px solid #16a34a;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 6px;
+        }
+
+        .success-code {
+            color: #16a34a;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .error-response {
+            background: #fef2f2;
+            border-left: 5px solid #dc2626;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 6px;
+        }
+
+        .error-code {
+            color: #dc2626;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 6px solid #f59e0b;
+            padding: 18px;
+            margin: 18px 0;
+            border-radius: 8px;
+        }
+
+        .concept-title {
+            font-weight: bold;
+            color: #d97706;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .concept-text {
+            color: #78350f;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 25px;
+            border-top: 2px solid #e5e7eb;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .table-of-contents {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-left: 6px solid #667eea;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 35px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .table-of-contents h2 {
+            color: #667eea;
+            margin-bottom: 18px;
+            font-size: 1.3em;
+        }
+
+        .table-of-contents ul {
+            list-style: none;
+        }
+
+        .table-of-contents li {
+            padding: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .table-of-contents li:before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+
+        .table-of-contents a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .table-of-contents a:hover {
+            text-decoration: underline;
+            color: #764ba2;
+        }
+
+        .response-detail {
+            background: #f3f4f6;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            font-size: 0.9em;
+            border-left: 3px solid #667eea;
+        }
+
+        .action-list {
+            margin: 10px 0 10px 20px;
+            font-size: 0.9em;
+        }
+
+        .action-list li {
+            margin: 6px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 UniSkills API VIVA গাইড</h1>
+        <p class="subtitle">চূড়ান্ত সংস্করণ - টিম মেম্বারদের সম্পূর্ণ ব্যাখ্যা</p>
+
+        <div class="table-of-contents">
+            <h2>📋 বিষয়বস্তু</h2>
+            <ul>
+                <li><a href="#intro">ভূমিকা এবং কাঠামো</a></li>
+                <li><a href="#auth">Module 1: রেজিস্ট্রেশন এবং লগইন</a></li>
+                <li><a href="#dashboard">Module 2: ড্যাশবোর্ড এবং প্রোফাইল</a></li>
+                <li><a href="#skills">Module 3: স্কিল ব্যবস্থাপনা</a></li>
+                <li><a href="#moderation">Module 4: মডারেশন এবং অনুমোদন</a></li>
+                <li><a href="#alumni">Module 5: অ্যালামনাই বৈশিষ্ট্য</a></li>
+                <li><a href="#bookings">Module 6: বুকিং এবং রেটিং</a></li>
+            </ul>
+        </div>
+
+        <!-- INTRODUCTION -->
+        <section id="intro">
+            <div class="concept-box">
+                <div class="concept-title">🎯 প্রজেক্ট সম্পর্কে এবং টেকনিক্যাল ভিত্তি</div>
+                <div class="concept-text">
+                    <strong>UniSkills</strong> একটি Django-ভিত্তিক ওয়েব অ্যাপ্লিকেশন যা:
+                    <ul style="margin-top: 12px; margin-left: 20px;">
+                        <li><strong>স্টুডেন্টরা</strong> নতুন স্কিল শিখতে চান এবং অন্যদের স্কিল অফার করতে পারেন</li>
+                        <li><strong>অ্যালামনাইরা</strong> ক্যারিয়ার পরামর্শ এবং মেন্টরশিপ প্রদান করেন</li>
+                        <li><strong>অ্যাডমিনরা</strong> সমস্ত কন্টেন্ট যাচাই এবং অনুমোদন করেন</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="concept-title">💡 কেন Form Data (`application/x-www-form-urlencoded`) ব্যবহার করা হয়?</div>
+                <div class="concept-text">
+                    এটি একটি <strong>ঐতিহ্যবাহী Django ওয়েব অ্যাপ্লিকেশন</strong> যা JSON REST API নয়:
+                    <ul style="margin-top: 12px; margin-left: 20px;">
+                        <li>📌 <strong>HTML ফর্ম</strong> ব্যবহার করে ডেটা পাঠায় (ব্রাউজার থেকে সরাসরি)</li>
+                        <li>📌 <strong>CSRF সুরক্ষা</strong> এর জন্য প্রয়োজন (প্রতিটি POST-এ `csrftoken`)</li>
+                        <li>📌 <strong>Session-ভিত্তিক প্রমাণীকরণ</strong> ব্যবহার করে (JSON টোকেন নয়)</li>
+                        <li>📌 <strong>HTML পৃষ্ঠা</strong> রেসপন্স হিসাবে ফেরত পাঠায়, JSON নয়</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 1: AUTHENTICATION -->
+        <section id="auth">
+            <h2 class="module-title">📝 Module 1: রেজিস্ট্রেশন এবং লগইন</h2>
+
+            <!-- Student Registration -->
+            <div class="endpoint-box">
+                <div class="endpoint-header">
+                    <span class="endpoint-name">স্টুডেন্ট রেজিস্ট্রেশন</span>
+                    <span class="method-badge method-multi">GET, POST</span>
+                    <span class="auth-badge">🔓 PUBLIC</span>
+                </div>
+                <div class="endpoint-url">GET, POST /accounts/register/student/</div>
+
+                <div class="endpoint-description">
+                    নতুন স্টুডেন্টরা এই এন্ডপয়েন্টে তাদের একাউন্ট তৈরি করে। ইমেইল অবশ্যই <strong>@uap-bd.edu</strong> দিয়ে শেষ হতে হবে।
+                </div>
+
+                <div class="info-section">
+                    <span class="info-label">🔍 বিস্তারিত ব্যাখ্যা:</span>
+                    <div class="info-value">
+                        এটি একটি <strong>দুই-ধাপ প্রক্রিয়া</strong>:
+                        <ul style="margin-top: 8px; margin-left: 20px;">
+                            <li><strong>GET অনুরোধ:</strong> ফর্ম খালি অবস্থায় প্রদর্শন করে</li>
+                            <li><strong>POST অনুরোধ:</strong> ব্যবহারকারী ফর্ম পূরণ করে জমা দেয়</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="form-data-explain">
+                    <strong>📮 কেন Form Data ব্যবহার করি?</strong><br>
+                    আমরা HTML ফর্ম থেকে ডেটা পাই। ব্রাউজার স্বয়ংক্রিয়ভাবে `application/x-www-form-urlencoded` ফরম্যাটে পাঠায়। এটি URL-এনকোড করা নাম-মূল্য জোড়ার একটি সহজ, নিরাপদ উপায়।
+                </div>
+
+                <h4 style="margin-top: 18px; color: #667eea;">📥 প্রয়োজনীয় ফর্ম ফিল্ডস (POST-এর জন্য)</h4>
+                <table class="fields-table">
+                    <thead>
+                        <tr>
+                            <th>ফিল্ড নাম</th>
+                            <th>ডেটা টাইপ</th>
+                            <th>বাধ্যতামূলক</th>
+                            <th>বর্ণনা</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="field-name">username</td>
+                            <td>Text (String)</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>অনন্য ইউজারনেম (অন্য কেউ ব্যবহার করতে পারবে না)</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">email</td>
+                            <td>Email</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>অবশ্যই @uap-bd.edu দিয়ে শেষ হতে হবে</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">department</td>
+                            <td>Text (String)</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>বিভাগ (উদাহরণ: CSE, BBA, EEE)</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">university_id</td>
+                            <td>Text (String)</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>আপনার স্টুডেন্ট আইডি নম্বর</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">password1</td>
+                            <td>Password</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>শক্তিশালী পাসওয়ার্ড (কমপক্ষে 8 অক্ষর)</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">password2</td>
+                            <td>Password</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>পাসওয়ার্ড নিশ্চিতকরণ (password1 এর সাথে একই হতে হবে)</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">csrftoken</td>
+                            <td>Token</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>Django CSRF সুরক্ষা টোকেন (ফর্মে স্বয়ংক্রিয়ভাবে অন্তর্ভুক্ত)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 18px; color: #667eea;">📤 সম্ভাব্য প্রতিক্রিয়া</h4>
+
+                <div class="response-section">
+                    <div class="response-title">✅ GET - সফল অনুরোধ (ফর্ম দেখানো)</div>
+                    <div class="success-response">
+                        <span class="success-code">200 OK</span>
+                        <div class="response-detail" style="margin-top: 8px;">
+                            <strong>Content-Type:</strong> text/html
+                        </div>
+                        <div class="response-detail">
+                            <strong>কী ঘটে:</strong> ব্রাউজার স্টুডেন্ট রেজিস্ট্রেশন ফর্ম দেখায়
+                        </div>
+                    </div>
+                </div>
+
+                <div class="response-section">
+                    <div class="response-title">✅ POST - সফল রেজিস্ট্রেশন</div>
+                    <div class="success-response">
+                        <span class="success-code">302 Found (Redirect)</span>
+                        <div class="response-detail" style="margin-top: 8px;">
+                            <strong>কী ঘটে:</strong>
+                            <ul class="action-list">
+                                <li>নতুন <strong>CustomUser</strong> তৈরি হয় (role='student')</li>
+                                <li><strong>is_alumni_verified = False</strong> সেট হয়</li>
+                                <li>ডেটাবেসে সংরক্ষণ করা হয়</li>
+                            </ul>
+                        </div>
+                        <div class="response-detail">
+                            <strong>রিডাইরেক্ট করে:</strong> /accounts/login/ সাফল্যের বার্তা সহ
+                        </div>
+                    </div>
+                </div>
+
+                <div class="response-section">
+                    <div class="response-title">❌ POST - ব্যর্থ রেজিস্ট্রেশন</div>
+                    <div class="error-response">
+                        <span class="error-code">200 OK (Validation Error)</span>
+                        <div class="response-detail" style="margin-top: 8px;">
+                            <strong>Content-Type:</strong> text/html
+                        </div>
+                        <div class="response-detail">
+                            <strong>কী ঘটে:</strong> ফর্ম আবার দেখানো হয় ত্রুটি বার্তা সহ:
+                            <ul class="action-list">
+                                <li>❌ ইমেইল @uap-bd.edu দিয়ে শেষ না হলে</li>
+                                <li>❌ পাসওয়ার্ড মিল না খেলে (password1 ≠ password2)</li>
+                                <li>❌ ইউজারনেম ইতিমধ্যে থাকলে</li>
+                                <li>❌ কোনো ফিল্ড খালি থাকলে</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alumni Registration -->
+            <div class="endpoint-box">
+                <div class="endpoint-header">
+                    <span class="endpoint-name">অ্যালামনাই রেজিস্ট্রেশন</span>
+                    <span class="method-badge method-multi">GET, POST</span>
+                    <span class="auth-badge">🔓 PUBLIC</span>
+                </div>
+                <div class="endpoint-url">GET, POST /accounts/register/alumni/</div>
+
+                <div class="endpoint-description">
+                    অ্যালামনাইরা এই এন্ডপয়েন্টে নিজেদের অ্যাকাউন্ট তৈরি করে। তবে লগইন করার আগে <strong>অ্যাডমিন অনুমোদন</strong> প্রয়োজন।
+                </div>
+
+                <div class="info-section">
+                    <span class="info-label">🔑 গুরুত্বপূর্ণ পার্থক্য:</span>
+                    <div class="info-value">
+                        <strong>স্টুডেন্টদের থেকে আলাদা:</strong> অ্যালামনাই অ্যাকাউন্টে <strong>is_alumni_verified = False</strong> থেকে শুরু হয় এবং লগইন করতে পারে না যতক্ষণ না অ্যাডমিন এটি যাচাই করে।
+                    </div>
+                </div>
+
+                <div class="form-data-explain">
+                    <strong>📮 Form Data ফরম্যাট</strong><br>
+                    অ্যালামনাই রেজিস্ট্রেশনও একটি HTML ফর্ম ব্যবহার করে যা `application/x-www-form-urlencoded` হিসাবে পাঠানো হয়।
+                </div>
+
+                <h4 style="margin-top: 18px; color: #667eea;">📥 প্রয়োজনীয় ফর্ম ফিল্ডস</h4>
+                <table class="fields-table">
+                    <thead>
+                        <tr>
+                            <th>ফিল্ড নাম</th>
+                            <th>ডেটা টাইপ</th>
+                            <th>বাধ্যতামূলক</th>
+                            <th>বর্ণনা</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="field-name">username</td>
+                            <td>Text</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>অনন্য ইউজারনেম</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">email</td>
+                            <td>Email</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>যেকোনো বৈধ ইমেইল ঠিকানা</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">graduation_year</td>
+                            <td>Integer</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>কবে গ্র্যাজুয়েট হয়েছেন (বছর)</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">major</td>
+                            <td>Text</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>আপনার বিশেষত্ব/বিভাগ</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">current_company</td>
+                            <td>Text</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>বর্তমান কর্মস্থল</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">password1</td>
+                            <td>Password</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>পাসওয়ার্ড</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">password2</td>
+                            <td>Password</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>পাসওয়ার্ড নিশ্চিতকরণ</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="response-section">
+                    <div class="response-title">✅ POST - সফল রেজিস্ট্রেশন</div>
+                    <div class="success-response">
+                        <span class="success-code">302 Found (Redirect)</span>
+                        <div class="response-detail" style="margin-top: 8px;">
+                            <strong>কী ঘটে:</strong>
+                            <ul class="action-list">
+                                <li>নতুন অ্যালামনাই ব্যবহারকারী তৈরি হয়</li>
+                                <li><strong>is_alumni_verified = False</strong> সেট হয়</li>
+                                <li>অ্যাডমিনদের অনুমোদনের জন্য অপেক্ষা করতে হবে</li>
+                            </ul>
+                        </div>
+                        <div class="response-detail">
+                            <strong>রিডাইরেক্ট করে:</strong> /accounts/login/ বার্তা: "অ্যাডমিনের অনুমোদনের অপেক্ষা করুন"
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login -->
+            <div class="endpoint-box">
+                <div class="endpoint-header">
+                    <span class="endpoint-name">ব্যবহারকারী লগইন</span>
+                    <span class="method-badge method-multi">GET, POST</span>
+                    <span class="auth-badge">🔓 PUBLIC</span>
+                </div>
+                <div class="endpoint-url">GET, POST /accounts/login/</div>
+
+                <div class="endpoint-description">
+                    যাচাইকৃত ব্যবহারকারীরা তাদের ইউজারনেম এবং পাসওয়ার্ড দিয়ে লগইন করে। এটি একটি <strong>সেশন</strong> তৈরি করে যা পরে অন্যান্য সুরক্ষিত পেজে ব্যবহৃত হয়।
+                </div>
+
+                <div class="key-point">
+                    <strong>🔐 সেশন-ভিত্তিক প্রমাণীকরণ:</strong> লগইন করলে, ব্রাউজার একটি সেশন কুকি পায়। প্রতিটি পরবর্তী অনুরোধে এই কুকি পাঠানো হয় যাতে সার্ভার জানতে পারে কে ব্যবহারকারী।
+                </div>
+
+                <h4 style="margin-top: 18px; color: #667eea;">📥 প্রয়োজনীয় ফর্ম ফিল্ডস</h4>
+                <table class="fields-table">
+                    <thead>
+                        <tr>
+                            <th>ফিল্ড নাম</th>
+                            <th>ডেটা টাইপ</th>
+                            <th>বাধ্যতামূলক</th>
+                            <th>বর্ণনা</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="field-name">username</td>
+                            <td>Text</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>ইউজারনেম অথবা ইমেইল ঠিকানা</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">password</td>
+                            <td>Password</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>পাসওয়ার্ড</td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">csrftoken</td>
+                            <td>Token</td>
+                            <td><span class="required">✓ হাঁ</span></td>
+                            <td>CSRF সুরক্ষা টোকেন (স্বয়ংক্রিয়)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="response-section">
+                    <div class="response-title">✅ GET - লগইন ফর্ম (সফল)</div>
+                    <div class="success-response">
+                        <span class="success-code">200 OK</span>
+                        <div class="response-detail" style="margin-top: 8px;">
+                            <strong>Content-Type:</strong> text/html
+                        </div>
+                        <div class="response-detail">
+                            <strong>কী ঘটে:</strong> খালি লগইন ফর্ম প্রদর্শিত হয়
+                        </div>
+                    </div>
+                </div>
+
+                <div class="response-section">
+                    <div class="response-title">✅ POST - সফল লগইন</div>
+                    <div class="success-response">
+                        <span class="success-code">302 Found (Redirect)</span>
+                        <div class="response-detail" style="margin-top: 8px;">
+                            <strong>কী ঘটে:</strong>
+                            <ul class="action-list">
+                                <li>ডাটাবেসে পাসওয়ার্ড যাচাই করা হয়</li>
+                                <li>সেশন কুকি সেট করা হয়</li>
+                                <li>ব্যবহারকারী সফলভাবে প্রমাণিত</li>
+                            </ul>
+                        </div>
+                        <div class="response-detail">
+                            <strong>রিডাইরেক্ট করে:</strong> তাদের ড্যাশবোর্ডে (রোল অনুযায়ী):
+                            <ul class="action-list">
+                                <li>স্টুডেন্ট → /accounts/student_dashboard/</li>
+                                <li>যাচাইকৃত অ্যালামনাই → /accounts/alumni_dashboard/</li>
+                                <li>অ্যাডমিন → /admin/</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="response-section">
+                    <div class="response-title">❌ POST - ব্যর্থ লগইন</div>
+                    <div class="error-response">
+                        <span class="error-code">200 OK (Auth Error)</span>
+                        <div class="response-detail" style="margin-top: 8px;">
+                            <strong>Content-Type:</strong> text/html
+                        </div>
+                        <div class="response-detail">
+                            <strong>ত্রুটির কারণ:</strong>
+                            <ul class="action-list">
+                                <li>❌ ইউজারনেম বা পাসওয়ার্ড ভুল</li>
+                                <li>❌ অ্যালামনাই যাচাইকৃত নয় (is_alumni_verified=False)</li>
+                                <li>❌ ব্যবহারকারী বিদ্যমান নেই</li>
+                            </ul>
+                        </div>
+                        <div class="response-detail">
+                            <strong>প্রতিক্রিয়া:</strong> লগইন ফর্ম ত্রুটি বার্তা সহ পুনরায় প্রদর্শিত হয়
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logout -->
+            <div class="endpoint-box">
+                <div class="endpoint-header">
+                    <span class="endpoint-name">লগআউট</span>
+                    <span class="method-badge method-get">GET</span>
+                    <span class="auth-badge">🔓 PUBLIC</span>
+                </div>
+                <div class="endpoint-url">GET /accounts/logout/</div>
+
+                <div class="endpoint-description">
+                    ব্যবহারকারীর সেশন শেষ করে এবং তাদের লগ আউট করে।
+                </div>
+
+                <div class="response-section">
+                    <div class="response-title">✅ GET - সফল লগআউট</div>
+                    <div class="success-response">
+                        <span class="success-code">302 Found (Redirect)</span>
+                        <div class="response-detail" style="margin-top: 8px;">
+                            <strong>কী ঘটে:</strong>
+                            <ul class="action-list">
+                                <li>সেশন কুকি মুছে ফেলা হয়</li>
+                                <li>সার্ভারে সেশন ডেটা সাফ করা হয়</li>
+                                <li>ব্যবহারকারী সম্পূর্ণভাবে লগ আউট</li>
+                            </ul>
+                        </div>
+                        <div class="response-detail">
+                            <strong>রিডাইরেক্ট করে:</strong> /accounts/ (ল্যান্ডিং পেজ)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>💻 UniSkills Final VIVA Guide | প্রস্তুত: সম্পূর্ণ API ব্যাখ্যা সহ</p>
+            <p style="margin-top: 10px; font-size: 0.85em;">এটি চূড়ান্ত সংস্করণ - সব বিবরণ অন্তর্ভুক্ত</p>
+        </footer>
+    </div>
+</body>
+</html>

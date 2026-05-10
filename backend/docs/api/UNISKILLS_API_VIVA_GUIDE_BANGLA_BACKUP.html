@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniSkills API Viva গাইড (Box Style)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+
+        h1 {
+            color: #1d4ed8;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            font-style: italic;
+        }
+
+        .module-title {
+            color: #1d4ed8;
+            font-size: 1.6em;
+            border-bottom: 3px solid #1d4ed8;
+            padding-bottom: 12px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .endpoint-box {
+            background: #f8f9fa;
+            border: 2px solid #1d4ed8;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .endpoint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .endpoint-name {
+            color: #1d4ed8;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85em;
+            color: white;
+        }
+
+        .method-get {
+            background: #3b82f6;
+        }
+
+        .method-post {
+            background: #10b981;
+        }
+
+        .method-multi {
+            background: #8b5cf6;
+        }
+
+        .endpoint-url {
+            background: #0f172a;
+            color: #10b981;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+
+        .endpoint-description {
+            color: #555;
+            margin: 12px 0;
+            font-size: 0.95em;
+        }
+
+        .info-section {
+            margin: 12px 0;
+            padding-left: 15px;
+            border-left: 4px solid #1d4ed8;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #1d4ed8;
+            display: inline-block;
+            min-width: 100px;
+        }
+
+        .info-value {
+            color: #555;
+        }
+
+        .fields-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+        }
+
+        .fields-table th {
+            background: #1d4ed8;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .fields-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .fields-table tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .field-name {
+            font-weight: bold;
+            color: #1d4ed8;
+            font-family: 'Courier New', monospace;
+        }
+
+        .required {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .optional {
+            color: #059669;
+            font-weight: bold;
+        }
+
+        .response-box {
+            background: #f0f9ff;
+            border-left: 4px solid #0284c7;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .response-code {
+            font-weight: bold;
+            color: #0284c7;
+            font-family: 'Courier New', monospace;
+        }
+
+        .success-box {
+            background: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .success-code {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .error-box {
+            background: #fef2f2;
+            border-left: 4px solid #dc2626;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .error-code {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .concept-box {
+            background: #fef3c7;
+            border-left: 5px solid #f59e0b;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+
+        .concept-title {
+            font-weight: bold;
+            color: #d97706;
+            margin-bottom: 8px;
+        }
+
+        .concept-text {
+            color: #78350f;
+            font-size: 0.95em;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .table-of-contents {
+            background: #eff6ff;
+            border-left: 5px solid #1d4ed8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .table-of-contents h2 {
+            color: #1d4ed8;
+            margin-bottom: 15px;
+        }
+
+        .table-of-contents ul {
+            list-style: none;
+        }
+
+        .table-of-contents li {
+            padding: 8px 0;
+            padding-left: 20px;
+        }
+
+        .table-of-contents a {
+            color: #1d4ed8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .table-of-contents a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 UniSkills API Viva গাইড</h1>
+        <p class="subtitle">টিম মেম্বারদের জন্য সহজ ব্যাখ্যা — Box স্টাইলে</p>
+
+        <div class="table-of-contents">
+            <h2>📋 বিষয়বস্তু</h2>
+            <ul>
+                <li><a href="#intro">ভূমিকা এবং রোল</a></li>
+                <li><a href="#auth">Module 1: রেজিস্ট্রেশন এবং লগইন</a></li>
+                <li><a href="#dashboard">Module 2: ড্যাশবোর্ড</a></li>
+                <li><a href="#skills">Module 3: স্কিল পোস্ট</a></li>
+                <li><a href="#moderation">Module 4: মডারেশন</a></li>
+                <li><a href="#alumni">Module 5: অ্যালামনাই</a></li>
+                <li><a href="#profile">Module 6: প্রোফাইল</a></li>
+            </ul>
+        </div>
+
+        <h2 id="overview">Project Overview + Roles</h2>
+        <div class="section">
+            <p>UniSkills একটি skill-sharing প্ল্যাটফর্ম যেখানে <strong>Student</strong> skill post দেয়, <strong>Alumni</strong> mentorship post দেয়, এবং <strong>Admin</strong> সবকিছু মডারেট করে।</p>
+            <table>
+                <tr>
+                    <th>Role</th>
+                    <th>কাজ</th>
+                </tr>
+                <tr>
+                    <td>Student</td>
+                    <td>Skill পোস্ট তৈরি/এডিট, approved posts ব্রাউজ</td>
+                </tr>
+                <tr>
+                    <td>Alumni</td>
+                    <td>Mentorship পোস্ট তৈরি, alumni directory ব্রাউজ</td>
+                </tr>
+                <tr>
+                    <td>Admin</td>
+                    <td>Skill এবং Alumni posts approve/reject</td>
+                </tr>
+            </table>
+        </div>
+
+        <h2 id="module-auth">Module 1: Authentication & User Management</h2>
+        <div class="section">
+            <div class="endpoint">
+                <strong>Student Registration</strong>
+                <div class="url">/accounts/register/student/</div>
+                <table>
+                    <tr><th>Parameter</th><th>Required</th><th>Description</th></tr>
+                    <tr><td>username</td><td>Yes</td><td>Student username</td></tr>
+                    <tr><td>email</td><td>Yes</td><td>@uap-bd.edu required</td></tr>
+                    <tr><td>department</td><td>Yes</td><td>Department name</td></tr>
+                    <tr><td>university_id</td><td>Yes</td><td>Student ID</td></tr>
+                    <tr><td>password1 / password2</td><td>Yes</td><td>Password + confirm</td></tr>
+                </table>
+                <div class="note">Method: GET/POST | Success: account created | Failure: validation errors</div>
+            </div>
+
+            <div class="endpoint">
+                <strong>Alumni Registration</strong>
+                <div class="url">/accounts/register/alumni/</div>
+                <div class="note">Method: GET/POST | alumni verified default = false</div>
+            </div>
+
+            <div class="endpoint">
+                <strong>Login</strong>
+                <div class="url">/accounts/login/</div>
+                <div class="note">Method: GET/POST | username/email allowed | admin login only at /admin/</div>
+            </div>
+
+            <div class="endpoint">
+                <strong>Logout</strong>
+                <div class="url">/accounts/logout/</div>
+                <div class="note">Method: GET | session ends</div>
+            </div>
+        </div>
+
+        <h2 id="module-dash">Module 2: Landing & Dashboards</h2>
+        <div class="section">
+            <div class="endpoint">
+                <strong>Landing</strong>
+                <div class="url">/accounts/ &amp; /accounts/index.html</div>
+                <div class="note">Method: GET</div>
+            </div>
+            <div class="endpoint">
+                <strong>Role Redirect</strong>
+                <div class="url">/accounts/dashboard/</div>
+                <div class="note">Method: GET | role অনুযায়ী redirect</div>
+            </div>
+            <div class="endpoint">
+                <strong>Student Dashboard</strong>
+                <div class="url">/accounts/dashboard.html</div>
+            </div>
+            <div class="endpoint">
+                <strong>Alumni Dashboard</strong>
+                <div class="url">/accounts/alumni-dashboard.html</div>
+            </div>
+        </div>
+
+        <h2 id="module-skill">Module 3: Skill Module (Student)</h2>
+        <div class="section">
+            <div class="endpoint">
+                <strong>Skill Browse + Create/Update</strong>
+                <div class="url">/accounts/skills.html</div>
+                <div class="note">Method: GET/POST | Filters: q, category, mode</div>
+                <div class="code">POST fields: title, description, category, session_mode, available_time, fee</div>
+            </div>
+            <div class="endpoint">
+                <strong>Skill Detail</strong>
+                <div class="url">/accounts/skills/&lt;post_id&gt;/</div>
+                <div class="note">Method: GET | only approved posts</div>
+            </div>
+            <div class="endpoint">
+                <strong>Delete Skill Post</strong>
+                <div class="url">/accounts/skills/&lt;post_id&gt;/delete/</div>
+                <div class="note">Method: POST | owner only</div>
+            </div>
+        </div>
+
+        <h2 id="module-skill-mod">Module 4: Skill Moderation (Admin)</h2>
+        <div class="section">
+            <div class="endpoint">
+                <strong>Moderation Dashboard</strong>
+                <div class="url">/accounts/moderation.html</div>
+                <div class="note">Method: GET | pending posts list</div>
+            </div>
+            <div class="endpoint">
+                <strong>Moderate Skill Post</strong>
+                <div class="url">/accounts/moderation/&lt;post_id&gt;/</div>
+                <div class="note">Method: GET/POST | action=approve/reject | reason required if reject</div>
+            </div>
+        </div>
+
+        <h2 id="module-alumni">Module 5: Alumni Module</h2>
+        <div class="section">
+            <div class="endpoint">
+                <strong>Create Alumni Post</strong>
+                <div class="url">/accounts/alumni/post/create/</div>
+                <div class="note">Method: GET/POST | verified alumni only</div>
+            </div>
+            <div class="endpoint">
+                <strong>Edit Alumni Post</strong>
+                <div class="url">/accounts/alumni/post/&lt;post_id&gt;/edit/</div>
+                <div class="note">Method: GET/POST | edit করলে status pending</div>
+            </div>
+            <div class="endpoint">
+                <strong>Delete Alumni Post</strong>
+                <div class="url">/accounts/alumni/post/&lt;post_id&gt;/delete/</div>
+            </div>
+            <div class="endpoint">
+                <strong>Browse Alumni Posts</strong>
+                <div class="url">/accounts/alumni/posts/</div>
+                <div class="note">Method: GET | approved posts only</div>
+            </div>
+            <div class="endpoint">
+                <strong>Alumni Directory</strong>
+                <div class="url">/accounts/alumni/directory/</div>
+            </div>
+            <div class="endpoint">
+                <strong>Alumni Profile Detail</strong>
+                <div class="url">/accounts/alumni/&lt;user_id&gt;/</div>
+            </div>
+            <div class="endpoint">
+                <strong>Alumni Moderation</strong>
+                <div class="url">/accounts/admin/alumni/moderation/</div>
+            </div>
+        </div>
+
+        <h2 id="module-profile">Module 6: Profile & Misc</h2>
+        <div class="section">
+            <div class="endpoint">
+                <strong>Profile Update</strong>
+                <div class="url">/accounts/profile.html</div>
+                <div class="note">Method: GET/POST | student email must be @uap-bd.edu</div>
+            </div>
+            <div class="endpoint">
+                <strong>Rating Page</strong>
+                <div class="url">/accounts/rating.html</div>
+            </div>
+            <div class="endpoint">
+                <strong>Bookings Page</strong>
+                <div class="url">/accounts/bookings.html</div>
+            </div>
+            <div class="endpoint">
+                <strong>Alumni Landing</strong>
+                <div class="url">/accounts/alumni.html</div>
+            </div>
+        </div>
+
+        <h2 id="module-admin">Module 7: Admin</h2>
+        <div class="section">
+            <div class="endpoint">
+                <strong>Django Admin</strong>
+                <div class="url">/admin/</div>
+                <div class="note">Staff/superuser only</div>
+            </div>
+        </div>
+
+        <h2 id="flows">Status Workflow</h2>
+        <div class="section">
+            <p><strong>Skill Post:</strong> Create/Update → Pending → (Approved/Rejected)</p>
+            <p><strong>Alumni Post:</strong> Create/Update → Pending → (Approved/Rejected)</p>
+            <div class="note">Approved হলে সবাই দেখে, rejected হলে শুধু লেখক reason দেখে।</div>
+        </div>
+
+        <h2 id="errors">Failure/404 Examples</h2>
+        <div class="section">
+            <div class="warn">
+                <strong>404 Not Found Example:</strong>
+                <div class="code">GET /accounts/skills/999999/</div>
+                <div>Result: Django default 404 page (Not Found)</div>
+            </div>
+            <div class="warn">
+                <strong>404 Not Found Example:</strong>
+                <div class="code">GET /accounts/alumni/999999/</div>
+                <div>Result: alumni user না থাকলে 404</div>
+            </div>
+            <div class="warn">
+                <strong>403 Forbidden:</strong> অন্যের পোস্ট edit/delete করলে
+            </div>
+        </div>
+
+        <h2 id="viva">Viva Short Q/A</h2>
+        <div class="section">
+            <div class="endpoint">
+                <strong>Q:</strong> কেন module-based API documentation দরকার?
+                <div class="ok">Module অনুযায়ী ভাগ করলে exam/viva তে সহজে ব্যাখ্যা করা যায় এবং report readability বাড়ে।</div>
+            </div>
+            <div class="endpoint">
+                <strong>Q:</strong> 404 কবে হয়?
+                <div class="ok">যখন URL এ invalid post_id বা user_id দেওয়া হয়, তখন Django 404 দেয়।</div>
+            </div>
+            <div class="endpoint">
+                <strong>Q:</strong> Admin login আলাদা কেন?
+                <div class="ok">Security policy: admin login শুধুমাত্র /admin/ এ।</div>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>UniSkills API Viva Guide (Bangla)</strong></p>
+            <p>Final report এর জন্য module-based structure রাখা হয়েছে।</p>
+        </footer>
+    </div>
+</body>
+</html>

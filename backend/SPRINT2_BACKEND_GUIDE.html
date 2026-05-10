@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sprint 2 Backend Implementation Guide</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Segoe UI", "Roboto", sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #333; padding: 20px; }
+    .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }
+    .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+    .header p { font-size: 1.1em; opacity: 0.95; }
+    .nav-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; padding: 20px; background: #f8f9fa; border-bottom: 3px solid #667eea; }
+    .nav-btn { padding: 10px 14px; border: none; border-radius: 8px; font-size: 0.85em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-block; text-align: center; white-space: nowrap; }
+    .nav-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+    .nav-btn-files { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; }
+    .nav-btn-joy { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+    .nav-btn-shahin { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+    .nav-btn-esha { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }
+    .nav-btn-tanjida { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+    .nav-btn-code { background: linear-gradient(135deg, #fb923c 0%, #ec4899 100%); color: white; }
+    .content { padding: 25px; }
+    .member-section { display: none; animation: fadeIn 0.5s ease; }
+    .member-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .member-card { border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .member-card.joy { background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); border-left: 6px solid #f5576c; }
+    .member-card.shahin { background: linear-gradient(135deg, #4facfe15 0%, #00f2fe15 100%); border-left: 6px solid #00f2fe; }
+    .member-card.esha { background: linear-gradient(135deg, #43e97b15 0%, #38f9d715 100%); border-left: 6px solid #38f9d7; }
+    .member-card.tanjida { background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); border-left: 6px solid #fee140; }
+    .member-card.files { background: linear-gradient(135deg, #6366f115 0%, #8b5cf615 100%); border-left: 6px solid #8b5cf6; }
+    .member-card h2 { font-size: 1.6em; margin-bottom: 8px; color: #1f2937; }
+    .member-card .subtitle { color: #666; font-size: 0.9em; margin-bottom: 12px; }
+    .subtask-block { background: white; padding: 16px; border-radius: 10px; margin-bottom: 14px; border: 1px solid #e5e7eb; }
+    .subtask-block h3 { color: #1f2937; margin-bottom: 10px; font-size: 1.2em; }
+    .file-path { background: #f3f4f6; padding: 8px 12px; border-radius: 6px; color: #d97706; font-family: "Courier New", monospace; font-weight: 600; display: inline-block; margin-bottom: 12px; border-left: 3px solid #d97706; font-size: 0.9em; }
+    .task-info { background: #fffbeb; border-left: 3px solid #fbbf24; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.5; }
+    .task-info ul { list-style: disc; margin-left: 20px; margin-top: 6px; }
+    .dropdown-btn { background: #f3f4f6; border: 1px solid #d1d5db; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: #1f2937; width: 100%; text-align: left; transition: all 0.3s; margin-bottom: 10px; }
+    .dropdown-btn:hover { background: #e5e7eb; }
+    .dropdown-btn.active { background: #667eea; color: white; }
+    .dropdown-content { display: none; background: #f8fafc; border: 1px solid #d1d5db; border-radius: 8px; padding: 15px; margin-bottom: 12px; }
+    .dropdown-content.show { display: block; }
+    pre { background: #1f2937; color: #e5e7eb; padding: 14px; border-radius: 8px; overflow-x: auto; font-family: "Courier New", monospace; font-size: 12px; line-height: 1.7; border: 1px solid #374151; }
+    .code-line { padding: 2px 0; }
+    .code-line-num { color: #6b7280; margin-right: 12px; display: inline-block; width: 35px; text-align: right; }
+    .explanation { background: #f0f9ff; border-left: 4px solid #0284c7; padding: 14px; border-radius: 8px; margin-top: 12px; }
+    .explanation h4 { color: #0284c7; margin-bottom: 10px; font-size: 1em; font-weight: 700; }
+    .explanation ul { list-style: none; padding-left: 0; }
+    .explanation li { padding: 8px 0; color: #334155; border-bottom: 1px solid #bae6fd; font-size: 0.9em; line-height: 1.5; }
+    .explanation li:last-child { border-bottom: none; }
+    .explanation code { background: #e0f2fe; padding: 2px 5px; border-radius: 3px; font-family: monospace; color: #0369a1; font-weight: 600; }
+    .explanation strong { color: #0369a1; font-weight: 700; }
+    .file-list { background: #f8fafc; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+    .file-list ul { list-style: none; padding-left: 0; }
+    .file-list li { padding: 10px; margin-bottom: 8px; background: white; border-radius: 6px; border-left: 4px solid #667eea; font-size: 0.9em; }
+    .file-list code { color: #d97706; font-family: monospace; font-weight: 600; }
+    .file-list .backend-yes { color: #16a34a; font-weight: 700; }
+    .footer { background: #f8f9fa; border-top: 2px solid #e5e7eb; padding: 16px 20px; text-align: center; color: #666; font-size: 0.9em; }
+    .git-info { background: #dcfce7; border: 1px solid #86efac; padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 0.85em; color: #166534; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    table tr { border-bottom: 1px solid #e5e7eb; }
+    table th, table td { padding: 10px; text-align: left; font-size: 0.9em; }
+    table th { background: #f3f4f6; font-weight: 700; color: #1f2937; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🚀 Sprint 2 Backend Implementation</h1>
+    <p>Skill Management - Complete Code Breakdown Guide</p>
+  </div>
+
+  <div class="nav-section">
+    <button class="nav-btn nav-btn-files" onclick="showSection('files')">📁 Backend Files</button>
+    <button class="nav-btn nav-btn-joy" onclick="showSection('joy')">👩‍💻 Joy (UN-44)</button>
+    <button class="nav-btn nav-btn-shahin" onclick="showSection('shahin')">👨‍💼 Shahin (UN-48)</button>
+    <button class="nav-btn nav-btn-esha" onclick="showSection('esha')">👩‍💻 Esha (UN-52)</button>
+    <button class="nav-btn nav-btn-tanjida" onclick="showSection('tanjida')">👩‍💻 Tanjida (UN-56)</button>
+    <button class="nav-btn nav-btn-code" onclick="showSection('fullcode')">📄 Full Code</button>
+  </div>
+
+  <div class="content">
+    <!-- BACKEND FILES SECTION -->
+    <div class="member-section active" id="files">
+      <div class="member-card files">
+        <h2>📁 Backend Files Overview</h2>
+        <p class="subtitle">কোন কোন files-এ Sprint 2 backend changes আছে</p>
+        
+        <div class="subtask-block">
+          <h3>যেসব Files-এ Sprint 2 Backend Code আছে:</h3>
+          <div class="file-list">
+            <ul>
+              <li><code>accounts/models.py</code> - <span class="backend-yes">✓ MAIN</span> - SkillPost model definition (সব members-এর জন্য base)</li>
+              <li><code>accounts/user_management/student.py</code> - <span class="backend-yes">✓ MAIN</span> - 4 members-এর সব code (Joy, Shahin, Esha, Tanjida)</li>
+              <li><code>accounts/urls.py</code> - <span class="backend-yes">✓ UPDATED</span> - skill routes add করা</li>
+              <li><code>accounts/views.py</code> - <span class="backend-yes">✓ UPDATED</span> - new views re-export করা</li>
+              <li><code>accounts/user_management/__init__.py</code> - <span class="backend-yes">✓ UPDATED</span> - new functions export করা</li>
+              <li><code>accounts/admin.py</code> - <span class="backend-yes">✓ UPDATED</span> - SkillPostAdmin register করা</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="subtask-block">
+          <h3>Main Implementation File (student.py)</h3>
+          <p style="color: #666; margin-bottom: 15px;">এই file-টি হলো Sprint 2 backend-এর সবচেয়ে গুরুত্বপূর্ণ file। এতে 4 জন member-এর সব code আছে 290+ lines-এ distributed:</p>
+          <div class="task-info">
+            <strong>📝 File Structure:</strong>
+            <ul>
+              <li><strong>Lines 1-50:</strong> Imports + StudentRegistrationForm (shared)</li>
+              <li><strong>Lines 51-69:</strong> SkillPostForm (Joy's form for UN-45)</li>
+              <li><strong>Lines 71-92:</strong> ModerationForm (Shahin's form for UN-49)</li>
+              <li><strong>Lines 94-155:</strong> Helper functions (Esha's filters UN-53/54/55 + Tanjida's browse helpers UN-57/58)</li>
+              <li><strong>Lines 157-220:</strong> register_student + student_dashboard + skills_page (Joy + Shahin work)</li>
+              <li><strong>Lines 222-227:</strong> delete_skill_post (Joy's UN-47)</li>
+              <li><strong>Lines 229-290:</strong> moderation_dashboard + moderate_skill_post (Shahin's UN-49/50)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JOY SECTION -->
+    <div class="member-section" id="joy">
+      <div class="member-card joy">
+        <h2>👩‍💻 Joy - Story UN-44: Create & Manage Skill Posts</h2>
+        <p class="subtitle">Student-side post creation, editing, and deletion functionality</p>
+
+        <div class="subtask-block">
+          <h3>📋 UN-45: Create Skill Post Form with Validation</h3>
+          <div class="task-info">
+            <strong>Location:</strong> accounts/user_management/student.py, Lines 51-69
+          </div>
+          <div class="file-path">📄 SkillPostForm Class</div>
+          <pre><code>class SkillPostForm(forms.ModelForm):
+    class Meta:
+        model = SkillPost
+        fields = ["title", "description", "category", "session_mode", "available_time", "fee"]
+        widgets = {
+            "available_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "form-control"
+
+    def clean_available_time(self):
+        available_time = self.cleaned_data["available_time"]
+        if available_time <= timezone.now():
+            raise ValidationError("Available time must be in the future.")
+        return available_time
+
+    def clean_fee(self):
+        fee = self.cleaned_data["fee"]
+        if fee < 0:
+            raise ValidationError("Fee cannot be negative.")
+        return fee</code></pre>
+          <div class="explanation">
+            <h4>📝 Line-by-Line Explanation</h4>
+            <ul>
+              <li><strong>Line 51:</strong> <code>class SkillPostForm(forms.ModelForm):</code> - SkillPost database model থেকে automatically form তৈরি করে (Django convenience feature)</li>
+              <li><strong>Line 53-58 (Meta class):</strong> <code>fields = ["title", "description", ...]</code> - student যেসব field fill করবে সেগুলো define করে</li>
+              <li><strong>Line 56:</strong> <code>available_time: DateTimeInput</code> - browser-এ datetime picker widget দেখাবে (HTML5 native control)</li>
+              <li><strong>Line 60-62 (__init__):</strong> সব form field-এ CSS class "form-control" যোগ করে (Bootstrap styling-এর জন্য)</li>
+              <li><strong>Line 64-68 (clean_available_time):</strong> Custom validation - available time অবশ্যই future-এ হতে হবে। Past date reject করে ValidationError দেয়</li>
+              <li><strong>Line 70-73 (clean_fee):</strong> Custom validation - fee negative হতে পারে না। যদি -5 এর মত negative value দেয় তাহলে error দেখাবে</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="subtask-block">
+          <h3>✏️ UN-46: Edit Own Skill Post (In skills_page)</h3>
+          <div class="task-info">
+            <strong>Location:</strong> accounts/user_management/student.py, Lines 187-210 (inside skills_page function)
+          </div>
+          <div class="file-path">📄 Edit Logic in skills_page</div>
+          <pre><code># Joy: Edit own skill post if student POSTs form
+if request.method == "POST":
+    post_id = request.POST.get("post_id")  # form থেকে post_id আসে যদি edit হয়
+    instance = None
+    
+    if post_id:  # post_id আছে মানে edit operation
+        instance = get_object_or_404(SkillPost, id=post_id, provider=request.user)
+
+    form = SkillPostForm(request.POST, instance=instance)
+    if form.is_valid():
+        post = form.save(commit=False)
+        post.provider = request.user  # যিনি edit করছেন তিনিই provider
+        post.status = SkillPost.STATUS_PENDING  # edit করলে status reset হয় pending-এ
+        post.rejection_reason = ""  # previous rejection reason clear করে দেয়
+        post.save()
+        if instance:
+            messages.success(request, "Skill post updated...")
+        else:
+            messages.success(request, "Skill post created...")
+        return redirect("accounts:skills")</code></pre>
+          <div class="explanation">
+            <h4>📝 Line-by-Line Explanation (Edit Logic)</h4>
+            <ul>
+              <li><strong>Line 189:</strong> <code>post_id = request.POST.get("post_id")</code> - form থেকে post_id নেয়। যদি থাকে তাহলে edit, না থাকলে create</li>
+              <li><strong>Line 193-194:</strong> <code>get_object_or_404(SkillPost, id=post_id, provider=request.user)</code> - <strong>Ownership Check:</strong> শুধু নিজের post edit করতে পারবে। অন্যের post edit করার চেষ্টা করলে 404 error হবে</li>
+              <li><strong>Line 196:</strong> <code>form = SkillPostForm(request.POST, instance=instance)</code> - instance pass করা মানে form-এ existing data pre-fill হবে</li>
+              <li><strong>Line 198-204:</strong> Form valid হলে post save করে (commit=False দিয়ে তাড়াতাড়ি save করছে না, আগে provider/status set করছি)</li>
+              <li><strong>Line 200-202:</strong> Provider set করে, status PENDING করে (admin review-এর জন্য), rejection reason clear করে</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="subtask-block">
+          <h3>🗑️ UN-47: Delete Own Skill Post</h3>
+          <div class="task-info">
+            <strong>Location:</strong> accounts/user_management/student.py, Lines 222-227
+          </div>
+          <div class="file-path">📄 delete_skill_post Function</div>
+          <pre><code>@login_required
+def delete_skill_post(request, post_id):
+    if request.method != "POST":
+        return redirect("accounts:skills")
+
+    post = get_object_or_404(SkillPost, id=post_id, provider=request.user)
+    post.delete()
+    messages.success(request, "Skill post deleted.")
+    return redirect("accounts:skills")</code></pre>
+          <div class="explanation">
+            <h4>📝 Line-by-Line Explanation (Delete Logic)</h4>
+            <ul>
+              <li><strong>Line 222:</strong> <code>@login_required</code> - decorator যা লগইন-না করা user-দের block করে</li>
+              <li><strong>Line 224-225:</strong> <code>if request.method != "POST":</code> - শুধু POST request allow করে (security feature)</li>
+              <li><strong>Line 227:</strong> <code>get_object_or_404(SkillPost, id=post_id, provider=request.user)</code> - Ownership verify করে। শুধু নিজের post delete করতে পারবে</li>
+              <li><strong>Line 228:</strong> <code>post.delete()</code> - database থেকে post delete করে</li>
+              <li><strong>Line 229:</strong> Success message দেখায় এবং skills page-এ redirect করে</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHAHIN SECTION -->
+    <div class="member-section" id="shahin">
+      <div class="member-card shahin">
+        <h2>👨‍💼 Shahin - Story UN-48: Skill Post Moderation</h2>
+        <p class="subtitle">Admin-side moderation workflow for approving/rejecting posts</p>
+
+        <div class="subtask-block">
+          <h3>📋 UN-49: Moderation Form with Validation</h3>
+          <div class="task-info">
+            <strong>Location:</strong> accounts/user_management/student.py, Lines 71-92
+          </div>
+          <div class="file-path">📄 ModerationForm Class</div>
+          <pre><code>class ModerationForm(forms.Form):
+    ACTION_CHOICES = [
+        ("approve", "Approve"),
+        ("reject", "Reject"),
+    ]
+    action = forms.ChoiceField(choices=ACTION_CHOICES, widget=forms.RadioSelect())
+    rejection_reason = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 3, "placeholder": "..."}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "form-control"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        action = cleaned_data.get("action")
+        reason = cleaned_data.get("rejection_reason", "").strip()
+
+        if action == "reject" and not reason:
+            raise ValidationError("Rejection reason is required...")
+        return cleaned_data</code></pre>
+          <div class="explanation">
+            <h4>📝 Line-by-Line Explanation</h4>
+            <ul>
+              <li><strong>Line 71:</strong> <code>class ModerationForm(forms.Form):</code> - Admin moderation-এর জন্য form (ModelForm না হয়ে regular Form)</li>
+              <li><strong>Line 72-75:</strong> <code>ACTION_CHOICES</code> - radio button-এ 2 option: approve বা reject</li>
+              <li><strong>Line 76-77:</strong> <code>action = forms.ChoiceField(widget=forms.RadioSelect())</code> - Admin-কে radio buttons দেখাবে</li>
+              <li><strong>Line 78-81:</strong> <code>rejection_reason = CharField(required=False)</code> - Textarea field যেখানে admin rejection reason লিখবে। Initially optional কিন্তু...(see clean method)</li>
+              <li><strong>Line 87-92 (clean method):</strong> <strong>Cross-field Validation:</strong> যদি action = "reject" হয় কিন্তু reason খালি থাকে, তাহলে error throw করে। Approve হলে reason দরকার নেই</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="subtask-block">
+          <h3>📊 UN-49 & UN-50: Moderation Dashboard & Action Handler</h3>
+          <div class="task-info">
+            <strong>Location:</strong> accounts/user_management/student.py, Lines 248-290 (moderation_dashboard + moderate_skill_post)
+          </div>
+          <div class="file-path">📄 moderation_dashboard Function</div>
+          <pre><code>@login_required
+def moderation_dashboard(request):
+    # Admin-only check
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("accounts:skills")
+
+    # Get all pending posts ordered by newest first
+    pending_posts = SkillPost.objects.select_related("provider").filter(
+        status=SkillPost.STATUS_PENDING
+    ).order_by("-created_at")
+
+    context = {
+        "active_page": "moderation",
+        "pending_posts": pending_posts,
+    }
+    return render(request, "accounts/moderation.html", context)</code></pre>
+          <div class="explanation">
+            <h4>📝 Line-by-Line Explanation (Dashboard)</h4>
+            <ul>
+              <li><strong>Line 250-252:</strong> <code>if not (request.user.is_staff or request.user.is_superuser):</code> - শুধু admin (is_staff=True) access দিবে। student approve/reject দেখতে পারবে না</li>
+              <li><strong>Line 255-257:</strong> <code>pending_posts = SkillPost.objects.filter(status=STATUS_PENDING)</code> - শুধু pending (review awaiting) posts fetch করে</li>
+              <li><strong>Line 256:</strong> <code>select_related("provider")</code> - Optimization: provider user-এর info একসাথে fetch করে (1 query instead of N)</li>
+              <li><strong>Line 258:</strong> <code>.order_by("-created_at")</code> - newest first order-এ দেখাবে</li>
+            </ul>
+          </div>
+
+          <div class="file-path">📄 moderate_skill_post Function</div>
+          <pre><code>@login_required
+def moderate_skill_post(request, post_id):
+    # Admin-only check
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("accounts:skills")
+
+    post = get_object_or_404(SkillPost, id=post_id, status=SkillPost.STATUS_PENDING)
+
+    if request.method == "POST":
+        form = ModerationForm(request.POST)
+        if form.is_valid():
+            action = form.cleaned_data["action"]
+            
+            if action == "approve":
+                post.status = SkillPost.STATUS_APPROVED
+                post.rejection_reason = ""
+                post.save()
+                messages.success(request, f"Post '{post.title}' approved successfully.")
+            
+            elif action == "reject":
+                reason = form.cleaned_data["rejection_reason"].strip()
+                post.status = SkillPost.STATUS_REJECTED
+                post.rejection_reason = reason
+                post.save()
+                messages.success(request, f"Post '{post.title}' rejected with reason provided.")
+            
+            return redirect("accounts:moderation")
+    else:
+        form = ModerationForm()
+
+    context = {
+        "active_page": "moderation",
+        "post": post,
+        "form": form,
+    }
+    return render(request, "accounts/moderate_post.html", context)</code></pre>
+          <div class="explanation">
+            <h4>📝 Line-by-Line Explanation (Action Handler)</h4>
+            <ul>
+              <li><strong>Line 264:</strong> <code>get_object_or_404(SkillPost, id=post_id, status=STATUS_PENDING)</code> - যদি post_id exist না করে অথবা status PENDING না হয় তাহলে 404</li>
+              <li><strong>Line 266:</strong> <code>if request.method == "POST":</code> - admin যখন approve/reject form submit করে</li>
+              <li><strong>Line 269-270:</strong> <code>action = form.cleaned_data["action"]</code> - form থেকে choose করা action নেয়</li>
+              <li><strong>Line 272-277 (if approve):</strong> status APPROVED করে, rejection_reason clear করে, save করে (student এখন এই skill দেখতে পাবে browse-এ)</li>
+              <li><strong>Line 279-285 (elif reject):</strong> status REJECTED করে, admin-এর reason save করে। Student later দেখতে পারবে কেন reject হয়েছে</li>
+              <li><strong>Line 289:</strong> GET request (first time visit) হলে blank ModerationForm দেখায়</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESHA SECTION -->
+    <div class="member-section" id="esha">
+      <div class="member-card esha">
+        <h2>👩‍💻 Esha - Story UN-52: Search & Filter Skills</h2>
+        <p class="subtitle">Advanced search by keyword, category, and session mode filtering</p>
+
+        <div class="subtask-block">
+          <h3>🔍 UN-53, UN-54, UN-55: Filter Helper Functions</h3>
+          <div class="task-info">
+            <strong>Location:</strong> accounts/user_management/student.py, Lines 94-130 (helper functions) + Lines 168-175 (used in skills_page)
+          </div>
+          <div class="file-path">📄 Filter Helper Functions</div>
+          <pre><code>def get_skill_filter_inputs(request):
+    """Extract filter parameters from URL query string"""
+    query = request.GET.get("q", "").strip()
+    category = request.GET.get("category", "").strip()
+    mode = request.GET.get("mode", "").strip()
+    return query, category, mode
+
+def apply_keyword_filter(skill_posts, query):
+    """UN-53: Search by keyword in title, description, or provider"""
+    if query:
+        skill_posts = skill_posts.filter(
+            Q(title__icontains=query)
+            | Q(description__icontains=query)
+            | Q(provider__username__icontains=query)
+        )
+    return skill_posts
+
+def apply_category_filter(skill_posts, category):
+    """UN-54: Filter by category (e.g. 'Graphics Design', 'Web Dev')"""
+    if category:
+        skill_posts = skill_posts.filter(category=category)
+    return skill_posts
+
+def apply_mode_filter(skill_posts, mode):
+    """UN-55: Filter by session mode (online/offline/hybrid)"""
+    if mode:
+        skill_posts = skill_posts.filter(session_mode=mode)
+    return skill_posts</code></pre>
+          <div class="explanation">
+            <h4>📝 Line-by-Line Explanation</h4>
+            <ul>
+              <li><strong>Lines 94-99 (get_skill_filter_inputs):</strong> Browser URL থেকে query parameters নেয় (যেমন /skills/?q=python&category=programming). GET request-এ আসা data extract করে</li>
+              <li><strong>Lines 101-110 (apply_keyword_filter - UN-53):</strong> <code>Q(title__icontains=query)</code> - title-এ case-insensitive search করে; <code>|</code> means OR operator, তাই title OR description OR username-এ search করে। "Python" লিখলে "Python Web Dev", "learning python", "user123-python" সব match হবে</li>
+              <li><strong>Lines 112-116 (apply_category_filter - UN-54):</strong> যদি category param pass হয় (e.g. "Graphics Design") তাহলে সেই category-র posts শুধু দেখাবে</li>
+              <li><strong>Lines 118-122 (apply_mode_filter - UN-55):</strong> যদি mode param pass হয় (e.g. "online") তাহলে সেই mode-র posts শুধু দেখাবে। User একসাথে "online + graphics" filter করতে পারবে</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TANJIDA SECTION -->
+    <div class="member-section" id="tanjida">
+      <div class="member-card tanjida">
+        <h2>👩‍💻 Tanjida Maria - Story UN-56: Browse Available Skills</h2>
+        <p class="subtitle">Show approved skills with availability checking and smart ordering</p>
+
+        <div class="subtask-block">
+          <h3>📚 UN-57 & UN-58: Browse Feed Helper Functions</h3>
+          <div class="task-info">
+            <strong>Location:</strong> accounts/user_management/student.py, Lines 133-155 (helper functions) + Lines 166-167 (used in skills_page)
+          </div>
+          <div class="file-path">📄 Browse Feed Helper Functions</div>
+          <pre><code>def get_approved_skill_feed():
+    """UN-57: Only show approved posts (STATUS_APPROVED)"""
+    return SkillPost.objects.select_related("provider").filter(
+        status=SkillPost.STATUS_APPROVED
+    )
+
+def hide_unavailable_skill_slots(skill_posts):
+    """UN-58: Only show posts with available_time in the future"""
+    return skill_posts.filter(available_time__gt=timezone.now())
+
+def order_skill_feed(skill_posts):
+    """Order by upcoming availability time, then by recent creation"""
+    return skill_posts.order_by("available_time", "-created_at")
+
+def get_browse_skill_feed():
+    """Combines all browse logic into one function"""
+    skill_posts = get_approved_skill_feed()
+    skill_posts = hide_unavailable_skill_slots(skill_posts)
+    skill_posts = order_skill_feed(skill_posts)
+    return skill_posts</code></pre>
+          <div class="explanation">
+            <h4>📝 Line-by-Line Explanation</h4>
+            <ul>
+              <li><strong>Lines 133-138 (get_approved_skill_feed - UN-57):</strong> Database থেকে শুধু STATUS_APPROVED posts নিয়ে আসে। Pending/rejected posts hide করে কারণ user-রা শুধু approved skills দেখতে পারবে। <code>select_related("provider")</code> optimization দেয়</li>
+              <li><strong>Lines 140-143 (hide_unavailable_skill_slots - UN-58):</strong> <code>available_time__gt=timezone.now()</code> মানে "available time যা now-এর চেয়ে বড় (future-এ)". অর্থাৎ past date-র posts বাদ দেয়। যেমন 2024-01-01 availability pass হয়ে গেছে, তো সেটা hide করবে</li>
+              <li><strong>Lines 145-147 (order_skill_feed):</strong> <code>.order_by("available_time", "-created_at")</code> - প্রথমে upcoming availability অনুযায়ী sort (nearest first), তারপর যদি একই time-এ multiple posts থাকে তাহলে newest first (minus mean descending)</li>
+              <li><strong>Lines 149-155 (get_browse_skill_feed):</strong> সব logic একসাথে call করে. This is the "public feed" যা regular users দেখে browse করার সময়</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FULL CODE SECTION -->
+    <div class="member-section" id="fullcode">
+      <div class="member-card files">
+        <h2>📄 Full Backend Code Structure with Dropdowns</h2>
+        <p class="subtitle">সব backend files - dropdowns সহ - git clone করার পর কোথায় add করবে তা mention করা আছে</p>
+
+        <!-- FILE 1: models.py -->
+        <div class="subtask-block">
+          <button class="dropdown-btn" onclick="toggleDropdown(this)">📋 1. accounts/models.py - SkillPost + 4 Member Models (EQUALLY SPLIT)</button>
+          <div class="dropdown-content">
+            <div class="git-info">
+              ✅ <strong>Where to add:</strong> File exists. ADD entire code block below CustomUser class (after line ~24)
+            </div>
+            <pre><code"># ==================== CORE SKILLPOST MODEL (SHARED) ====================
+class SkillPost(models.Model):
+    """Shared by all 4 members for skill posting"""
+    CATEGORY_TECHNICAL = "technical"
+    CATEGORY_NON_TECHNICAL = "non_technical"
+    CATEGORY_OTHER = "other"
+    CATEGORY_CHOICES = [
+        (CATEGORY_TECHNICAL, "Technical"),
+        (CATEGORY_NON_TECHNICAL, "Non-Technical"),
+        (CATEGORY_OTHER, "Other"),
+    ]
+
+    MODE_ONLINE = "online"
+    MODE_OFFLINE = "offline"
+    MODE_BOTH = "both"
+    MODE_CHOICES = [
+        (MODE_ONLINE, "Online"),
+        (MODE_OFFLINE, "Offline"),
+        (MODE_BOTH, "Both"),
+    ]
+
+    STATUS_PENDING = "pending"
+    STATUS_APPROVED = "approved"
+    STATUS_REJECTED = "rejected"
+    STATUS_CHOICES = [
+        (STATUS_PENDING, "Pending"),
+        (STATUS_APPROVED, "Approved"),
+        (STATUS_REJECTED, "Rejected"),
+    ]
+
+    provider = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="skill_posts")
+    title = models.CharField(max_length=120)
+    description = models.TextField()
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    session_mode = models.CharField(max_length=10, choices=MODE_CHOICES)
+    available_time = models.DateTimeField()
+    fee = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    rejection_reason = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.title} ({self.get_status_display()})"
+
+
+# ==================== JOY (UN-44) - SKILL CATEGORIES ====================
+class SkillCategory(models.Model):
+    """JOY: Custom skill categories for organization"""
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True)
+    icon = models.CharField(max_length=50, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Skill Categories"
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
+# ==================== SHAHIN (UN-48) - MODERATION LOGS ====================
+class SkillModerationLog(models.Model):
+    """SHAHIN: Track approval/rejection history"""
+    ACTION_APPROVE = "approve"
+    ACTION_REJECT = "reject"
+    ACTION_CHOICES = [
+        (ACTION_APPROVE, "Approved"),
+        (ACTION_REJECT, "Rejected"),
+    ]
+
+    skill_post = models.ForeignKey(SkillPost, on_delete=models.CASCADE, related_name="moderation_logs")
+    moderator = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name="moderation_actions")
+    action = models.CharField(max_length=10, choices=ACTION_CHOICES)
+    reason = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.skill_post.title} - {self.get_action_display()}"
+
+
+# ==================== ESHA (UN-52) - SEARCH FILTERS ====================
+class SkillSearchFilter(models.Model):
+    """ESHA: Save user search preferences"""
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="saved_filters")
+    filter_name = models.CharField(max_length=100)
+    category = models.CharField(max_length=20, blank=True, choices=SkillPost.CATEGORY_CHOICES)
+    session_mode = models.CharField(max_length=10, blank=True, choices=SkillPost.MODE_CHOICES)
+    keyword = models.CharField(max_length=100, blank=True)
+    is_favorite = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.filter_name}"
+
+
+# ==================== TANJIDA (UN-56) - SKILL SLOTS ====================
+class SkillSlot(models.Model):
+    """TANJIDA: Individual time slots for availability"""
+    skill_post = models.ForeignKey(SkillPost, on_delete=models.CASCADE, related_name="slots")
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    max_students = models.PositiveIntegerField(default=1)
+    booked_students = models.PositiveIntegerField(default=0)
+    is_available = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["start_time"]
+
+    def __str__(self):
+        return f"{self.skill_post.title} - {self.start_time}"</code></pre>
+            <div class="explanation">
+              <h4>📝 Member Distribution in models.py (ALL EQUAL ~40 lines each):</h4>
+              <ul>
+                <li><strong>SHARED SkillPost (Lines 1-45):</strong> Core model used by all members. Has status choices that Shahin uses, category for Esha, available_time for Tanjida</li>
+                <li><strong>JOY (Lines 48-62):</strong> <code>SkillCategory</code> model - manages custom skill categories with name, description, icon</li>
+                <li><strong>SHAHIN (Lines 65-85):</strong> <code>SkillModerationLog</code> model - tracks all moderation actions with action choice field, moderator FK, reason</li>
+                <li><strong>ESHA (Lines 88-105):</strong> <code>SkillSearchFilter</code> model - saves user search preferences with category, mode, keyword filters</li>
+                <li><strong>TANJIDA (Lines 108-128):</strong> <code>SkillSlot</code> model - represents individual time slots with start_time, end_time, student booking tracking</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILE 2: student.py -->
+        <div class="subtask-block">
+          <button class="dropdown-btn" onclick="toggleDropdown(this)">📋 2. accounts/user_management/student.py - MAIN FILE (Joy, Shahin, Esha, Tanjida)</button>
+          <div class="dropdown-content">
+            <div class="git-info">
+              ✅ <strong>Where to add:</strong> Create NEW FILE at: <code>accounts/user_management/student.py</code>
+            </div>
+            <pre><code># ==================== JOY + SHAHIN + ESHA + TANJIDA MARIA ====================
+# Sprint 2: Skill Management Backend Implementation
+# File Structure:
+# - JOY: SkillPostForm, create/edit skill post (lines 51-69, 187-210)
+# - JOY: delete_skill_post (lines 222-227)
+# - SHAHIN: ModerationForm, moderation_dashboard, moderate_skill_post (lines 71-92, 248-290)
+# - ESHA: Filter helpers - apply_keyword_filter, apply_category_filter, apply_mode_filter (lines 94-130)
+# - TANJIDA: Browse helpers - get_approved_skill_feed, hide_unavailable_skill_slots, order_skill_feed (lines 133-155)
+
+from django import forms
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+
+from ..models import CustomUser, SkillPost
+
+
+# ===================== JOY (UN-44, UN-45, UN-46, UN-47) =====================
+# UN-45: Form for creating/editing skill posts with validation
+class SkillPostForm(forms.ModelForm):
+    """Form for students to create or edit their skill posts"""
+    class Meta:
+        model = SkillPost
+        fields = ["title", "description", "category", "session_mode", "available_time", "fee"]
+        widgets = {
+            "available_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "form-control"
+
+    def clean_available_time(self):
+        available_time = self.cleaned_data["available_time"]
+        if available_time <= timezone.now():
+            raise ValidationError("Available time must be in the future.")
+        return available_time
+
+    def clean_fee(self):
+        fee = self.cleaned_data["fee"]
+        if fee < 0:
+            raise ValidationError("Fee cannot be negative.")
+        return fee
+
+
+# ==================== SHAHIN (UN-48, UN-49, UN-50) ====================
+# UN-49: Form for admin to approve/reject posts with reason validation
+class ModerationForm(forms.Form):
+    """Form for admins to moderate skill posts (approve/reject)"""
+    ACTION_CHOICES = [
+        ("approve", "Approve"),
+        ("reject", "Reject"),
+    ]
+    action = forms.ChoiceField(choices=ACTION_CHOICES, widget=forms.RadioSelect())
+    rejection_reason = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 3, "placeholder": "Reason for rejection (required if rejecting)"}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "form-control"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        action = cleaned_data.get("action")
+        reason = cleaned_data.get("rejection_reason", "").strip()
+
+        if action == "reject" and not reason:
+            raise ValidationError("Rejection reason is required when rejecting a post.")
+        return cleaned_data
+
+
+# ===================== ESHA (UN-52, UN-53, UN-54, UN-55) =====================
+# Helper functions for search and filtering
+def get_skill_filter_inputs(request):
+    """Extract filter parameters from URL query string"""
+    query = request.GET.get("q", "").strip()
+    category = request.GET.get("category", "").strip()
+    mode = request.GET.get("mode", "").strip()
+    return query, category, mode
+
+
+def apply_keyword_filter(skill_posts, query):
+    """UN-53: Search by keyword in title, description, or provider username"""
+    if query:
+        skill_posts = skill_posts.filter(
+            Q(title__icontains=query)
+            | Q(description__icontains=query)
+            | Q(provider__username__icontains=query)
+        )
+    return skill_posts
+
+
+def apply_category_filter(skill_posts, category):
+    """UN-54: Filter by category (e.g. Graphics Design, Web Development)"""
+    if category:
+        skill_posts = skill_posts.filter(category=category)
+    return skill_posts
+
+
+def apply_mode_filter(skill_posts, mode):
+    """UN-55: Filter by session mode (online/offline/hybrid)"""
+    if mode:
+        skill_posts = skill_posts.filter(session_mode=mode)
+    return skill_posts
+
+
+def build_skill_filter_context(query, category, mode):
+    """Return dict with selected filters for template to display"""
+    return {
+        "search_query": query,
+        "selected_category": category,
+        "selected_mode": mode,
+        "category_choices": SkillPost.CATEGORY_CHOICES,
+        "mode_choices": SkillPost.MODE_CHOICES,
+    }
+
+
+# ===================== TANJIDA MARIA (UN-56, UN-57, UN-58) =====================
+# Helper functions for browse feed with availability checking
+def get_approved_skill_feed():
+    """UN-57: Get only approved posts from database"""
+    return SkillPost.objects.select_related("provider").filter(
+        status=SkillPost.STATUS_APPROVED
+    )
+
+
+def hide_unavailable_skill_slots(skill_posts):
+    """UN-58: Hide posts where available_time is in the past"""
+    return skill_posts.filter(available_time__gt=timezone.now())
+
+
+def order_skill_feed(skill_posts):
+    """Order by upcoming availability, then by recent creation"""
+    return skill_posts.order_by("available_time", "-created_at")
+
+
+def get_browse_skill_feed():
+    """Combine all browse logic: approved + available + ordered"""
+    skill_posts = get_approved_skill_feed()
+    skill_posts = hide_unavailable_skill_slots(skill_posts)
+    skill_posts = order_skill_feed(skill_posts)
+    return skill_posts
+
+
+# ======================== MAIN VIEWS ========================
+
+# ========== JOY + SHAHIN + ESHA + TANJIDA ===========
+@login_required
+def skills_page(request):
+    """
+    Main skills page integrating all 4 members' functionality:
+    - Joy: Create/edit/delete skill posts
+    - Shahin: View moderation status
+    - Esha: Search and filter logic
+    - Tanjida: Browse available approved skills
+    """
+    # Esha: Extract filter inputs
+    query, category, mode = get_skill_filter_inputs(request)
+
+    # Tanjida: Get base feed (approved + available + ordered)
+    skill_posts = get_browse_skill_feed()
+
+    # Esha: Apply filters
+    skill_posts = apply_keyword_filter(skill_posts, query)
+    skill_posts = apply_category_filter(skill_posts, category)
+    skill_posts = apply_mode_filter(skill_posts, mode)
+
+    form = None
+    edit_post = None
+    my_posts = SkillPost.objects.none()
+    is_student = request.user.role == "student"
+
+    # JOY + SHAHIN: Students manage own posts and see moderation status
+    if is_student:
+        my_posts = SkillPost.objects.filter(provider=request.user)
+
+        # JOY (UN-46): Create/edit own skill post
+        if request.method == "POST":
+            post_id = request.POST.get("post_id")
+            instance = None
+            if post_id:
+                instance = get_object_or_404(SkillPost, id=post_id, provider=request.user)
+
+            form = SkillPostForm(request.POST, instance=instance)
+            if form.is_valid():
+                post = form.save(commit=False)
+                post.provider = request.user
+                post.status = SkillPost.STATUS_PENDING
+                post.rejection_reason = ""
+                post.save()
+                if instance:
+                    messages.success(request, "Skill post updated and sent for admin review.")
+                else:
+                    messages.success(request, "Skill post created and sent for admin review.")
+                return redirect("accounts:skills")
+            messages.error(request, "Please fix the errors in the form.")
+        else:
+            edit_id = request.GET.get("edit")
+            if edit_id:
+                edit_post = get_object_or_404(SkillPost, id=edit_id, provider=request.user)
+                form = SkillPostForm(instance=edit_post)
+            else:
+                form = SkillPostForm()
+
+    context = {
+        "active_page": "skills",
+        "skill_posts": skill_posts,
+        "my_skill_posts": my_posts,
+        "skill_form": form,
+        "editing_post": edit_post,
+        "is_student_provider": is_student,
+    }
+    context.update(build_skill_filter_context(query, category, mode))
+    return render(request, "accounts/skills.html", context)
+
+
+# JOY (UN-47): Delete own skill post
+@login_required
+def delete_skill_post(request, post_id):
+    """Delete a skill post (must be owner)"""
+    if request.method != "POST":
+        return redirect("accounts:skills")
+
+    post = get_object_or_404(SkillPost, id=post_id, provider=request.user)
+    post.delete()
+    messages.success(request, "Skill post deleted.")
+    return redirect("accounts:skills")
+
+
+# ==================== SHAHIN (UN-48, UN-49, UN-50) ====================
+# Admin moderation dashboard
+@login_required
+def moderation_dashboard(request):
+    """UN-49: Admin-only dashboard showing all pending posts"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("accounts:skills")
+
+    pending_posts = SkillPost.objects.select_related("provider").filter(
+        status=SkillPost.STATUS_PENDING
+    ).order_by("-created_at")
+
+    context = {
+        "active_page": "moderation",
+        "pending_posts": pending_posts,
+    }
+    return render(request, "accounts/moderation.html", context)
+
+
+# UN-50: Moderate individual skill post (approve/reject)
+@login_required
+def moderate_skill_post(request, post_id):
+    """UN-50: Admin-only page to approve/reject a pending post"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("accounts:skills")
+
+    post = get_object_or_404(SkillPost, id=post_id, status=SkillPost.STATUS_PENDING)
+
+    if request.method == "POST":
+        form = ModerationForm(request.POST)
+        if form.is_valid():
+            action = form.cleaned_data["action"]
+            if action == "approve":
+                post.status = SkillPost.STATUS_APPROVED
+                post.rejection_reason = ""
+                post.save()
+                messages.success(request, f"Post '{post.title}' approved successfully.")
+            elif action == "reject":
+                reason = form.cleaned_data["rejection_reason"].strip()
+                post.status = SkillPost.STATUS_REJECTED
+                post.rejection_reason = reason
+                post.save()
+                messages.success(request, f"Post '{post.title}' rejected with reason provided.")
+            return redirect("accounts:moderation")
+        messages.error(request, "Please fix the errors in the form.")
+    else:
+        form = ModerationForm()
+
+    context = {
+        "active_page": "moderation",
+        "post": post,
+        "form": form,
+    }
+    return render(request, "accounts/moderate_post.html", context)</code></pre>
+            <div class="explanation">
+              <h4>📝 Member Distribution in student.py:</h4>
+              <ul>
+                <li><strong>JOY (lines 20-40, 145-180, 190-200):</strong> SkillPostForm class with validators, POST logic in skills_page, delete_skill_post function</li>
+                <li><strong>SHAHIN (lines 43-67, 210-235):</strong> ModerationForm class with rejection reason validation, moderation_dashboard, moderate_skill_post handlers</li>
+                <li><strong>ESHA (lines 70-115):</strong> Filter helpers for keyword/category/mode search</li>
+                <li><strong>TANJIDA (lines 118-145):</strong> Browse feed helpers for approved/available/ordered posts</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILE 3: urls.py -->
+        <div class="subtask-block">
+          <button class="dropdown-btn" onclick="toggleDropdown(this)">📋 3. accounts/urls.py - Routes (Joy, Esha, Tanjida)</button>
+          <div class="dropdown-content">
+            <div class="git-info">
+              ✅ <strong>Where to add:</strong> File exists. ADD these 5 routes to <strong>urlpatterns</strong> list (around line 12-16)
+            </div>
+            <pre><code>urlpatterns = [
+    # ... existing routes ...
+    
+    # SPRINT 2 NEW ROUTES
+    path("skills.html", views.skills_page, name="skills"),  # Joy/Esha/Tanjida
+    path("skills/&lt;int:post_id&gt;/", views.skill_detail_page, name="skill_detail"),  # Tanjida
+    path("skills/&lt;int:post_id&gt;/delete/", views.delete_skill_post, name="delete_skill_post"),  # Joy
+    path("moderation.html", views.moderation_dashboard, name="moderation"),  # Shahin
+    path("moderation/&lt;int:post_id&gt;/", views.moderate_skill_post, name="moderate_skill_post"),  # Shahin
+    
+    # ... rest of routes ...
+]</code></pre>
+            <div class="explanation">
+              <h4>📝 What Each Route Does:</h4>
+              <ul>
+                <li><strong>/skills.html:</strong> Tanjida's browse + Esha's search/filters + Joy's create/edit form</li>
+                <li><strong>/skills/&lt;id&gt;/:</strong> Tanjida - view single approved skill detail</li>
+                <li><strong>/skills/&lt;id&gt;/delete/:</strong> Joy - delete own post</li>
+                <li><strong>/moderation.html:</strong> Shahin - admin dashboard with pending posts</li>
+                <li><strong>/moderation/&lt;id&gt;/:</strong> Shahin - approve/reject individual post</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILE 4: views.py -->
+        <div class="subtask-block">
+          <button class="dropdown-btn" onclick="toggleDropdown(this)">📋 4. accounts/views.py - Re-exports (Joy, Esha, Tanjida)</button>
+          <div class="dropdown-content">
+            <div class="git-info">
+              ✅ <strong>Where to add:</strong> File exists. ADD these imports and exports near top + in __all__ list (line ~1-30)
+            </div>
+            <pre><code"># At top of file, in the import statement from user_management:
+from .user_management import (
+    StudentRegistrationForm,
+    bookings_page,
+    register_student,
+    skill_detail_page,  # ADD THIS
+    skills_page,  # ADD THIS
+    student_dashboard,
+    delete_skill_post,  # ADD THIS
+    moderation_dashboard,  # ADD THIS
+    moderate_skill_post,  # ADD THIS
+)
+
+# In __all__ export list:
+__all__ = [
+    "StudentRegistrationForm",
+    "register_student",
+    "skills_page",  # ADD THIS
+    "skill_detail_page",  # ADD THIS
+    "delete_skill_post",  # ADD THIS
+    "moderation_dashboard",  # ADD THIS
+    "moderate_skill_post",  # ADD THIS
+]</code></pre>
+            <div class="explanation">
+              <h4>📝 Why These Re-exports?</h4>
+              <ul>
+                <li><strong>Purpose:</strong> Make student.py functions available at accounts.views level</li>
+                <li><strong>urls.py uses:</strong> urls.py imports views and calls these functions</li>
+                <li><strong>One-level indirection:</strong> views.py → user_management package → student.py module</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILE 5: __init__.py -->
+        <div class="subtask-block">
+          <button class="dropdown-btn" onclick="toggleDropdown(this)">📋 5. accounts/user_management/__init__.py - Exports (Joy, Esha, Tanjida)</button>
+          <div class="dropdown-content">
+            <div class="git-info">
+              ✅ <strong>Where to add:</strong> File exists. ADD imports + __all__ (line ~8-25)
+            </div>
+            <pre><code"># In the import statement from student:
+from .student import (
+    StudentRegistrationForm,
+    bookings_page,
+    register_student,
+    skill_detail_page,  # ADD THIS
+    skills_page,  # ADD THIS
+    student_dashboard,
+    delete_skill_post,  # ADD THIS
+    moderation_dashboard,  # ADD THIS
+    moderate_skill_post,  # ADD THIS
+)
+
+# In __all__ export list:
+__all__ = [
+    "StudentRegistrationForm",
+    "register_student",
+    "skills_page",  # ADD THIS
+    "skill_detail_page",  # ADD THIS
+    "delete_skill_post",  # ADD THIS
+    "moderation_dashboard",  # ADD THIS
+    "moderate_skill_post",  # ADD THIS
+]</code></pre>
+            <div class="explanation">
+              <h4>📝 What This Does:</h4>
+              <ul>
+                <li><strong>Package-level exports:</strong> Makes student.py functions available at user_management package level</li>
+                <li><strong>views.py imports from:</strong> views.py imports these from user_management package</li>
+                <li><strong>Clean import path:</strong> views → user_management → student.py</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILE 6: admin.py -->
+        <div class="subtask-block">
+          <button class="dropdown-btn" onclick="toggleDropdown(this)">📋 6. accounts/admin.py - Admin Interface (EQUALLY SPLIT across all 4)</button>
+          <div class="dropdown-content">
+            <div class="git-info">
+              ✅ <strong>Where to add:</strong> File exists. ADD all 4 admin classes at END (after CustomUserAdmin, line ~50)
+            </div>
+            <pre><code"># ==================== SHAHIN (UN-48) - SKILLPOST ADMIN ====================
+@admin.register(SkillPost)
+class SkillPostAdmin(admin.ModelAdmin):
+    """SHAHIN: Admin interface for skill posts"""
+    list_display = (
+        "title",
+        "provider",
+        "category",
+        "session_mode",
+        "fee",
+        "status",
+        "available_time",
+        "created_at",
+    )
+    list_filter = ("status", "category", "session_mode")
+    search_fields = ("title", "description", "provider__username", "provider__email")
+
+
+# ==================== JOY (UN-44) - SKILL CATEGORY ADMIN ====================
+@admin.register(SkillCategory)
+class SkillCategoryAdmin(admin.ModelAdmin):
+    """JOY: Manage custom skill categories"""
+    list_display = ("name", "icon", "created_at")
+    search_fields = ("name", "description")
+    ordering = ("name",)
+
+
+# ==================== SHAHIN (UN-48) - MODERATION LOG ADMIN ====================
+@admin.register(SkillModerationLog)
+class SkillModerationLogAdmin(admin.ModelAdmin):
+    """SHAHIN: Track and view all moderation history"""
+    list_display = ("skill_post", "moderator", "action", "created_at")
+    list_filter = ("action", "created_at")
+    search_fields = ("skill_post__title", "moderator__username", "reason")
+    readonly_fields = ("created_at",)
+
+
+# ==================== ESHA (UN-52) - SEARCH FILTER ADMIN ====================
+@admin.register(SkillSearchFilter)
+class SkillSearchFilterAdmin(admin.ModelAdmin):
+    """ESHA: View and manage saved search filters"""
+    list_display = ("filter_name", "user", "category", "session_mode", "is_favorite", "created_at")
+    list_filter = ("category", "session_mode", "is_favorite", "created_at")
+    search_fields = ("user__username", "filter_name", "keyword")
+
+
+# ==================== TANJIDA (UN-56) - SKILL SLOT ADMIN ====================
+@admin.register(SkillSlot)
+class SkillSlotAdmin(admin.ModelAdmin):
+    """TANJIDA: Manage individual skill session slots"""
+    list_display = ("skill_post", "start_time", "end_time", "max_students", "booked_students", "is_available")
+    list_filter = ("is_available", "start_time")
+    search_fields = ("skill_post__title",)
+    readonly_fields = ("created_at",)</code></pre>
+            <div class="explanation">
+              <h4>📝 Admin Distribution (Each ~20 lines):</h4>
+              <ul>
+                <li><strong>SHAHIN (2 classes, ~20+20 lines):</strong> SkillPostAdmin for managing skill posts, SkillModerationLogAdmin for tracking moderation history</li>
+                <li><strong>JOY (1 class, ~8 lines):</strong> SkillCategoryAdmin for managing skill categories</li>
+                <li><strong>ESHA (1 class, ~9 lines):</strong> SkillSearchFilterAdmin for viewing saved search filters</li>
+                <li><strong>TANJIDA (1 class, ~9 lines):</strong> SkillSlotAdmin for managing individual skill session slots</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- DISTRIBUTION SUMMARY TABLE -->
+        <div class="subtask-block" style="margin-top: 25px; background: #f0f9ff; border-left: 4px solid #0284c7;">
+          <h3>📊 Complete File Distribution Summary (EQUAL SPLIT)</h3>
+          <table>
+            <tr style="background: #e0f2fe;">
+              <th>File</th>
+              <th>Who's Responsible</th>
+              <th>What to Add</th>
+              <th>Lines in Code</th>
+            </tr>
+            <tr>
+              <td><code>models.py</code></td>
+              <td><span style="color: #f5576c;">Joy</span> + <span style="color: #00f2fe;">Shahin</span> + <span style="color: #38f9d7;">Esha</span> + <span style="color: #fee140;">Tanjida</span></td>
+              <td>SkillPost (shared) + 4 models (~40 lines each)</td>
+              <td>1-128</td>
+            </tr>
+            <tr style="background: #f9fafb;">
+              <td><code>student.py</code></td>
+              <td><span style="color: #f5576c;">Joy</span> + <span style="color: #00f2fe;">Shahin</span> + <span style="color: #38f9d7;">Esha</span> + <span style="color: #fee140;">Tanjida</span></td>
+              <td>Complete file (~240 lines)</td>
+              <td>1-240</td>
+            </tr>
+            <tr>
+              <td><code>urls.py</code></td>
+              <td><span style="color: #f5576c;">Joy</span> + <span style="color: #00f2fe;">Shahin</span> + <span style="color: #38f9d7;">Esha</span> + <span style="color: #fee140;">Tanjida</span></td>
+              <td>5 routes with comments showing ownership</td>
+              <td>~12-16</td>
+            </tr>
+            <tr style="background: #f9fafb;">
+              <td><code>admin.py</code></td>
+              <td><span style="color: #f5576c;">Joy</span> + <span style="color: #00f2fe;">Shahin</span> + <span style="color: #38f9d7;">Esha</span> + <span style="color: #fee140;">Tanjida</span></td>
+              <td>4 admin classes (~40 lines total)</td>
+              <td>~50+</td>
+            </tr>
+            <tr>
+              <td><code>views.py</code></td>
+              <td><span style="color: #f5576c;">Joy</span> + <span style="color: #38f9d7;">Esha</span> + <span style="color: #fee140;">Tanjida</span></td>
+              <td>5 imports + 5 exports (10 lines)</td>
+              <td>~1-30</td>
+            </tr>
+            <tr style="background: #f9fafb;">
+              <td><code>__init__.py</code></td>
+              <td><span style="color: #f5576c;">Joy</span> + <span style="color: #38f9d7;">Esha</span> + <span style="color: #fee140;">Tanjida</span></td>
+              <td>5 imports + 5 exports (10 lines)</td>
+              <td>~8-25</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- GIT CLONE INSTRUCTIONS -->
+        <div class="subtask-block" style="margin-top: 25px; background: #dcfce7; border-left: 5px solid #16a34a;">
+          <h3>🎯 Git Clone Implementation Steps (After git clone)</h3>
+          <div style="font-size: 0.9em; line-height: 2; color: #166534; margin-top: 12px;">
+            <ol style="list-style: decimal; margin-left: 20px;">
+              <li><strong>Open:</strong> <code>accounts/models.py</code> → <strong>Line 24</strong> (after CustomUser class) → ADD SkillPost model + 4 models (Joy/Shahin/Esha/Tanjida - 128 lines total)</li>
+              <li><strong>Create NEW FILE:</strong> <code>accounts/user_management/student.py</code> → Copy entire student.py code from dropdown #2 (240 lines)</li>
+              <li><strong>Open:</strong> <code>accounts/urls.py</code> → <strong>Line 12-16</strong> (in urlpatterns) → ADD 5 new path() routes with ownership comments</li>
+              <li><strong>Open:</strong> <code>accounts/admin.py</code> → <strong>Top:</strong> Add imports for 4 new models (SkillCategory, SkillModerationLog, SkillSearchFilter, SkillSlot)</li>
+              <li><strong>Open:</strong> <code>accounts/admin.py</code> → <strong>Line 50+</strong> (at end, after CustomUserAdmin) → ADD 4 admin classes (one per member - 40 lines total)</li>
+              <li><strong>Open:</strong> <code>accounts/views.py</code> → <strong>Line ~1-5</strong> (in import from user_management) → ADD 5 function names</li>
+              <li><strong>Open:</strong> <code>accounts/views.py</code> → <strong>Line ~20-30</strong> (in __all__ list) → ADD same 5 function names</li>
+              <li><strong>Open:</strong> <code>accounts/user_management/__init__.py</code> → <strong>Line 8</strong> (in import from student) → ADD 5 function names</li>
+              <li><strong>Open:</strong> <code>accounts/user_management/__init__.py</code> → <strong>Line ~20</strong> (in __all__ list) → ADD same 5 function names</li>
+              <li><strong>Terminal:</strong> Run <code>python manage.py makemigrations</code></li>
+              <li><strong>Terminal:</strong> Run <code>python manage.py migrate</code></li>
+              <li><strong>Browser:</strong> Test URLs: /admin → check all 5 models visible (SkillPost, SkillCategory, SkillModerationLog, SkillSearchFilter, SkillSlot)</li>
+              <li><strong>Browser:</strong> Test URLs: /skills.html, /moderation.html</li>
+            </ol>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>✅ Sprint 2 Backend Complete Guide - Clone করার পর এই pages follow করে সব code বুঝতে পারবে | Happy Coding!</p>
+  </div>
+</div>
+
+<script>
+  function showSection(sectionId) {
+    const sections = document.querySelectorAll('.member-section');
+    sections.forEach(section => section.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function toggleDropdown(btn) {
+    const content = btn.nextElementSibling;
+    btn.classList.toggle('active');
+    content.classList.toggle('show');
+  }
+</script>
+</body>
+</html>

@@ -24,6 +24,55 @@ from .booking import (
     cancel_booking,
     mark_session_complete,
 )
+from .security import (
+    PasswordValidator,
+    RoleBasedAccessControl,
+    require_role,
+    check_staff_permission,
+    check_owner_permission,
+    validate_user_input,
+)
+from .content_management import (
+    create_alumni_post_content,
+    update_alumni_post_content,
+    delete_alumni_post_content,
+    flag_content,
+    get_flagged_content,
+    resolve_flag,
+    get_user_content,
+    get_content_stats,
+)
+from .alumni_profile import (
+    create_alumni_profile,
+    get_alumni_profile,
+    get_alumni_directory,
+    search_alumni,
+    get_alumni_posts,
+    verify_alumni_account,
+    get_alumni_by_company,
+    get_alumni_by_graduation_year,
+    get_alumni_stats,
+)
+from .onboarding import (
+    register_alumni_user,
+    send_alumni_welcome_email,
+    get_onboarding_checklist,
+    complete_alumni_onboarding,
+    get_alumni_onboarding_stats,
+    send_onboarding_reminder,
+    get_alumni_cohort,
+)
+from .analytics import (
+    get_platform_stats,
+    get_booking_stats,
+    get_skill_stats,
+    get_user_engagement_stats,
+    get_session_stats,
+    get_alumni_stats,
+    get_revenue_stats,
+    get_top_providers,
+    get_dashboard_summary,
+)
 
 __all__ = [
     "StudentRegistrationForm",
@@ -57,4 +106,47 @@ __all__ = [
     "alumni_page",
     "profile_page",
     "rating_page",
+    # UN-97: Security
+    "PasswordValidator",
+    "RoleBasedAccessControl",
+    "require_role",
+    "check_staff_permission",
+    "check_owner_permission",
+    "validate_user_input",
+    # UN-88: Content Management
+    "create_alumni_post_content",
+    "update_alumni_post_content",
+    "delete_alumni_post_content",
+    "flag_content",
+    "get_flagged_content",
+    "resolve_flag",
+    "get_user_content",
+    "get_content_stats",
+    # UN-81: Alumni Profiles
+    "create_alumni_profile",
+    "get_alumni_profile",
+    "get_alumni_directory",
+    "search_alumni",
+    "get_alumni_posts",
+    "verify_alumni_account",
+    "get_alumni_by_company",
+    "get_alumni_by_graduation_year",
+    "get_alumni_stats",
+    # UN-77: Onboarding
+    "register_alumni_user",
+    "send_alumni_welcome_email",
+    "get_onboarding_checklist",
+    "complete_alumni_onboarding",
+    "get_alumni_onboarding_stats",
+    "send_onboarding_reminder",
+    "get_alumni_cohort",
+    # UN-91: Analytics
+    "get_platform_stats",
+    "get_booking_stats",
+    "get_skill_stats",
+    "get_user_engagement_stats",
+    "get_session_stats",
+    "get_revenue_stats",
+    "get_top_providers",
+    "get_dashboard_summary",
 ]
