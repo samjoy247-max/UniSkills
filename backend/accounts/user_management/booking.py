@@ -55,7 +55,7 @@ def create_booking(request, post_id):
     # Student cannot book their own posts
     if skill_post.provider == request.user:
         messages.error(request, "You cannot book your own skill posts")
-        return redirect("accounts:skill_detail_page", post_id=post_id)
+        return redirect("accounts:skill_detail", post_id=post_id)
     
     # Check if already booked
     existing_booking = Booking.objects.filter(
@@ -65,7 +65,7 @@ def create_booking(request, post_id):
     
     if existing_booking:
         messages.warning(request, "You already have a booking request for this skill")
-        return redirect("accounts:skill_detail_page", post_id=post_id)
+        return redirect("accounts:skill_detail", post_id=post_id)
     
     if request.method == "POST":
         form = BookingForm(request.POST)
@@ -77,7 +77,7 @@ def create_booking(request, post_id):
             booking.save()
             
             messages.success(request, "Booking request sent! Waiting for instructor approval...")
-            return redirect("accounts:bookings_page")
+            return redirect("accounts:bookings")
     else:
         form = BookingForm()
     
@@ -99,7 +99,7 @@ def respond_booking(request, booking_id):
     
     if booking.status != Booking.STATUS_PENDING:
         messages.error(request, "This booking has already been responded to")
-        return redirect("accounts:bookings_page")
+        return redirect("accounts:bookings")
     
     if request.method == "POST":
         action = request.POST.get("action")  # accept or decline
@@ -117,7 +117,7 @@ def respond_booking(request, booking_id):
             booking.save()
             messages.info(request, "Booking declined")
         
-        return redirect("accounts:bookings_page")
+        return redirect("accounts:bookings")
     
     return render(request, "accounts/respond_booking.html", {
         "booking": booking,
@@ -127,29 +127,25 @@ def respond_booking(request, booking_id):
 
 @login_required
 def bookings_page(request):
-    """View all bookings (for both students and instructors)"""
-    if request.user.role == "student":
-        # Student sees bookings they made
-        bookings = Booking.objects.filter(student=request.user).select_related("skill_post", "skill_post__provider")
-        context = {
-            "bookings": bookings,
-            "page_title": "My Bookings",
-            "user_type": "student"
-        }
-    elif request.user.role == "alumni":
-        # Alumni (instructor) sees bookings for their skills
-        bookings = Booking.objects.filter(
-            skill_post__provider=request.user
-        ).select_related("student", "skill_post")
-        context = {
-            "bookings": bookings,
-            "page_title": "Booking Requests",
-            "user_type": "instructor"
-        }
-    else:
-        return HttpResponseForbidden("Invalid user role")
-    
+    """View all bookings (as seeker and as provider) ΓÇö UN-64"""
+    # Bookings this user made as a seeker
+    bookings_as_seeker = Booking.objects.filter(
+        student=request.user
+    ).select_related("skill_post", "skill_post__provider").order_by("-created_at")
+
+    # Bookings for skill posts this user provides
+    bookings_as_provider = Booking.objects.filter(
+        skill_post__provider=request.user
+    ).select_related("student", "skill_post").order_by("-created_at")
+
+    context = {
+        "bookings_as_seeker": bookings_as_seeker,
+        "bookings_as_provider": bookings_as_provider,
+        "page_title": "My Bookings",
+        "active_page": "bookings",
+    }
     return render(request, "accounts/bookings.html", context)
+
 
 
 @login_required
@@ -178,13 +174,13 @@ def cancel_booking(request, booking_id):
     
     if booking.status in [Booking.STATUS_COMPLETED, Booking.STATUS_DECLINED]:
         messages.error(request, "Cannot cancel a completed or declined booking")
-        return redirect("accounts:bookings_page")
+        return redirect("accounts:bookings")
     
     if request.method == "POST":
         booking.status = Booking.STATUS_CANCELLED
         booking.save()
         messages.success(request, "Booking cancelled")
-        return redirect("accounts:bookings_page")
+        return redirect("accounts:bookings")
     
     return render(request, "accounts/cancel_booking.html", {
         "booking": booking,
@@ -203,7 +199,7 @@ def mark_session_complete(request, booking_id):
     
     if booking.status != Booking.STATUS_ACCEPTED:
         messages.error(request, "Only accepted bookings can be marked complete")
-        return redirect("accounts:bookings_page")
+        return redirect("accounts:bookings")
     
     # Create session history record
     session = SessionHistory.objects.create(
@@ -216,4 +212,4 @@ def mark_session_complete(request, booking_id):
     booking.save()
     
     messages.success(request, "Session marked as completed!")
-    return redirect("accounts:bookings_page")
+    return redirect("accounts:bookings")
