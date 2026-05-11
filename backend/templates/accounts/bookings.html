@@ -133,7 +133,7 @@
             <div class="booking-left">
               <h4>{{ booking.skill_post.title }} <span style="font-weight:400;color:var(--text-muted);font-size:0.84rem;">← your post</span></h4>
               <p>Seeker: {{ booking.student.username }} &nbsp;·&nbsp; {% if booking.status == 'pending' %}Requested{% else %}Booked{% endif %}: {{ booking.created_at|date:"d M Y" }}</p>
-              <p>Session: {{ booking.requested_date|date:"l, d M Y · h:i A" if booking.requested_date else "To be scheduled" }}</p>
+              <p>Session: {% if booking.requested_date %}{{ booking.requested_date|date:"l, d M Y · h:i A" }}{% else %}To be scheduled{% endif %}</p>
               {% if booking.message %}
                 <p style="font-style:italic;font-size:0.84rem;color:var(--text-mid);">"{{ booking.message }}"</p>
               {% endif %}
