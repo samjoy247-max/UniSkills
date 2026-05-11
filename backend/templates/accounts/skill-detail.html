@@ -14,7 +14,7 @@
     <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
     <ul class="navbar-links" id="navLinks">
       <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
-      <li><a href="{% url 'accounts:skills' %}" class="active">Browse Skills</a></li>
+      <li><a href="{% url 'accounts:skills_page' %}" class="active">Browse Skills</a></li>
       <li><a href="{% url 'accounts:bookings' %}">Bookings</a></li>
       <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
       <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
@@ -25,7 +25,7 @@
 <section class="hero-banner">
   <div class="container">
     <div>
-      <p style="color:#7a9bbf;font-size:0.84rem;margin-bottom:6px;"><a href="{% url 'accounts:skills' %}" style="color:#7a9bbf;">Back to Skills</a></p>
+      <p style="color:#7a9bbf;font-size:0.84rem;margin-bottom:6px;"><a href="{% url 'accounts:skills_page' %}" style="color:#7a9bbf;">Back to Skills</a></p>
       <h1>{{ skill_post.title }}</h1>
       <p>{{ skill_post.get_category_display }} · {{ skill_post.get_session_mode_display }} · BDT {{ skill_post.fee }}/session</p>
     </div>
@@ -49,8 +49,16 @@
 
     <div class="card">
       <h3 style="margin-bottom:8px;">Book This Session</h3>
-      <p class="text-muted" style="font-size:0.86rem;">This sprint covers post creation and management. Booking workflow will be connected in the booking module.</p>
-      <a href="{% url 'accounts:bookings' %}" class="btn btn-amber">Go to Bookings</a>
+      <p class="text-muted" style="font-size:0.86rem;">Ready to learn this skill? Book a session now and the instructor will respond to your request.</p>
+      {% if request.user.is_authenticated %}
+        {% if request.user.id == skill_post.provider.id %}
+          <p class="text-muted" style="color: #d97706; font-weight: 600;">You cannot book your own skill post</p>
+        {% else %}
+          <a href="{% url 'accounts:create_booking' skill_post.id %}" class="btn btn-amber">Book Now</a>
+        {% endif %}
+      {% else %}
+        <p class="text-muted">Please <a href="{% url 'accounts:login' %}">login</a> to book a session</p>
+      {% endif %}
     </div>    
   </div>
 </main>
