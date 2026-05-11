@@ -84,7 +84,7 @@ class SkillPostAdmin(admin.ModelAdmin):
     search_fields = ("title", "description", "provider__username", "provider__email")
     # UN-49: Admin can approve/reject from list view
     list_editable = ("status",)
-    actions = ["approve_posts", "reject_posts"]
+    actions = ["approve_posts", "reject_posts", "delete_rejected_posts"]
 
     def approve_posts(self, request, queryset):
         updated = queryset.update(status=SkillPost.STATUS_APPROVED)
@@ -95,6 +95,12 @@ class SkillPostAdmin(admin.ModelAdmin):
         updated = queryset.update(status=SkillPost.STATUS_REJECTED)
         self.message_user(request, f"{updated} skill post(s) rejected.")
     reject_posts.short_description = "Reject selected skill posts"
+
+    def delete_rejected_posts(self, request, queryset):
+        rejected_count = queryset.filter(status=SkillPost.STATUS_REJECTED).count()
+        queryset.filter(status=SkillPost.STATUS_REJECTED).delete()
+        self.message_user(request, f"{rejected_count} rejected skill post(s) deleted.")
+    delete_rejected_posts.short_description = "Delete rejected skill posts"
 
 
 # ==================== UN-88: Booking & Session Management ====================
@@ -142,7 +148,7 @@ class AlumniPostAdmin(admin.ModelAdmin):
     search_fields = ("title", "content", "author__username")
     # UN-86: Quick approval toggle from list view
     list_editable = ("status",)
-    actions = ["approve_alumni_posts", "reject_alumni_posts"]
+    actions = ["approve_alumni_posts", "reject_alumni_posts", "delete_rejected_alumni_posts"]
 
     def approve_alumni_posts(self, request, queryset):
         updated = queryset.update(status=AlumniPost.STATUS_APPROVED)
@@ -153,6 +159,12 @@ class AlumniPostAdmin(admin.ModelAdmin):
         updated = queryset.update(status=AlumniPost.STATUS_REJECTED)
         self.message_user(request, f"{updated} alumni post(s) rejected.")
     reject_alumni_posts.short_description = "Reject selected alumni posts"
+
+    def delete_rejected_alumni_posts(self, request, queryset):
+        rejected_count = queryset.filter(status=AlumniPost.STATUS_REJECTED).count()
+        queryset.filter(status=AlumniPost.STATUS_REJECTED).delete()
+        self.message_user(request, f"{rejected_count} rejected alumni post(s) deleted.")
+    delete_rejected_alumni_posts.short_description = "Delete rejected alumni posts"
 
 
 # ==================== Auxiliary Models ====================

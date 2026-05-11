@@ -34,6 +34,7 @@ from .booking import (
     cancel_booking,
     mark_session_complete,
 )
+from .otp_verification import verify_email_otp, resend_otp
 from .rating import submit_rating
 
 __all__ = [
@@ -52,6 +53,8 @@ __all__ = [
     "register_alumni",
     "login_user",
     "logout_user",
+    "verify_email_otp",
+    "resend_otp",
     "dashboard",
     # Student
     "student_dashboard",

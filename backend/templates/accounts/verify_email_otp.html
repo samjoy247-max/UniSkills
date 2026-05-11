@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email - UniSkills</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .verify-container {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        .verify-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .verify-header h1 {
+            color: var(--navy);
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .verify-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .email-display {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: var(--radius);
+            text-align: center;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: var(--navy);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-control {
+            text-align: center;
+            font-size: 20px;
+            letter-spacing: 8px;
+            font-weight: 600;
+        }
+        .btn-verify {
+            width: 100%;
+            padding: 12px;
+            background: var(--amber);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .btn-verify:hover {
+            background: #d4a500;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 177, 0, 0.3);
+        }
+        .resend-section {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .resend-section p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .btn-resend {
+            background: none;
+            border: none;
+            color: var(--navy);
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .btn-resend:hover {
+            color: var(--amber);
+        }
+        .error-message {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 12px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .success-message {
+            background: #efe;
+            border: 1px solid #cfc;
+            color: #3c3;
+            padding: 12px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .otp-info {
+            background: #f0f8ff;
+            border-left: 4px solid var(--navy);
+            padding: 12px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: var(--navy);
+        }
+    </style>
+</head>
+<body>
+    <div class="verify-container">
+        <div class="verify-header">
+            <h1>🔐 Verify Email</h1>
+            <p>Enter the OTP sent to your email</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags %}{{ message.tags }}{% endif %}-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="email-display">{{ email }}</div>
+
+        <div class="otp-info">
+            <strong>Note:</strong> Check your email inbox or spam folder for the 6-digit OTP code. If you don't see it, check the server console or click "Resend OTP" below.
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_otp_code">OTP Code</label>
+                <input 
+                    type="text" 
+                    id="id_otp_code" 
+                    name="otp_code" 
+                    class="form-control" 
+                    placeholder="000000" 
+                    maxlength="6"
+                    required
+                    autofocus
+                >
+                {% if form.otp_code.errors %}
+                    <div style="color: #c33; font-size: 12px; margin-top: 5px;">
+                        {{ form.otp_code.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn-verify">Verify OTP</button>
+        </form>
+
+        <div class="resend-section">
+            <p>Didn't receive the OTP?</p>
+            <form method="GET" action="{% url 'accounts:resend_otp' %}" style="display: inline;">
+                <button type="submit" class="btn-resend">Resend OTP</button>
+            </form>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'accounts:login' %}" style="color: var(--text-muted); text-decoration: none; font-size: 14px;">Back to Login</a>
+        </div>
+    </div>
+
+    <script>
+        // Only allow digits in OTP input
+        document.getElementById('id_otp_code').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</body>
+</html>

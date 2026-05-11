@@ -28,6 +28,7 @@ from .user_management import (
     skills_page,
     student_dashboard,
 )
+from .user_management.otp_verification import verify_email_otp, resend_otp
 from .user_management.rating import submit_rating
 from .user_management.session import session_history
 
@@ -37,6 +38,8 @@ __all__ = [
     "register_alumni",
     "login_user",
     "logout_user",
+    "verify_email_otp",
+    "resend_otp",
     "dashboard",
     "student_dashboard",
     "alumni_dashboard",

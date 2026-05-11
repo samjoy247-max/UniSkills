@@ -12,6 +12,10 @@ urlpatterns = [
     path("register/alumni/", views.register_alumni, name="register_alumni"),
     path("login/", views.login_user, name="login"),
     path("logout/", views.logout_user, name="logout"),
+    
+    # OTP Verification
+    path("verify-email/", views.verify_email_otp, name="verify_email_otp"),
+    path("resend-otp/", views.resend_otp, name="resend_otp"),
 
     # Dashboards
     path("dashboard/", views.dashboard, name="dashboard"),

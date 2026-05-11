@@ -31,7 +31,7 @@
     <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
     <ul class="navbar-links" id="navLinks">
       <li><a href="{% url 'accounts:student_dashboard' %}" class="active">Dashboard</a></li>
-      <li><a href="{% url 'accounts:skills' %}">Browse Skills</a></li>
+      <li><a href="{% url 'accounts:skills_page' %}">Browse Skills</a></li>
       <li><a href="{% url 'accounts:bookings' %}">Bookings</a></li>
       <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
       <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
@@ -71,12 +71,12 @@
       <span class="section-title">Quick Actions</span>
     </div>
     <div class="quick-action-grid mb-3">
-      <a href="{% url 'accounts:skills' %}" class="quick-card">
+      <a href="{% url 'accounts:skills_page' %}" class="quick-card">
         <div class="qc-icon">🔍</div>
         <h4>Browse Skills</h4>
         <p>Find a skill to learn</p>
       </a>
-      <a href="{% url 'accounts:skills' %}#create" class="quick-card">
+      <a href="{% url 'accounts:skills_page' %}#create" class="quick-card">
         <div class="qc-icon">✏️</div>
         <h4>Post a Skill</h4>
         <p>Teach what you know</p>
@@ -145,7 +145,7 @@
       <div>
         <div class="section-header">
           <span class="section-title">My Skill Posts</span>
-          <a href="{% url 'accounts:skills' %}#create" class="btn btn-amber btn-sm">+ New Post</a>
+          <a href="{% url 'accounts:skills_page' %}#create" class="btn btn-amber btn-sm">+ New Post</a>
         </div>
         <div class="booking-item" style="border-left:3px solid var(--success);">
           <div class="booking-left">

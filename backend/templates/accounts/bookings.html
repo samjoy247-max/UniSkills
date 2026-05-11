@@ -14,7 +14,7 @@
     <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
     <ul class="navbar-links" id="navLinks">
       <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
-      <li><a href="{% url 'accounts:skills' %}">Browse Skills</a></li>
+      <li><a href="{% url 'accounts:skills_page' %}">Browse Skills</a></li>
       <li><a href="{% url 'accounts:bookings' %}" class="active">Bookings</a></li>
       <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
       <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
@@ -33,7 +33,7 @@
       <h1>My Bookings</h1>
       <p>Track all your session requests — as Seeker and as Provider.</p>
     </div>
-    <a href="{% url 'accounts:skills' %}" class="btn btn-amber">Browse More Skills</a>
+    <a href="{% url 'accounts:skills_page' %}" class="btn btn-amber">Browse More Skills</a>
   </div>
 </section>
 
@@ -131,7 +131,7 @@
         </div>
         <div class="booking-right">
           <span class="badge badge-cancelled">Cancelled</span>
-          <a href="{% url 'accounts:skills' %}" class="btn btn-ghost btn-sm">Find Similar</a>
+          <a href="{% url 'accounts:skills_page' %}" class="btn btn-ghost btn-sm">Find Similar</a>
         </div>
       </div>
     </div>
