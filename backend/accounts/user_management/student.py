@@ -7,8 +7,9 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponseForbidden
 
-from ..models import CustomUser, SkillPost
+from ..models import CustomUser, SkillPost, Booking, AlumniPost, Rating
 from ..otp_utils import create_and_send_otp
+from django.db.models import Avg
 
 
 class StudentRegistrationForm(UserCreationForm):
@@ -122,7 +123,55 @@ def register_student(request):
 def student_dashboard(request):
     if request.user.role == "alumni" and not (request.user.is_staff or request.user.is_superuser):
         return redirect("accounts:alumni_dashboard")
-    return render(request, "accounts/student_dashboard.html", {"active_page": "dashboard"})
+    
+    # Get user's skill posts
+    my_skill_posts = SkillPost.objects.filter(provider=request.user).order_by("-created_at")
+    
+    # Get user's bookings as seeker
+    bookings_as_seeker = Booking.objects.filter(
+        student=request.user
+    ).select_related("skill_post", "skill_post__provider").order_by("-created_at")[:3]
+    
+    # Get skill posts created by user that are approved
+    approved_posts = my_skill_posts.filter(status=SkillPost.STATUS_APPROVED)
+    
+    # Calculate stats
+    total_skill_posts = my_skill_posts.count()
+    total_bookings = Booking.objects.filter(student=request.user).count()
+    completed_sessions = Booking.objects.filter(
+        student=request.user,
+        status=Booking.STATUS_COMPLETED
+    ).count()
+    
+    # Calculate average rating from completed sessions
+    avg_rating = 0.0
+    if completed_sessions > 0:
+        ratings = Rating.objects.filter(
+            rater=request.user,
+            session__booking__student=request.user
+        ).aggregate(avg=Avg('rating'))
+        avg_rating = round(ratings['avg'], 1) if ratings['avg'] else 0.0
+    
+    # Get alumni posts
+    try:
+        alumni_posts = AlumniPost.objects.filter(
+            status='approved'
+        ).select_related('author').order_by("-created_at")[:2]
+    except:
+        alumni_posts = []
+    
+    context = {
+        "active_page": "dashboard",
+        "total_skill_posts": total_skill_posts,
+        "total_bookings": total_bookings,
+        "completed_sessions": completed_sessions,
+        "avg_rating": avg_rating,
+        "my_skill_posts": my_skill_posts,
+        "bookings_as_seeker": bookings_as_seeker,
+        "alumni_posts": alumni_posts,
+    }
+    
+    return render(request, "accounts/student_dashboard.html", context)
 
 
 @login_required
