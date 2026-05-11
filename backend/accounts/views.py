@@ -1,7 +1,16 @@
 from .user_management import (
     alumni_dashboard,
     alumni_page,
+    create_alumni_post,
+    delete_alumni_post,
+    moderate_alumni_post,
+    alumni_moderation_dashboard,
     bookings_page,
+    create_booking,
+    booking_detail,
+    respond_booking,
+    cancel_booking,
+    mark_session_complete,
     create_skill_post,
     dashboard,
     delete_skill_post,
@@ -19,6 +28,8 @@ from .user_management import (
     skills_page,
     student_dashboard,
 )
+from .user_management.rating import submit_rating
+from .user_management.session import session_history
 
 __all__ = [
     "landing",
@@ -29,6 +40,11 @@ __all__ = [
     "dashboard",
     "student_dashboard",
     "alumni_dashboard",
+    "alumni_page",
+    "create_alumni_post",
+    "delete_alumni_post",
+    "moderate_alumni_post",
+    "alumni_moderation_dashboard",
     "skills_page",
     "skill_detail_page",
     "create_skill_post",
@@ -37,7 +53,13 @@ __all__ = [
     "moderation_dashboard",
     "moderate_skill_post",
     "bookings_page",
-    "alumni_page",
+    "create_booking",
+    "booking_detail",
+    "respond_booking",
+    "cancel_booking",
+    "mark_session_complete",
+    "session_history",
     "profile_page",
     "rating_page",
+    "submit_rating",
 ]

@@ -7,8 +7,6 @@ class CustomUser(AbstractUser):
     ROLE_CHOICES = [
         ("student", "Student"),
         ("alumni", "Alumni"),
-        ("provider", "Provider"),
-        ("admin", "Admin"),
     ]
 
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="student")
@@ -22,7 +20,12 @@ class CustomUser(AbstractUser):
 
     is_alumni_verified = models.BooleanField(default=False)
     is_email_verified = models.BooleanField(default=False)
-    profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True, help_text='Upload your profile picture')
+    profile_picture = models.ImageField(
+        upload_to="profile_pics/",
+        blank=True,
+        null=True,
+        help_text="Upload your profile picture",
+    )
 
     def __str__(self):
         return self.username
