@@ -47,144 +47,139 @@
 
     <!-- SEEKER VIEW -->
     <div id="bpanel-seeker">
-      <div class="filter-row mb-3">
-        <label>Filter:</label>
-        <select class="form-control" style="width:auto;">
-          <option>All Statuses</option><option>Pending</option><option>Accepted</option><option>Completed</option><option>Cancelled</option>
-        </select>
-      </div>
+      {% if bookings_as_seeker %}
+        {% for booking in bookings_as_seeker %}
+          {% if booking.status == 'pending' %}
+            <div class="booking-item" style="border-left:4px solid var(--amber);">
+          {% elif booking.status == 'accepted' %}
+            <div class="booking-item" style="border-left:4px solid var(--success);">
+          {% elif booking.status == 'completed' %}
+            <div class="booking-item" style="border-left:4px solid var(--info);">
+          {% else %}
+            <div class="booking-item" style="border-left:4px solid var(--danger);opacity:0.7;">
+          {% endif %}
+            <div class="booking-left">
+              <h4>{{ booking.skill_post.title }}</h4>
+              <p>Provider: {{ booking.skill_post.provider.username }} &nbsp;·&nbsp; {{ booking.skill_post.available_time|date:"l, d M Y · h:i A" }} &nbsp;·&nbsp; {{ booking.skill_post.get_session_mode_display }}</p>
+              <p>Fee: ৳{{ booking.skill_post.fee }} &nbsp;·&nbsp; Booked on: {{ booking.created_at|date:"d M Y" }}</p>
 
-      <!-- Accepted -->
-      <div class="booking-item" style="border-left:4px solid var(--success);">
-        <div class="booking-left">
-          <h4>Python for Beginners</h4>
-          <p>Provider: Samiul Alam Joy &nbsp;·&nbsp; Saturday, 14 Jan 2025 · 3:00–5:00 PM &nbsp;·&nbsp; Online</p>
-          <p>Fee: ৳300 &nbsp;·&nbsp; Booked on: 10 Jan 2025</p>
-          <div class="alert alert-success mt-2" style="font-size:0.82rem;padding:10px 14px;">
-            <span>📞</span>
-            <div>
-              <strong>Provider Contact (Revealed):</strong><br/>
-              Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5122303c38243d7f3b3e28112430217c33357f343524">[email&#160;protected]</a> &nbsp;|&nbsp; Phone: 017XXXXXXXX<br/>
-              <span style="color:var(--text-muted);font-size:0.78rem;">Contact the provider to confirm session details.</span>
+              {% if booking.status == 'accepted' %}
+                <div class="alert alert-success mt-2" style="font-size:0.82rem;padding:10px 14px;">
+                  <span>📞</span>
+                  <div>
+                    <strong>Provider Details:</strong><br/>
+                    Email: {{ booking.skill_post.provider.email }}<br/>
+                    <span style="color:var(--text-muted);font-size:0.78rem;">Session accepted! Contact the provider to confirm details.</span>
+                  </div>
+                </div>
+              {% elif booking.status == 'pending' %}
+                <div class="alert alert-warning mt-2" style="font-size:0.82rem;padding:10px 14px;">
+                  <span>⏳</span> Waiting for provider to accept your booking.
+                </div>
+              {% endif %}
+
+              {% if booking.status == 'completed' %}
+                {% if booking.session and booking.session.rating %}
+                  <div class="stars mt-1">
+                    <span style="font-size:0.82rem;color:var(--text-muted);">Your rating: &nbsp;</span>
+                    <span style="font-weight:600;">{{ booking.session.rating.rating|floatformat:1 }}/5</span>
+                  </div>
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="booking-right">
+              {% if booking.status == 'pending' %}
+                <span class="badge badge-pending">Pending</span>
+                <a href="{% url 'accounts:cancel_booking' booking.id %}" class="btn btn-ghost btn-sm" style="color:var(--danger);border-color:var(--danger);">Cancel</a>
+              {% elif booking.status == 'accepted' %}
+                <span class="badge badge-accepted">Accepted</span>
+              {% elif booking.status == 'completed' %}
+                <span class="badge badge-completed">Completed</span>
+                {% if not booking.session.rating %}
+                  <a href="{% url 'accounts:submit_rating' booking.skill_post.id %}" class="btn btn-amber btn-sm">⭐ Rate</a>
+                {% else %}
+                  <span class="text-muted" style="font-size:0.78rem;">Rated ✓</span>
+                {% endif %}
+              {% elif booking.status == 'cancelled' %}
+                <span class="badge badge-cancelled">Cancelled</span>
+              {% elif booking.status == 'declined' %}
+                <span class="badge badge-cancelled">Declined</span>
+              {% endif %}
             </div>
           </div>
-        </div>
-        <div class="booking-right">
-          <span class="badge badge-accepted">Accepted</span>
-          <a href="{% url 'accounts:skill_detail_legacy' %}" class="btn btn-ghost btn-sm">View Skill</a>
-        </div>
-      </div>
-
-      <!-- Pending -->
-      <div class="booking-item" style="border-left:4px solid var(--amber);">
-        <div class="booking-left">
-          <h4>Figma UI Design Basics</h4>
-          <p>Provider: Khadija Akter Esha &nbsp;·&nbsp; Monday, 16 Jan 2025 · 5:00–7:00 PM &nbsp;·&nbsp; Online</p>
-          <p>Fee: ৳200 &nbsp;·&nbsp; Booked on: 12 Jan 2025</p>
-          <div class="alert alert-warning mt-2" style="font-size:0.82rem;padding:10px 14px;">
-            <span>⏳</span> Waiting for provider to accept. Contact info will be shared after acceptance.
-          </div>
-        </div>
-        <div class="booking-right">
-          <span class="badge badge-pending">Pending</span>
-          <button class="btn btn-ghost btn-sm" style="color:var(--danger);border-color:var(--danger);" onclick="alert('Booking cancelled.')">Cancel</button>
-        </div>
-      </div>
-
-      <!-- Completed - rate -->
-      <div class="booking-item" style="border-left:4px solid var(--info);">
-        <div class="booking-left">
-          <h4>LaTeX Report Writing</h4>
-          <p>Provider: Niloy Hasan &nbsp;·&nbsp; Wednesday, 10 Jan 2025 · 2:00–4:00 PM &nbsp;·&nbsp; Online</p>
-          <p>Fee: ৳180 &nbsp;·&nbsp; Completed on: 10 Jan 2025</p>
-        </div>
-        <div class="booking-right">
-          <span class="badge badge-completed">Completed</span>
-          <a href="{% url 'accounts:rating' %}" class="btn btn-amber btn-sm">⭐ Rate Session</a>
-        </div>
-      </div>
-
-      <!-- Completed + rated -->
-      <div class="booking-item" style="border-left:4px solid var(--border-dark);">
-        <div class="booking-left">
-          <h4>Data Structures (C++)</h4>
-          <p>Provider: Shahin Akand &nbsp;·&nbsp; Friday, 5 Jan 2025 · 4:00–6:00 PM &nbsp;·&nbsp; Offline</p>
-          <p>Fee: ৳250 &nbsp;·&nbsp; Completed on: 5 Jan 2025</p>
-          <div class="stars mt-1">
-            <span style="font-size:0.82rem;color:var(--text-muted);">Your rating:&nbsp;</span>
-            <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span>
-            <span class="rating-text">4/5</span>
-          </div>
-        </div>
-        <div class="booking-right">
-          <span class="badge badge-completed">Completed</span>
-          <span class="text-muted" style="font-size:0.78rem;">Rated ✓</span>
-        </div>
-      </div>
-
-      <!-- Cancelled -->
-      <div class="booking-item" style="border-left:4px solid var(--danger);opacity:0.7;">
-        <div class="booking-left">
-          <h4>Academic English Writing</h4>
-          <p>Provider: Rumi Akter &nbsp;·&nbsp; Sunday, 8 Jan 2025 · 2:00 PM &nbsp;·&nbsp; Offline</p>
-          <p>Fee: ৳150 &nbsp;·&nbsp; Cancelled by provider</p>
-        </div>
-        <div class="booking-right">
-          <span class="badge badge-cancelled">Cancelled</span>
-          <a href="{% url 'accounts:skills_page' %}" class="btn btn-ghost btn-sm">Find Similar</a>
-        </div>
-      </div>
+        {% endfor %}
+      {% else %}
+        <p style="text-align:center;color:var(--text-muted);padding:40px 0;">No bookings yet. <a href="{% url 'accounts:skills_page' %}">Browse skills</a> to get started!</p>
+      {% endif %}
     </div>
 
     <!-- PROVIDER VIEW -->
     <div id="bpanel-provider" style="display:none;">
       <div class="alert alert-info mb-3">
-        <span>📋</span> Booking requests from other students for your skill posts. Accept or decline each.
+        <span>📋</span> Booking requests from other students for your skill posts.
       </div>
 
-      <div class="booking-item" style="border-left:4px solid var(--amber);">
-        <div class="booking-left">
-          <h4>Django Web Development <span style="font-weight:400;color:var(--text-muted);font-size:0.84rem;">← your post</span></h4>
-          <p>Seeker: Rima Akter (CSE, 4th Sem) &nbsp;·&nbsp; Requested: 13 Jan 2025</p>
-          <p>Time Slot: Sat, 18 Jan 2025 · 4:00–6:00 PM</p>
-          <p style="font-style:italic;font-size:0.84rem;color:var(--text-mid);">"I want to learn how to build a basic e-commerce project using Django."</p>
-        </div>
-        <div class="booking-right">
-          <span class="badge badge-pending">New Request</span>
-          <div class="d-flex gap-1">
-            <button class="btn btn-success btn-sm" onclick="alert('Booking accepted! Contact details shared with seeker.')">✓ Accept</button>
-            <button class="btn btn-danger btn-sm" onclick="alert('Request declined.')">✗ Decline</button>
+      {% if bookings_as_provider %}
+        {% for booking in bookings_as_provider %}
+          {% if booking.status == 'pending' %}
+            <div class="booking-item" style="border-left:4px solid var(--amber);">
+          {% elif booking.status == 'accepted' %}
+            <div class="booking-item" style="border-left:4px solid var(--success);">
+          {% elif booking.status == 'completed' %}
+            <div class="booking-item" style="border-left:4px solid var(--info);">
+          {% else %}
+            <div class="booking-item" style="border-left:4px solid var(--danger);opacity:0.7;">
+          {% endif %}
+            <div class="booking-left">
+              <h4>{{ booking.skill_post.title }} <span style="font-weight:400;color:var(--text-muted);font-size:0.84rem;">← your post</span></h4>
+              <p>Seeker: {{ booking.student.username }} &nbsp;·&nbsp; {% if booking.status == 'pending' %}Requested{% else %}Booked{% endif %}: {{ booking.created_at|date:"d M Y" }}</p>
+              <p>Session: {{ booking.requested_date|date:"l, d M Y · h:i A" if booking.requested_date else "To be scheduled" }}</p>
+              {% if booking.message %}
+                <p style="font-style:italic;font-size:0.84rem;color:var(--text-mid);">"{{ booking.message }}"</p>
+              {% endif %}
+
+              {% if booking.status == 'completed' %}
+                {% if booking.session.rating %}
+                  <div class="stars mt-1">
+                    <span style="font-size:0.82rem;color:var(--text-muted);">Seeker rated you: &nbsp;</span>
+                    <span style="font-weight:600;">{{ booking.session.rating.rating|floatformat:1 }}/5</span>
+                  </div>
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="booking-right">
+              {% if booking.status == 'pending' %}
+                <span class="badge badge-pending">New Request</span>
+                <div class="d-flex gap-1">
+                  <form method="POST" action="{% url 'accounts:respond_booking' booking.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="accept">
+                    <button type="submit" class="btn btn-success btn-sm">✓ Accept</button>
+                  </form>
+                  <button class="btn btn-danger btn-sm" onclick="alert('Decline feature coming soon')">✗ Decline</button>
+                </div>
+              {% elif booking.status == 'accepted' %}
+                <span class="badge badge-accepted">Accepted</span>
+                <form method="POST" action="{% url 'accounts:mark_session_complete' booking.id %}" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-primary btn-sm">Mark Completed</button>
+                </form>
+              {% elif booking.status == 'completed' %}
+                <span class="badge badge-completed">Completed</span>
+                {% if booking.session.rating %}
+                  <span class="text-muted" style="font-size:0.78rem;">Rated ✓</span>
+                {% endif %}
+              {% elif booking.status == 'declined' %}
+                <span class="badge badge-cancelled">Declined</span>
+              {% elif booking.status == 'cancelled' %}
+                <span class="badge badge-cancelled">Cancelled</span>
+              {% endif %}
+            </div>
           </div>
-        </div>
-      </div>
-
-      <div class="booking-item" style="border-left:4px solid var(--success);">
-        <div class="booking-left">
-          <h4>Data Structures (C++) <span style="font-weight:400;color:var(--text-muted);font-size:0.84rem;">← your post</span></h4>
-          <p>Seeker: Mohidul Hasan (EEE, 3rd Sem) &nbsp;·&nbsp; Accepted: 11 Jan 2025</p>
-          <p>Time Slot: Fri, 13 Jan 2025 · 4:00–6:00 PM</p>
-        </div>
-        <div class="booking-right">
-          <span class="badge badge-accepted">Accepted</span>
-          <button class="btn btn-primary btn-sm" onclick="alert('Session marked as completed!')">Mark Completed</button>
-        </div>
-      </div>
-
-      <div class="booking-item" style="border-left:4px solid var(--border-dark);">
-        <div class="booking-left">
-          <h4>Data Structures (C++) <span style="font-weight:400;color:var(--text-muted);font-size:0.84rem;">← your post</span></h4>
-          <p>Seeker: Nusrat Sharmin (CSE, 2nd Sem) &nbsp;·&nbsp; Completed: 5 Jan 2025</p>
-          <div class="stars mt-1">
-            <span style="font-size:0.82rem;color:var(--text-muted);">Seeker rated you:&nbsp;</span>
-            <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span>
-            <span class="rating-text">5/5</span>
-          </div>
-        </div>
-        <div class="booking-right">
-          <span class="badge badge-completed">Completed</span>
-          <a href="{% url 'accounts:rating' %}" class="btn btn-amber btn-sm">Rate Seeker</a>
-        </div>
-      </div>
+        {% endfor %}
+      {% else %}
+        <p style="text-align:center;color:var(--text-muted);padding:40px 0;">No booking requests yet. <a href="{% url 'accounts:skills_page' %}">Post a skill</a> to start teaching!</p>
+      {% endif %}
     </div>
 
   </div>
