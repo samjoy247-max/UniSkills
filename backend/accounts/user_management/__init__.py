@@ -34,6 +34,7 @@ from .booking import (
     cancel_booking,
     mark_session_complete,
 )
+from .rating import submit_rating
 
 __all__ = [
     # Forms
@@ -78,4 +79,5 @@ __all__ = [
     # Profile & rating
     "profile_page",
     "rating_page",
+    "submit_rating",
 ]
