@@ -173,10 +173,6 @@ def skill_detail_page(request, post_id):
     )
 
 
-@login_required
-def bookings_page(request):
-    """Student bookings list"""
-    return render(request, "accounts/bookings.html", {"active_page": "bookings"})
 
 
 # ==================== UN-44: SKILL POST CRUD ====================
