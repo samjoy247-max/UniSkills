@@ -7,8 +7,9 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponseForbidden
 
-from ..models import CustomUser, SkillPost
+from ..models import CustomUser, SkillPost, Booking, AlumniPost, Rating
 from ..otp_utils import create_and_send_otp
+from django.db.models import Avg
 
 
 class StudentRegistrationForm(UserCreationForm):
@@ -85,9 +86,9 @@ class SkillPostForm(forms.ModelForm):
         }
     
     def clean_available_time(self):
-        from datetime import datetime
+        from django.utils import timezone
         available_time = self.cleaned_data.get('available_time')
-        if available_time and available_time < datetime.now():
+        if available_time and available_time < timezone.now():
             raise ValidationError("Available time must be in the future")
         return available_time
     
@@ -108,8 +109,10 @@ def register_student(request):
             new_user = form.save()
             # Send OTP email
             create_and_send_otp(new_user.email)
-            messages.success(request, "Student registration successful! OTP sent to your email. Please log in.")
-            return redirect("accounts:login")
+            # Store email in session for OTP verification
+            request.session['pending_verification_email'] = new_user.email
+            messages.success(request, "Registration successful! Please verify your email with the OTP sent to your inbox.")
+            return redirect("accounts:verify_email_otp")
     else:
         form = StudentRegistrationForm()
 
@@ -120,15 +123,69 @@ def register_student(request):
 def student_dashboard(request):
     if request.user.role == "alumni" and not (request.user.is_staff or request.user.is_superuser):
         return redirect("accounts:alumni_dashboard")
-    return render(request, "accounts/student_dashboard.html", {"active_page": "dashboard"})
+    
+    # Get user's skill posts
+    my_skill_posts = SkillPost.objects.filter(provider=request.user).order_by("-created_at")
+    
+    # Get user's bookings as seeker
+    bookings_as_seeker = Booking.objects.filter(
+        student=request.user
+    ).select_related("skill_post", "skill_post__provider").order_by("-created_at")[:3]
+    
+    # Get skill posts created by user that are approved
+    approved_posts = my_skill_posts.filter(status=SkillPost.STATUS_APPROVED)
+    
+    # Calculate stats
+    total_skill_posts = my_skill_posts.count()
+    total_bookings = Booking.objects.filter(student=request.user).count()
+    completed_sessions = Booking.objects.filter(
+        student=request.user,
+        status=Booking.STATUS_COMPLETED
+    ).count()
+    
+    # Calculate average rating from completed sessions
+    avg_rating = 0.0
+    if completed_sessions > 0:
+        ratings = Rating.objects.filter(
+            rater=request.user,
+            session__booking__student=request.user
+        ).aggregate(avg=Avg('rating'))
+        avg_rating = round(ratings['avg'], 1) if ratings['avg'] else 0.0
+    
+    # Get alumni posts
+    try:
+        alumni_posts = AlumniPost.objects.filter(
+            status='approved'
+        ).select_related('author').order_by("-created_at")[:2]
+    except:
+        alumni_posts = []
+    
+    context = {
+        "active_page": "dashboard",
+        "total_skill_posts": total_skill_posts,
+        "total_bookings": total_bookings,
+        "completed_sessions": completed_sessions,
+        "avg_rating": avg_rating,
+        "my_skill_posts": my_skill_posts,
+        "bookings_as_seeker": bookings_as_seeker,
+        "alumni_posts": alumni_posts,
+    }
+    
+    return render(request, "accounts/student_dashboard.html", context)
 
 
 @login_required
 def skills_page(request):
     """Browse all approved skill posts with filtering"""
+    # Only allow students/providers, not admin/staff
+    if request.user.is_staff or request.user.is_superuser:
+        messages.error(request, "Admin users cannot post skills. Use the admin panel to manage posts.")
+        return redirect("accounts:dashboard")
+    
     query = request.GET.get("q", "").strip()
     category = request.GET.get("category", "").strip()
     mode = request.GET.get("mode", "").strip()
+    edit_post_id = request.GET.get("edit", "").strip()
 
     skill_posts = SkillPost.objects.select_related("provider").filter(status=SkillPost.STATUS_APPROVED)
 
@@ -143,9 +200,40 @@ def skills_page(request):
     if mode:
         skill_posts = skill_posts.filter(session_mode=mode)
 
+    # Student can act as both seeker and provider.
+    is_student_provider = request.user.role in ["student", "provider"]
+    my_skill_posts = SkillPost.objects.filter(provider=request.user).order_by("-id")
+
+    editing_post = None
+    if edit_post_id:
+        try:
+            editing_post = SkillPost.objects.get(id=int(edit_post_id), provider=request.user)
+        except (SkillPost.DoesNotExist, ValueError):
+            editing_post = None
+
+    if request.method == "POST" and is_student_provider:
+        if editing_post:
+            form = SkillPostForm(request.POST, instance=editing_post)
+        else:
+            form = SkillPostForm(request.POST)
+
+        if form.is_valid():
+            skill_post = form.save(commit=False)
+            skill_post.provider = request.user
+            skill_post.status = SkillPost.STATUS_PENDING
+            skill_post.save()
+            messages.success(request, "Skill post submitted for moderation.")
+            return redirect("accounts:skills_page")
+    else:
+        form = SkillPostForm(instance=editing_post) if editing_post else SkillPostForm()
+
     context = {
         "active_page": "skills",
         "skill_posts": skill_posts,
+        "my_skill_posts": my_skill_posts,
+        "is_student_provider": is_student_provider,
+        "editing_post": editing_post,
+        "skill_form": form,
         "search_query": query,
         "selected_category": category,
         "selected_mode": mode,
@@ -180,6 +268,11 @@ def skill_detail_page(request, post_id):
 @login_required
 def create_skill_post(request):
     """Create a new skill post"""
+    # Only allow students, not admin/staff
+    if request.user.is_staff or request.user.is_superuser:
+        messages.error(request, "Admin users cannot create skill posts. Use the admin panel instead.")
+        return redirect("accounts:dashboard")
+    
     if request.method == "POST":
         form = SkillPostForm(request.POST)
         if form.is_valid():
