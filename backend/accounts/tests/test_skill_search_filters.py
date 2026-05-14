@@ -64,27 +64,27 @@ class SkillSearchFilterTests(TestCase):
         self.client.login(username="student1", password="Pass12345!")
 
     def test_search_by_keyword_matches_title_or_description_or_provider(self):
-        response = self.client.get(reverse("accounts:skills"), {"q": "python"})
+        response = self.client.get(reverse("accounts:skills_page"), {"q": "python"})
         self.assertContains(response, "Python for Beginners")
         self.assertNotContains(response, "Figma UI Design")
 
-        response = self.client.get(reverse("accounts:skills"), {"q": "wireframing"})
+        response = self.client.get(reverse("accounts:skills_page"), {"q": "wireframing"})
         self.assertContains(response, "Figma UI Design")
 
-        response = self.client.get(reverse("accounts:skills"), {"q": "joy"})
+        response = self.client.get(reverse("accounts:skills_page"), {"q": "joy"})
         self.assertContains(response, "Python for Beginners")
 
     def test_filter_by_category_and_mode(self):
-        response = self.client.get(reverse("accounts:skills"), {"category": SkillPost.CATEGORY_TECHNICAL})
+        response = self.client.get(reverse("accounts:skills_page"), {"category": SkillPost.CATEGORY_TECHNICAL})
         self.assertContains(response, "Python for Beginners")
         self.assertNotContains(response, "Figma UI Design")
 
-        response = self.client.get(reverse("accounts:skills"), {"mode": SkillPost.MODE_OFFLINE})
+        response = self.client.get(reverse("accounts:skills_page"), {"mode": SkillPost.MODE_OFFLINE})
         self.assertContains(response, "Figma UI Design")
         self.assertNotContains(response, "Python for Beginners")
 
     def test_only_approved_posts_are_shown(self):
-        response = self.client.get(reverse("accounts:skills"))
+        response = self.client.get(reverse("accounts:skills_page"))
         self.assertContains(response, "Python for Beginners")
         self.assertContains(response, "Figma UI Design")
         self.assertNotContains(response, "Hidden Pending Skill")

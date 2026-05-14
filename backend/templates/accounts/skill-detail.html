@@ -14,7 +14,7 @@
     <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
     <ul class="navbar-links" id="navLinks">
       <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
-      <li><a href="{% url 'accounts:skills' %}" class="active">Browse Skills</a></li>
+      <li><a href="{% url 'accounts:skills_page' %}" class="active">Browse Skills</a></li>
       <li><a href="{% url 'accounts:bookings' %}">Bookings</a></li>
       <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
       <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
@@ -25,7 +25,7 @@
 <section class="hero-banner">
   <div class="container">
     <div>
-      <p style="color:#7a9bbf;font-size:0.84rem;margin-bottom:6px;"><a href="{% url 'accounts:skills' %}" style="color:#7a9bbf;">Back to Skills</a></p>
+      <p style="color:#7a9bbf;font-size:0.84rem;margin-bottom:6px;"><a href="{% url 'accounts:skills_page' %}" style="color:#7a9bbf;">Back to Skills</a></p>
       <h1>{{ skill_post.title }}</h1>
       <p>{{ skill_post.get_category_display }} · {{ skill_post.get_session_mode_display }} · BDT {{ skill_post.fee }}/session</p>
     </div>
