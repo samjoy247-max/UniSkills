@@ -174,6 +174,12 @@ def student_dashboard(request):
     except:
         alumni_posts = []
     
+    # Get booking notifications
+    pending_provider_booking_count = Booking.objects.filter(
+        skill_post__provider=request.user,
+        status=Booking.STATUS_PENDING,
+    ).count()
+    
     context = {
         "active_page": "dashboard",
         "total_skill_posts": total_skill_posts,
@@ -184,6 +190,8 @@ def student_dashboard(request):
         "my_skill_posts": my_skill_posts,
         "bookings_as_seeker": bookings_as_seeker,
         "alumni_posts": alumni_posts,
+        "pending_booking_notifications": pending_provider_booking_count,
+        "pending_provider_booking_count": pending_provider_booking_count,
     }
     
     return render(request, "accounts/student_dashboard.html", context)
