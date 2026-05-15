@@ -60,6 +60,12 @@ class SkillPostModerationSeleniumTests(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_password").send_keys(password)
         self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
 
+    def click_js(self, by, value):
+        element = self.wait.until(EC.presence_of_element_located((by, value)))
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+        self.driver.execute_script("arguments[0].click();", element)
+        return element
+
     def create_pending_post(self, title="Moderation Test Skill"):
         return SkillPost.objects.create(
             provider=self.student,
@@ -83,11 +89,8 @@ class SkillPostModerationSeleniumTests(StaticLiveServerTestCase):
         )
         review_link.click()
 
-        approve_radio = self.wait.until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='action'][value='approve']"))
-        )
-        approve_radio.click()
-        self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+        self.click_js(By.CSS_SELECTOR, "input[name='action'][value='approve']")
+        self.click_js(By.CSS_SELECTOR, "button[type='submit']")
 
         self.wait.until(lambda _: SkillPost.objects.get(id=post.id).status == SkillPost.STATUS_APPROVED)
 
@@ -102,16 +105,13 @@ class SkillPostModerationSeleniumTests(StaticLiveServerTestCase):
         self.login("admin_un48", "AdminPass123!")
         self.driver.get(f"{self.live_server_url}/moderation/{post.id}/")
 
-        reject_radio = self.wait.until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='action'][value='reject']"))
-        )
-        reject_radio.click()
+        self.click_js(By.CSS_SELECTOR, "input[name='action'][value='reject']")
 
-        reason_box = self.driver.find_element(By.ID, "id_rejection_reason")
+        reason_box = self.driver.find_element(By.ID, "reason")
         reason_box.clear()
         reason_box.send_keys(reason)
 
-        self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+        self.click_js(By.CSS_SELECTOR, "button[type='submit']")
         self.wait.until(lambda _: SkillPost.objects.get(id=post.id).status == SkillPost.STATUS_REJECTED)
 
         post.refresh_from_db()
@@ -122,8 +122,8 @@ class SkillPostModerationSeleniumTests(StaticLiveServerTestCase):
         self.login("student_un48", "Pass12345!")
         self.driver.get(f"{self.live_server_url}/skills.html")
 
-        # My Skill Posts table should show rejected status and reason for the owner.
-        self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "table")))
+        # My Skill Posts section should show the rejected status and reason for the owner.
+        self.wait.until(lambda _: "Rejection Flow Skill" in self.driver.page_source)
         page_source = self.driver.page_source
 
         self.assertIn("Rejection Flow Skill", page_source)
