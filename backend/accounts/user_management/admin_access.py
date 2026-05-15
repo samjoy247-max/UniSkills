@@ -62,8 +62,8 @@ def login_user(request):
                 return redirect("accounts:login")
 
             if user.is_staff or user.is_superuser:
-                messages.error(request, "Admin login is allowed only at /admin/.")
-                return redirect("accounts:login")
+                login(request, user)
+                return redirect("/admin/")
 
             if user.role == "alumni" and not user.is_alumni_verified:
                 messages.error(request, "Alumni account pending verification by admin.")

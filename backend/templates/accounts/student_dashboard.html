@@ -31,7 +31,7 @@
     <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
     <ul class="navbar-links" id="navLinks">
       <li><a href="{% url 'accounts:student_dashboard' %}" class="active">Dashboard</a></li>
-      <li><a href="{% url 'accounts:skills' %}">Browse Skills</a></li>
+      <li><a href="{% url 'accounts:skills_page' %}">Browse Skills</a></li>
       <li><a href="{% url 'accounts:bookings' %}">Bookings</a></li>
       <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
       <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
@@ -59,11 +59,11 @@
 
     <!-- Stats -->
     <div class="stat-grid">
-      <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Skill Posts</div></div>
-      <div class="stat-card"><div class="stat-num">7</div><div class="stat-label">Sessions Booked</div></div>
-      <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Completed</div></div>
-      <div class="stat-card"><div class="stat-num">4.6</div><div class="stat-label">Avg. Rating</div></div>
-      <div class="stat-card"><div class="stat-num">12</div><div class="stat-label">Alumni Posts</div></div>
+      <div class="stat-card"><div class="stat-num">{{ total_skill_posts }}</div><div class="stat-label">Skill Posts</div></div>
+      <div class="stat-card"><div class="stat-num">{{ total_bookings }}</div><div class="stat-label">Sessions Booked</div></div>
+      <div class="stat-card"><div class="stat-num">{{ completed_sessions }}</div><div class="stat-label">Completed</div></div>
+      <div class="stat-card"><div class="stat-num">{{ avg_rating }}</div><div class="stat-label">Avg. Rating</div></div>
+      <div class="stat-card"><div class="stat-num">{% if alumni_posts %}{{ alumni_posts|length }}{% else %}0{% endif %}</div><div class="stat-label">Alumni Posts</div></div>
     </div>
 
     <!-- Quick Actions -->
@@ -71,12 +71,12 @@
       <span class="section-title">Quick Actions</span>
     </div>
     <div class="quick-action-grid mb-3">
-      <a href="{% url 'accounts:skills' %}" class="quick-card">
+      <a href="{% url 'accounts:skills_page' %}" class="quick-card">
         <div class="qc-icon">🔍</div>
         <h4>Browse Skills</h4>
         <p>Find a skill to learn</p>
       </a>
-      <a href="{% url 'accounts:skills' %}#create" class="quick-card">
+      <a href="{% url 'accounts:skills_page' %}#create" class="quick-card">
         <div class="qc-icon">✏️</div>
         <h4>Post a Skill</h4>
         <p>Teach what you know</p>
@@ -110,75 +110,91 @@
           <span class="section-title">Recent Bookings</span>
           <a href="{% url 'accounts:bookings' %}" class="btn btn-ghost btn-sm">View All</a>
         </div>
-        <div class="booking-item" style="border-left:3px solid var(--success);">
-          <div class="booking-left">
-            <h4>Python for Beginners</h4>
-            <p>Provider: Samiul Joy &nbsp;·&nbsp; Sat, 14 Jan · 3:00 PM</p>
-          </div>
-          <div class="booking-right">
-            <span class="badge badge-accepted">Accepted</span>
-            <a href="{% url 'accounts:bookings' %}" class="btn btn-primary btn-sm">Details</a>
-          </div>
-        </div>
-        <div class="booking-item" style="border-left:3px solid var(--amber);">
-          <div class="booking-left">
-            <h4>Figma UI Design Basics</h4>
-            <p>Provider: Esha Khadija &nbsp;·&nbsp; Mon, 16 Jan · 5:00 PM</p>
-          </div>
-          <div class="booking-right">
-            <span class="badge badge-pending">Pending</span>
-          </div>
-        </div>
-        <div class="booking-item" style="border-left:3px solid var(--info);">
-          <div class="booking-left">
-            <h4>LaTeX Report Writing</h4>
-            <p>Provider: Niloy Hasan &nbsp;·&nbsp; Wed, 10 Jan · 2:00 PM</p>
-          </div>
-          <div class="booking-right">
-            <span class="badge badge-completed">Completed</span>
-            <a href="{% url 'accounts:rating' %}" class="btn btn-amber btn-sm">Rate</a>
-          </div>
-        </div>
+        {% if bookings_as_seeker %}
+          {% for booking in bookings_as_seeker %}
+            {% if booking.status == 'accepted' %}
+              <div class="booking-item" style="border-left:3px solid var(--success);">
+            {% elif booking.status == 'pending' %}
+              <div class="booking-item" style="border-left:3px solid var(--amber);">
+            {% elif booking.status == 'completed' %}
+              <div class="booking-item" style="border-left:3px solid var(--info);">
+            {% else %}
+              <div class="booking-item" style="border-left:3px solid var(--danger);">
+            {% endif %}
+              <div class="booking-left">
+                <h4>{{ booking.skill_post.title }}</h4>
+                <p>Provider: {{ booking.skill_post.provider.username }} &nbsp;·&nbsp; {{ booking.created_at|date:"l, d M Y" }}</p>
+              </div>
+              <div class="booking-right">
+                {% if booking.status == 'pending' %}
+                  <span class="badge badge-pending">Pending</span>
+                {% elif booking.status == 'accepted' %}
+                  <span class="badge badge-accepted">Accepted</span>
+                {% elif booking.status == 'completed' %}
+                  <span class="badge badge-completed">Completed</span>
+                  {% if not booking.session.rating %}
+                    <a href="{% url 'accounts:submit_rating' booking.skill_post.id %}" class="btn btn-amber btn-sm">Rate</a>
+                  {% endif %}
+                {% else %}
+                  <span class="badge badge-cancelled">{{ booking.get_status_display }}</span>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p style="color:var(--text-muted);font-size:0.88rem;padding:20px 0;">No bookings yet. <a href="{% url 'accounts:skills_page' %}">Browse skills</a> to get started!</p>
+        {% endif %}
       </div>
 
       <!-- My Skill Posts -->
       <div>
         <div class="section-header">
           <span class="section-title">My Skill Posts</span>
-          <a href="{% url 'accounts:skills' %}#create" class="btn btn-amber btn-sm">+ New Post</a>
+          <a href="{% url 'accounts:skills_page' %}#create" class="btn btn-amber btn-sm">+ New Post</a>
         </div>
-        <div class="booking-item" style="border-left:3px solid var(--success);">
+        {% if my_skill_posts %}
+          {% for post in my_skill_posts %}
+            {% if post.status == 'approved' %}
+              <div class="booking-item" style="border-left:3px solid var(--success);">
+            {% elif post.status == 'pending' %}
+              <div class="booking-item" style="border-left:3px solid var(--amber);">
+            {% elif post.status == 'rejected' %}
+              <div class="booking-item" style="border-left:3px solid var(--danger);">
+            {% endif %}
           <div class="booking-left">
-            <h4>Django Web Development</h4>
-            <p>Technical &nbsp;·&nbsp; ৳300/session</p>
-          </div>
-          <div class="booking-right">
-            <span class="badge badge-accepted">Approved</span>
-            <span style="font-size:0.78rem;color:var(--text-muted);">2 bookings</span>
-          </div>
-        </div>
-        <div class="booking-item" style="border-left:3px solid var(--amber);">
-          <div class="booking-left">
-            <h4>English Presentation Skills</h4>
-            <p>Non-Technical &nbsp;·&nbsp; ৳150/session</p>
-          </div>
-          <div class="booking-right">
-            <span class="badge badge-review">Pending Review</span>
-          </div>
-        </div>
-        <div class="booking-item" style="border-left:3px solid var(--success);">
-          <div class="booking-left">
-            <h4>Data Structures (C++)</h4>
-            <p>Technical &nbsp;·&nbsp; ৳250/session</p>
-          </div>
-          <div class="booking-right">
-            <span class="badge badge-accepted">Approved</span>
-            <span style="font-size:0.78rem;color:var(--text-muted);">5 bookings</span>
-          </div>
-        </div>
-        <div class="alert alert-warning mt-2" style="font-size:0.82rem;">
-          <span>⏳</span> "English Presentation Skills" is pending admin approval.
-        </div>
+                <h4>{{ post.title }}</h4>
+                <p>{{ post.get_category_display }} &nbsp;·&nbsp; ৳{{ post.fee }}/session</p>
+              </div>
+              <div class="booking-right">
+                {% if post.status == 'approved' %}
+                  <span class="badge badge-accepted">Approved</span>
+                  {% with bookings_count=post.bookings.all|length %}
+                    {% if bookings_count > 0 %}
+                      <span style="font-size:0.78rem;color:var(--text-muted);">{{ bookings_count }} booking{% if bookings_count != 1 %}s{% endif %}</span>
+                    {% endif %}
+                  {% endwith %}
+                {% elif post.status == 'pending' %}
+                  <span class="badge badge-review">Pending Review</span>
+                {% elif post.status == 'rejected' %}
+                  <span class="badge badge-danger">Rejected</span>
+                  {% if post.rejection_reason %}
+                    <span style="display:block;font-size:0.78rem;color:var(--text-muted);max-width:240px;">{{ post.rejection_reason }}</span>
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+
+          {% with pending_posts=my_skill_posts|dictsort:"status"|slice:":1" %}
+            {% if pending_posts %}
+              <div class="alert alert-warning mt-2" style="font-size:0.82rem;">
+                <span>⏳</span> Some posts are pending admin approval.
+              </div>
+            {% endif %}
+          {% endwith %}
+        {% else %}
+          <p style="color:var(--text-muted);font-size:0.88rem;padding:20px 0;">No skill posts yet. <a href="{% url 'accounts:skills_page' %}">Create one</a> to start teaching!</p>
+        {% endif %}
       </div>
     </div>
 
@@ -188,34 +204,27 @@
       <span class="section-title">Latest from Alumni</span>
       <a href="{% url 'accounts:alumni' %}" class="btn btn-ghost btn-sm">See All</a>
     </div>
-    <div class="card-grid">
-      <div class="card">
-        <div class="alumni-mini">
-          <div class="avatar-sm">TA</div>
-          <div>
-            <div style="font-weight:600;font-size:0.9rem;color:var(--navy);">Tanvir Ahmed</div>
-            <div style="font-size:0.77rem;color:var(--text-muted);">SWE @ BRAC IT · CSE '24</div>
+    {% if alumni_posts %}
+      <div class="card-grid">
+        {% for post in alumni_posts %}
+          <div class="card">
+            <div class="alumni-mini">
+              <div class="avatar-sm">{{ post.author.username|slice:":2"|upper }}</div>
+              <div>
+                <div style="font-weight:600;font-size:0.9rem;color:var(--navy);">{{ post.author.username }}</div>
+                <div style="font-size:0.77rem;color:var(--text-muted);">{{ post.author.current_company|default:"" }} &nbsp;·&nbsp; {{ post.author.graduation_year|default:"" }}</div>
+              </div>
+              <span class="badge badge-verified" style="margin-left:auto;">Verified</span>
+            </div>
+            <h4 style="font-size:0.95rem;margin-bottom:6px;color:var(--navy);">{{ post.title }}</h4>
+            <p style="font-size:0.84rem;color:var(--text-muted);line-height:1.55;">{{ post.content|truncatewords:20 }}</p>
+            <a href="{% url 'accounts:alumni' %}" class="btn btn-ghost btn-sm mt-2">Read More →</a>
           </div>
-          <span class="badge badge-verified" style="margin-left:auto;">Verified</span>
-        </div>
-        <h4 style="font-size:0.95rem;margin-bottom:6px;color:var(--navy);">How I landed my first SWE job fresh out of UAP</h4>
-        <p style="font-size:0.84rem;color:var(--text-muted);line-height:1.55;">Resume building, DSA practice, and the 3 interview mistakes you should avoid...</p>
-        <a href="{% url 'accounts:alumni' %}" class="btn btn-ghost btn-sm mt-2">Read More →</a>
+        {% endfor %}
       </div>
-      <div class="card">
-        <div class="alumni-mini">
-          <div class="avatar-sm" style="background:var(--navy-mid);">RK</div>
-          <div>
-            <div style="font-weight:600;font-size:0.9rem;color:var(--navy);">Rabeya Khan</div>
-            <div style="font-size:0.77rem;color:var(--text-muted);">PM @ Pathao · CSE '23</div>
-          </div>
-          <span class="badge badge-verified" style="margin-left:auto;">Verified</span>
-        </div>
-        <h4 style="font-size:0.95rem;margin-bottom:6px;color:var(--navy);">Top 5 tools every CS student should learn in 2025</h4>
-        <p style="font-size:0.84rem;color:var(--text-muted);line-height:1.55;">Git, Docker, Postman, Linux basics, and one tool that most people overlook...</p>
-        <a href="{% url 'accounts:alumni' %}" class="btn btn-ghost btn-sm mt-2">Read More →</a>
-      </div>
-    </div>
+    {% else %}
+      <p style="color:var(--text-muted);font-size:0.88rem;padding:20px 0;">No alumni posts available yet.</p>
+    {% endif %}
 
   </div>
 </main>

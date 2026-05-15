@@ -12,6 +12,10 @@ urlpatterns = [
     path("register/alumni/", views.register_alumni, name="register_alumni"),
     path("login/", views.login_user, name="login"),
     path("logout/", views.logout_user, name="logout"),
+    
+    # OTP Verification
+    path("verify-email/", views.verify_email_otp, name="verify_email_otp"),
+    path("resend-otp/", views.resend_otp, name="resend_otp"),
 
     # Dashboards
     path("dashboard/", views.dashboard, name="dashboard"),
@@ -29,6 +33,7 @@ urlpatterns = [
     path("skill/<int:post_id>/delete/", views.delete_skill_post, name="delete_skill_post"),
 
     # Skill Post Moderation - UN-48
+    path("moderation/", views.moderation_dashboard, name="moderation_dashboard_legacy"),
     path("moderation.html", views.moderation_dashboard, name="moderation_dashboard"),
     path("moderation/<int:post_id>/", views.moderate_skill_post, name="moderate_skill_post"),
 
