@@ -94,7 +94,7 @@
             <a class="nav-link" href="{% url 'accounts:bookings' %}">
               Bookings
               {% if pending_booking_notifications %}
-                <span class="badge bg-danger ms-1">{{ pending_booking_notifications }}</span>
+                <span class="badge bg-danger ms-1">{{ pending_booking_notifications }} new</span>
               {% endif %}
             </a>
           </li>
