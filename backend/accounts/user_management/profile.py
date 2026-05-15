@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Avg, Count
 from django.shortcuts import redirect, render
 
-from ..models import CustomUser, Rating
+from ..models import Booking, CustomUser, Rating
 
 
 class ProfileUpdateForm(forms.ModelForm):
@@ -55,6 +55,18 @@ def profile_page(request):
     rating_summary = received_ratings.aggregate(avg=Avg("rating"), total=Count("id"))
     avg_received_rating = round(rating_summary["avg"], 1) if rating_summary["avg"] else 0.0
 
+    incoming_bookings = Booking.objects.filter(
+        skill_post__provider=request.user
+    ).select_related("student", "skill_post").order_by("-created_at")
+
+    booking_summary = incoming_bookings.aggregate(
+        total=Count("id"),
+    )
+
+    pending_incoming_count = incoming_bookings.filter(status=Booking.STATUS_PENDING).count()
+    accepted_incoming_count = incoming_bookings.filter(status=Booking.STATUS_ACCEPTED).count()
+    completed_incoming_count = incoming_bookings.filter(status=Booking.STATUS_COMPLETED).count()
+
     if request.method == "POST":
         form = ProfileUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
@@ -70,6 +82,11 @@ def profile_page(request):
         "avg_received_rating": avg_received_rating,
         "received_rating_count": rating_summary["total"],
         "recent_received_ratings": received_ratings[:5],
+        "incoming_bookings": incoming_bookings[:5],
+        "incoming_booking_total": booking_summary["total"],
+        "incoming_pending_count": pending_incoming_count,
+        "incoming_accepted_count": accepted_incoming_count,
+        "incoming_completed_count": completed_incoming_count,
     })
 
 
