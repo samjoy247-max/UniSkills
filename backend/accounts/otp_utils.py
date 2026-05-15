@@ -35,10 +35,15 @@ def create_and_send_otp(email):
     )
     
     backend_name = getattr(settings, "EMAIL_BACKEND", "")
+    print(
+        f"[EMAIL DEBUG] backend={backend_name} host={settings.EMAIL_HOST} port={settings.EMAIL_PORT} "
+        f"tls={settings.EMAIL_USE_TLS} from={settings.DEFAULT_FROM_EMAIL} to={email}",
+        flush=True,
+    )
 
     # If console backend is active, OTP won't be delivered to inbox.
     if "console.EmailBackend" in backend_name:
-        print(f"[EMAIL CONFIG] Console backend active. OTP for {email}: {otp_code}")
+        print(f"[EMAIL CONFIG] Console backend active. OTP for {email}: {otp_code}", flush=True)
         return otp_obj, False, "Console backend is active. Configure SMTP to send real emails."
 
     # Try to send email
@@ -82,12 +87,12 @@ UniSkills Team
             html_message=html_message,
             fail_silently=False,
         )
-        print(f"[EMAIL SENT] OTP sent to {email}")
+        print(f"[EMAIL SENT] OTP sent to {email}", flush=True)
         return otp_obj, True, None
     except Exception as e:
-        print(f"[EMAIL ERROR] Failed to send OTP to {email}: {str(e)}")
-        print(f"[OTP] OTP for {email}: {otp_code}")
-        return otp_obj, False, str(e)
+        print(f"[EMAIL ERROR] Failed to send OTP to {email}: {type(e).__name__}: {str(e)}", flush=True)
+        print(f"[OTP] OTP for {email}: {otp_code}", flush=True)
+        return otp_obj, False, f"{type(e).__name__}: {str(e)}"
 
 
 def verify_otp(email, otp_code):

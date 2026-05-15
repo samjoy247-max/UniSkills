@@ -94,7 +94,7 @@ def resend_otp(request):
     else:
         messages.error(
             request,
-            "OTP could not be sent. SMTP is not configured correctly. "
-            "Set EMAIL_BACKEND to SMTP and provide valid EMAIL_HOST_USER and EMAIL_HOST_PASSWORD."
+            "OTP could not be sent. Check the server console for the exact SMTP error, "
+            "then verify EMAIL_BACKEND, EMAIL_HOST_USER, and EMAIL_HOST_PASSWORD."
         )
     return redirect('accounts:verify_email_otp')

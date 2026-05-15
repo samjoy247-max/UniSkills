@@ -117,11 +117,11 @@ def register_student(request):
             else:
                 messages.warning(
                     request,
-                    "Registration completed, but OTP email could not be delivered. "
+                    f"Registration completed, but OTP email could not be delivered. Details: {email_error or 'unknown error'}. "
                     "Please check SMTP configuration and click Resend OTP."
                 )
                 if email_error:
-                    print(f"[OTP SEND ERROR] {email_error}")
+                    print(f"[OTP SEND ERROR] {email_error}", flush=True)
 
             return redirect("accounts:verify_email_otp")
     else:
