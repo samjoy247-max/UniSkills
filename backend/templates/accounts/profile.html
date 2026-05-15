@@ -55,6 +55,23 @@
       {% endfor %}
     {% endif %}
 
+    <div class="card" style="padding:18px 22px;margin:0 auto 20px;max-width:900px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;align-items:stretch;">
+        <div style="background:#f8fbff;border:1px solid #d9e2ef;border-radius:12px;padding:16px;">
+          <div style="font-size:0.8rem;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;">Average Rating Received</div>
+          <div style="font-size:2rem;font-weight:700;color:#0f4c81;line-height:1.1;">{{ avg_received_rating }}</div>
+        </div>
+        <div style="background:#f8fbff;border:1px solid #d9e2ef;border-radius:12px;padding:16px;">
+          <div style="font-size:0.8rem;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;">Total Reviews</div>
+          <div style="font-size:2rem;font-weight:700;color:#0f4c81;line-height:1.1;">{{ received_rating_count }}</div>
+        </div>
+        <div style="background:#f8fbff;border:1px solid #d9e2ef;border-radius:12px;padding:16px;">
+          <div style="font-size:0.8rem;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;">Profile Type</div>
+          <div style="font-size:1.1rem;font-weight:700;color:#172033;line-height:1.4;">{{ user.role|title }}</div>
+        </div>
+      </div>
+    </div>
+
     <div class="card" style="padding:24px; max-width:900px; margin:0 auto;">
       <h3 style="margin-bottom:14px;">Profile Information</h3>
       <form method="post">
@@ -127,6 +144,30 @@
           <a class="btn btn-outline" href="{% if user.role == 'alumni' %}{% url 'accounts:alumni_dashboard' %}{% else %}{% url 'accounts:student_dashboard' %}{% endif %}">Back</a>
         </div>
       </form>
+    </div>
+
+    <div class="card" style="padding:24px; max-width:900px; margin:20px auto 0;">
+      <h3 style="margin-bottom:14px;">Recent Reviews Received</h3>
+      {% if recent_received_ratings %}
+        <div style="display:grid;gap:12px;">
+          {% for rating in recent_received_ratings %}
+            <div style="border:1px solid #d9e2ef;border-radius:12px;padding:14px 16px;background:#fff;">
+              <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                <div>
+                  <strong>{{ rating.skill_post.title }}</strong>
+                  <div style="color:#6b7280;font-size:0.9rem;">by {{ rating.rater.username }} · {{ rating.created_at|date:"d M Y" }}</div>
+                </div>
+                <div style="font-weight:700;color:#f59e0b;">{{ rating.rating|floatformat:1 }}/5</div>
+              </div>
+              {% if rating.review_text %}
+                <div style="margin-top:10px;color:#374151;">{{ rating.review_text }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="color:#6b7280;margin-bottom:0;">No ratings received yet. After a student completes a session and submits feedback, the average will appear here.</p>
+      {% endif %}
     </div>
   </div>
 </main>

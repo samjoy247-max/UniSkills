@@ -2,9 +2,10 @@ from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from django.db.models import Avg, Count
 from django.shortcuts import redirect, render
 
-from ..models import CustomUser
+from ..models import CustomUser, Rating
 
 
 class ProfileUpdateForm(forms.ModelForm):
@@ -48,6 +49,12 @@ class ProfileUpdateForm(forms.ModelForm):
 
 @login_required
 def profile_page(request):
+    received_ratings = Rating.objects.filter(skill_post__provider=request.user).select_related(
+        "rater", "skill_post"
+    ).order_by("-created_at")
+    rating_summary = received_ratings.aggregate(avg=Avg("rating"), total=Count("id"))
+    avg_received_rating = round(rating_summary["avg"], 1) if rating_summary["avg"] else 0.0
+
     if request.method == "POST":
         form = ProfileUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
@@ -57,7 +64,13 @@ def profile_page(request):
     else:
         form = ProfileUpdateForm(instance=request.user)
 
-    return render(request, "accounts/profile.html", {"active_page": "profile", "form": form})
+    return render(request, "accounts/profile.html", {
+        "active_page": "profile",
+        "form": form,
+        "avg_received_rating": avg_received_rating,
+        "received_rating_count": rating_summary["total"],
+        "recent_received_ratings": received_ratings[:5],
+    })
 
 
 @login_required

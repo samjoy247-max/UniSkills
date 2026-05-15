@@ -3,13 +3,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
-from django.db.models import Q
+from django.db.models import Avg, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponseForbidden
 
 from ..models import CustomUser, SkillPost, Booking, AlumniPost, Rating
 from ..otp_utils import create_and_send_otp
-from django.db.models import Avg
 
 
 class StudentRegistrationForm(UserCreationForm):
@@ -160,14 +159,11 @@ def student_dashboard(request):
         status=Booking.STATUS_COMPLETED
     ).count()
     
-    # Calculate average rating from completed sessions
-    avg_rating = 0.0
-    if completed_sessions > 0:
-        ratings = Rating.objects.filter(
-            rater=request.user,
-            session__booking__student=request.user
-        ).aggregate(avg=Avg('rating'))
-        avg_rating = round(ratings['avg'], 1) if ratings['avg'] else 0.0
+    # Calculate average rating received on this user's skill posts
+    rating_stats = Rating.objects.filter(
+        skill_post__provider=request.user
+    ).aggregate(avg=Avg('rating'))
+    avg_rating = round(rating_stats['avg'], 1) if rating_stats['avg'] else 0.0
     
     # Get alumni posts
     try:
