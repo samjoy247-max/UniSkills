@@ -166,7 +166,30 @@
                     <input type="hidden" name="action" value="accept">
                     <button type="submit" class="btn btn-success btn-sm">✓ Accept</button>
                   </form>
-                  <button class="btn btn-danger btn-sm" onclick="alert('Decline feature coming soon')">✗ Decline</button>
+                  <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#declineModal{{ booking.id }}">✗ Decline</button>
+                </div>
+                <!-- Decline Modal -->
+                <div class="modal fade" id="declineModal{{ booking.id }}" tabindex="-1" aria-labelledby="declineModalLabel">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="declineModalLabel">Decline Booking Request</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <form method="POST" action="{% url 'accounts:respond_booking' booking.id %}">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                          <p>Decline this booking request from <strong>{{ booking.student.username }}</strong>?</p>
+                          <label class="form-label">Reason (optional):</label>
+                          <textarea name="decline_reason" class="form-control" rows="3" placeholder="Why are you declining this request?" style="resize:vertical;"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button type="submit" name="action" value="decline" class="btn btn-danger">Decline</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
                 </div>
               {% elif booking.status == 'accepted' %}
                 <span class="badge badge-accepted">Accepted</span>
