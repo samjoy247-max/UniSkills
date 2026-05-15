@@ -91,10 +91,10 @@
           <li class="nav-item"><a class="nav-link" href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'accounts:skills_page' %}">Skills</a></li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'accounts:bookings' %}">
+            <a class="nav-link" href="{% url 'accounts:bookings' %}" style="position:relative;">
               Bookings
               {% if pending_booking_notifications %}
-                <span class="badge bg-danger ms-1">{{ pending_booking_notifications }} new</span>
+                <span style="display:inline-block;margin-left:6px;padding:3px 8px;border-radius:12px;background:#dc3545;color:#fff;font-size:0.75rem;font-weight:700;vertical-align:middle;">{{ pending_booking_notifications }} new</span>
               {% endif %}
             </a>
           </li>
