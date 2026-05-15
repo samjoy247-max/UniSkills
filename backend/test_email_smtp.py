@@ -13,6 +13,8 @@ django.setup()
 from django.core.mail import send_mail
 from django.conf import settings
 
+has_error = False
+
 print("=" * 80)
 print("📧 UNISKILLS EMAIL CONFIGURATION TEST")
 print("=" * 80)
@@ -69,6 +71,7 @@ try:
         print(f"❌ Email failed to send")
         
 except Exception as e:
+    has_error = True
     print(f"❌ Error sending email: {e}")
     import traceback
     traceback.print_exc()
@@ -112,6 +115,7 @@ try:
         print(f"❌ OTP email failed to send")
         
 except Exception as e:
+    has_error = True
     print(f"❌ Error sending OTP email: {e}")
 
 # Test 3: Booking Confirmation Email Simulation
@@ -155,6 +159,7 @@ try:
         print(f"❌ Booking email failed to send")
         
 except Exception as e:
+    has_error = True
     print(f"❌ Error sending booking email: {e}")
 
 # Summary
@@ -174,8 +179,15 @@ if "console" in settings.EMAIL_BACKEND.lower():
     print("   2. Use Gmail App Password (not regular password)")
     print("   3. Enable 'Less secure app access' if using regular Gmail account")
 else:
-    print("\n✅ Production Email Backend (SMTP)")
-    print("   Emails are sent via actual SMTP server")
+    if has_error:
+        print("\n❌ Production Email Backend (SMTP) is configured but sending failed")
+        print("   Check EMAIL_HOST_USER and EMAIL_HOST_PASSWORD (Gmail App Password required)")
+    else:
+        print("\n✅ Production Email Backend (SMTP)")
+        print("   Emails are sent via actual SMTP server")
 
 print("\n✓ Email configuration test completed!")
 print("=" * 80)
+
+if has_error:
+    sys.exit(1)

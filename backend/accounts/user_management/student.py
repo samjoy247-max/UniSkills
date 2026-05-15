@@ -107,11 +107,22 @@ def register_student(request):
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
             new_user = form.save()
-            # Send OTP email
-            create_and_send_otp(new_user.email)
+            # Send OTP email and capture delivery status.
+            _, email_sent, email_error = create_and_send_otp(new_user.email)
             # Store email in session for OTP verification
             request.session['pending_verification_email'] = new_user.email
-            messages.success(request, "Registration successful! Please verify your email with the OTP sent to your inbox.")
+
+            if email_sent:
+                messages.success(request, "Registration successful! Please verify your email with the OTP sent to your inbox.")
+            else:
+                messages.warning(
+                    request,
+                    "Registration completed, but OTP email could not be delivered. "
+                    "Please check SMTP configuration and click Resend OTP."
+                )
+                if email_error:
+                    print(f"[OTP SEND ERROR] {email_error}")
+
             return redirect("accounts:verify_email_otp")
     else:
         form = StudentRegistrationForm()

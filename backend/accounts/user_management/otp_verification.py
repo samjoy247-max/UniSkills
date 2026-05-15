@@ -88,6 +88,13 @@ def resend_otp(request):
         messages.error(request, "User not found.")
         return redirect('accounts:register_student')
 
-    create_and_send_otp(email)
-    messages.success(request, f"OTP resent to {email}. Check your email or console for the OTP code.")
+    _, email_sent, _ = create_and_send_otp(email)
+    if email_sent:
+        messages.success(request, f"OTP resent to {email}. Please check your inbox/spam.")
+    else:
+        messages.error(
+            request,
+            "OTP could not be sent. SMTP is not configured correctly. "
+            "Set EMAIL_BACKEND to SMTP and provide valid EMAIL_HOST_USER and EMAIL_HOST_PASSWORD."
+        )
     return redirect('accounts:verify_email_otp')

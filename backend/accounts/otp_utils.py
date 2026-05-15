@@ -17,7 +17,11 @@ def generate_otp():
 
 
 def create_and_send_otp(email):
-    """Create OTP and send to email"""
+    """Create OTP and send to email.
+
+    Returns:
+        tuple: (otp_obj, email_sent, error_message)
+    """
     otp_code = generate_otp()
     
     # Delete existing OTPs for this email
@@ -30,6 +34,13 @@ def create_and_send_otp(email):
         expires_at=timezone.now() + timedelta(minutes=10)
     )
     
+    backend_name = getattr(settings, "EMAIL_BACKEND", "")
+
+    # If console backend is active, OTP won't be delivered to inbox.
+    if "console.EmailBackend" in backend_name:
+        print(f"[EMAIL CONFIG] Console backend active. OTP for {email}: {otp_code}")
+        return otp_obj, False, "Console backend is active. Configure SMTP to send real emails."
+
     # Try to send email
     try:
         subject = 'UniSkills Email Verification OTP'
@@ -72,12 +83,11 @@ UniSkills Team
             fail_silently=False,
         )
         print(f"[EMAIL SENT] OTP sent to {email}")
+        return otp_obj, True, None
     except Exception as e:
-        # Fallback: print to console if email fails
         print(f"[EMAIL ERROR] Failed to send OTP to {email}: {str(e)}")
         print(f"[OTP] OTP for {email}: {otp_code}")
-    
-    return otp_obj
+        return otp_obj, False, str(e)
 
 
 def verify_otp(email, otp_code):
