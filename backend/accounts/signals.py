@@ -1,14 +1,13 @@
-"""
-Minimal database initialization for UniSkills.
-
-Use this only if you want to refresh the default admin account manually.
-After migrations, the default admin is also created automatically.
-"""
-
 from django.contrib.auth import get_user_model
+from django.db.models.signals import post_migrate
+from django.dispatch import receiver
 
 
-def initialize_database():
+@receiver(post_migrate)
+def ensure_default_admin(sender, **kwargs):
+    if getattr(sender, "name", None) != "accounts":
+        return
+
     User = get_user_model()
     admin_user, _ = User.objects.get_or_create(
         username="admin",
@@ -34,15 +33,3 @@ def initialize_database():
     admin_user.is_alumni_verified = True
     admin_user.set_password("admin")
     admin_user.save()
-
-    print("Default admin ensured: admin / admin")
-
-
-if __name__ == "__main__":
-    try:
-        initialize_database()
-    except Exception as exc:
-        print(f"ERROR: {exc}")
-        import traceback
-
-        traceback.print_exc()
