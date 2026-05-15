@@ -60,7 +60,8 @@
     <!-- Stats -->
     <div class="stat-grid">
       <div class="stat-card"><div class="stat-num">{{ total_skill_posts }}</div><div class="stat-label">Skill Posts</div></div>
-      <div class="stat-card"><div class="stat-num">{{ total_bookings }}</div><div class="stat-label">Sessions Booked</div></div>
+      <div class="stat-card"><div class="stat-num">{{ total_bookings }}</div><div class="stat-label">Booked as Seeker</div></div>
+      <div class="stat-card"><div class="stat-num">{{ tutored_bookings }}</div><div class="stat-label">Tutored as Provider</div></div>
       <div class="stat-card"><div class="stat-num">{{ completed_sessions }}</div><div class="stat-label">Completed</div></div>
       <div class="stat-card"><div class="stat-num">{{ avg_rating }}</div><div class="stat-label">Avg. Rating</div></div>
       <div class="stat-card"><div class="stat-num">{% if alumni_posts %}{{ alumni_posts|length }}{% else %}0{% endif %}</div><div class="stat-label">Alumni Posts</div></div>
