@@ -177,6 +177,9 @@
                   <span class="badge badge-review">Pending Review</span>
                 {% elif post.status == 'rejected' %}
                   <span class="badge badge-danger">Rejected</span>
+                  {% if post.rejection_reason %}
+                    <span style="display:block;font-size:0.78rem;color:var(--text-muted);max-width:240px;">{{ post.rejection_reason }}</span>
+                  {% endif %}
                 {% endif %}
               </div>
             </div>

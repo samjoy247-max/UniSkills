@@ -33,6 +33,7 @@ urlpatterns = [
     path("skill/<int:post_id>/delete/", views.delete_skill_post, name="delete_skill_post"),
 
     # Skill Post Moderation - UN-48
+    path("moderation/", views.moderation_dashboard, name="moderation_dashboard_legacy"),
     path("moderation.html", views.moderation_dashboard, name="moderation_dashboard"),
     path("moderation/<int:post_id>/", views.moderate_skill_post, name="moderate_skill_post"),
 
