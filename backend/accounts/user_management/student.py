@@ -115,11 +115,17 @@ def register_student(request):
             if email_sent:
                 messages.success(request, "Registration successful! Please verify your email with the OTP sent to your inbox.")
             else:
-                messages.warning(
-                    request,
-                    f"Registration completed, but OTP email could not be delivered. Details: {email_error or 'unknown error'}. "
-                    "Please check SMTP configuration and click Resend OTP."
-                )
+                if email_error and "Console backend is active" in email_error:
+                    messages.info(
+                        request,
+                        "Registration successful! OTP was printed in the server console because the app is running in development mode."
+                    )
+                else:
+                    messages.warning(
+                        request,
+                        f"Registration completed, but OTP email could not be delivered. Details: {email_error or 'unknown error'}. "
+                        "Please check SMTP configuration and click Resend OTP."
+                    )
                 if email_error:
                     print(f"[OTP SEND ERROR] {email_error}", flush=True)
 

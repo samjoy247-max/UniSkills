@@ -88,13 +88,19 @@ def resend_otp(request):
         messages.error(request, "User not found.")
         return redirect('accounts:register_student')
 
-    _, email_sent, _ = create_and_send_otp(email)
+    _, email_sent, email_error = create_and_send_otp(email)
     if email_sent:
         messages.success(request, f"OTP resent to {email}. Please check your inbox/spam.")
     else:
-        messages.error(
-            request,
-            "OTP could not be sent. Check the server console for the exact SMTP error, "
-            "then verify EMAIL_BACKEND, EMAIL_HOST_USER, and EMAIL_HOST_PASSWORD."
-        )
+        if email_error and "Console backend is active" in email_error:
+            messages.info(
+                request,
+                "OTP was printed in the server console because this clone is using the default development email backend."
+            )
+        else:
+            messages.error(
+                request,
+                "OTP could not be sent. Check the server console for the exact SMTP error, "
+                "then verify EMAIL_BACKEND, EMAIL_HOST_USER, and EMAIL_HOST_PASSWORD."
+            )
     return redirect('accounts:verify_email_otp')

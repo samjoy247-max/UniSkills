@@ -54,16 +54,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "uniskills_backend.wsgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("MYSQL_DATABASE", "uniskills_test"),
-        "USER": os.environ.get("MYSQL_USER", "root"),
-        "PASSWORD": os.environ.get("MYSQL_PASSWORD", ""),
-        "HOST": os.environ.get("MYSQL_HOST", "127.0.0.1"),
-        "PORT": os.environ.get("MYSQL_PORT", "3306"),
+MYSQL_DATABASE = os.environ.get("MYSQL_DATABASE", "").strip()
+MYSQL_USER = os.environ.get("MYSQL_USER", "").strip()
+MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD", "").strip()
+MYSQL_HOST = os.environ.get("MYSQL_HOST", "").strip()
+MYSQL_PORT = os.environ.get("MYSQL_PORT", "").strip()
+
+if MYSQL_DATABASE and MYSQL_USER and MYSQL_HOST:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": MYSQL_DATABASE,
+            "USER": MYSQL_USER,
+            "PASSWORD": MYSQL_PASSWORD,
+            "HOST": MYSQL_HOST,
+            "PORT": MYSQL_PORT or "3306",
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = []
 
@@ -89,7 +103,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Email Configuration for OTP
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND",
-    "django.core.mail.backends.smtp.EmailBackend"  # SMTP backend for Gmail
+    "django.core.mail.backends.console.EmailBackend"
 )
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
