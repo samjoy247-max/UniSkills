@@ -153,7 +153,9 @@ def student_dashboard(request):
     
     # Calculate stats
     total_skill_posts = my_skill_posts.count()
-    total_bookings = Booking.objects.filter(student=request.user).count()
+    total_bookings = Booking.objects.filter(
+        Q(student=request.user) | Q(skill_post__provider=request.user)
+    ).distinct().count()
     completed_sessions = Booking.objects.filter(
         student=request.user,
         status=Booking.STATUS_COMPLETED
