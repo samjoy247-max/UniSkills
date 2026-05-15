@@ -90,7 +90,14 @@
           {% if user.is_authenticated %}
           <li class="nav-item"><a class="nav-link" href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'accounts:skills_page' %}">Skills</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'accounts:bookings' %}">Bookings</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'accounts:bookings' %}">
+              Bookings
+              {% if pending_booking_notifications %}
+                <span class="badge bg-danger ms-1">{{ pending_booking_notifications }}</span>
+              {% endif %}
+            </a>
+          </li>
           <li class="nav-item"><a class="nav-link" href="{% url 'accounts:profile' %}">Profile</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a></li>
           {% else %}

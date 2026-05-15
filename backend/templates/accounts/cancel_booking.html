@@ -13,7 +13,7 @@
                     <hr>
                     
                     <p><strong>Skill:</strong> {{ booking.skill_post.title }}</p>
-                    <p><strong>Instructor:</strong> {{ booking.skill_post.provider.get_full_name }}</p>
+                    <p><strong>Instructor:</strong> {{ booking.skill_post.provider.get_full_name|default:booking.skill_post.provider.username }}</p>
                     <p><strong>Status:</strong> <span class="badge bg-warning">{{ booking.get_status_display }}</span></p>
                     
                     <div class="alert alert-danger mt-3">

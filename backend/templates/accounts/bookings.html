@@ -15,7 +15,14 @@
     <ul class="navbar-links" id="navLinks">
       <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
       <li><a href="{% url 'accounts:skills_page' %}">Browse Skills</a></li>
-      <li><a href="{% url 'accounts:bookings' %}" class="active">Bookings</a></li>
+      <li>
+        <a href="{% url 'accounts:bookings' %}" class="active">
+          Bookings
+          {% if pending_booking_notifications %}
+            <span style="display:inline-flex;align-items:center;justify-content:center;min-width:1.35rem;height:1.35rem;padding:0 .35rem;border-radius:999px;background:#dc3545;color:#fff;font-size:0.72rem;font-weight:700;margin-left:6px;">{{ pending_booking_notifications }}</span>
+          {% endif %}
+        </a>
+      </li>
       <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
       <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
     </ul>
@@ -60,7 +67,7 @@
           {% endif %}
             <div class="booking-left">
               <h4>{{ booking.skill_post.title }}</h4>
-              <p>Provider: {{ booking.skill_post.provider.username }} &nbsp;·&nbsp; {{ booking.skill_post.available_time|date:"l, d M Y · h:i A" }} &nbsp;·&nbsp; {{ booking.skill_post.get_session_mode_display }}</p>
+              <p>Provider: {{ booking.skill_post.provider.get_full_name|default:booking.skill_post.provider.username }} &nbsp;·&nbsp; {{ booking.skill_post.available_time|date:"l, d M Y · h:i A" }} &nbsp;·&nbsp; {{ booking.skill_post.get_session_mode_display }}</p>
               <p>Fee: ৳{{ booking.skill_post.fee }} &nbsp;·&nbsp; Booked on: {{ booking.created_at|date:"d M Y" }}</p>
 
               {% if booking.status == 'accepted' %}
@@ -117,6 +124,9 @@
     <div id="bpanel-provider" style="display:none;">
       <div class="alert alert-info mb-3">
         <span>📋</span> Booking requests from other students for your skill posts.
+        {% if pending_provider_booking_count %}
+          <strong style="margin-left:6px;">{{ pending_provider_booking_count }} new request{{ pending_provider_booking_count|pluralize }}</strong>
+        {% endif %}
       </div>
 
       {% if bookings_as_provider %}

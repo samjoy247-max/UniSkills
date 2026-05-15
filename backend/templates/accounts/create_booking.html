@@ -15,7 +15,7 @@
                     <h5 class="card-title">{{ skill_post.title }}</h5>
                     <p class="card-text">{{ skill_post.description }}</p>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Provider:</strong> {{ skill_post.provider.get_full_name }}</li>
+                        <li class="list-group-item"><strong>Provider:</strong> {{ skill_post.provider.get_full_name|default:skill_post.provider.username }}</li>
                         <li class="list-group-item"><strong>Category:</strong> {{ skill_post.get_category_display }}</li>
                         <li class="list-group-item"><strong>Session Mode:</strong> {{ skill_post.get_session_mode_display }}</li>
                         <li class="list-group-item"><strong>Fee:</strong> ৳{{ skill_post.fee }}</li>
