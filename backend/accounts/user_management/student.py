@@ -250,6 +250,14 @@ def skills_page(request):
     else:
         form = SkillPostForm(instance=editing_post) if editing_post else SkillPostForm()
 
+    # Only block booking if user has an ACTIVE (pending/accepted) booking for that skill.
+    # Completed or declined bookings do NOT block — Esha can re-book the same skill.
+    user_bookings_qs = Booking.objects.filter(
+        student=request.user,
+        status__in=("pending", "accepted"),
+    ).values_list("skill_post_id", flat=True)
+    active_booked_ids = set(user_bookings_qs)  # only pending/accepted block the card
+
     context = {
         "active_page": "skills",
         "skill_posts": skill_posts,
@@ -262,6 +270,7 @@ def skills_page(request):
         "selected_mode": mode,
         "category_choices": SkillPost.CATEGORY_CHOICES,
         "mode_choices": SkillPost.MODE_CHOICES,
+        "active_booked_ids": active_booked_ids,
     }
     return render(request, "accounts/skills.html", context)
 
@@ -274,12 +283,21 @@ def skill_detail_page(request, post_id):
         id=post_id,
         status=SkillPost.STATUS_APPROVED,
     )
+    # Check if user has an existing booking for this post
+    existing_booking = None
+    if request.user.is_authenticated and skill_post.provider != request.user:
+        existing_booking = Booking.objects.filter(
+            student=request.user,
+            skill_post=skill_post,
+        ).order_by("-created_at").first()
+
     return render(
         request,
         "accounts/skill-detail.html",
         {
             "active_page": "skills",
             "skill_post": skill_post,
+            "existing_booking": existing_booking,
         },
     )
 

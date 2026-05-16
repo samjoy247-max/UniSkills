@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +33,12 @@
     <ul class="navbar-links" id="navLinks">
       <li><a href="{% url 'accounts:student_dashboard' %}" class="active">Dashboard</a></li>
       <li><a href="{% url 'accounts:skills_page' %}">Browse Skills</a></li>
-      <li><a href="{% url 'accounts:bookings' %}">Bookings</a></li>
+      <li style="position:relative;">
+        <a href="{% url 'accounts:bookings' %}">Bookings</a>
+        {% if pending_booking_notifications %}
+          <span class="nav-badge">{{ pending_booking_notifications }}</span>
+        {% endif %}
+      </li>
       <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
       <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
     </ul>
@@ -85,10 +90,12 @@
       </a>
       <a href="{% url 'accounts:bookings' %}" class="quick-card">
         <div class="qc-icon">📅</div>
-        <h4>My Bookings{% if pending_provider_booking_count %}<span class="qc-badge">{{ pending_provider_booking_count }} new</span>{% endif %}</h4>
+        <h4>My Bookings{% if pending_booking_notifications %}<span class="qc-badge">{{ pending_booking_notifications }} new</span>{% endif %}</h4>
         <p>View session history</p>
         {% if pending_provider_booking_count %}
           <p style="margin-top:6px;color:#dc3545;font-weight:600;">{{ pending_provider_booking_count }} new booking request{{ pending_provider_booking_count|pluralize }} waiting</p>
+        {% elif pending_seeker_booking_count %}
+          <p style="margin-top:6px;color:#059669;font-weight:600;">{{ pending_seeker_booking_count }} session{{ pending_seeker_booking_count|pluralize }} accepted</p>
         {% endif %}
       </a>
       <a href="{% url 'accounts:alumni' %}" class="quick-card">

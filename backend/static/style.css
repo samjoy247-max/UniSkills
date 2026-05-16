@@ -57,9 +57,11 @@ main { flex: 1; padding: 36px 0 64px; }
 .navbar-brand { font-family: var(--font-head); font-size: 1.3rem; color: #fff; display: flex; align-items: center; gap: 9px; text-decoration: none; }
 .navbar-brand span { color: var(--amber); }
 .navbar-brand img { width: 30px; height: 30px; object-fit: contain; border-radius: 4px; }
-.navbar-links { display: flex; align-items: center; gap: 2px; list-style: none; }
+.navbar-links { display: flex; align-items: center; gap: 2px; list-style: none; overflow: visible; }
+.navbar-links li { position: relative; }
 .navbar-links a { color: #b8cde0; font-size: 0.88rem; font-weight: 500; padding: 6px 13px; border-radius: 6px; text-decoration: none; transition: var(--transition); }
 .navbar-links a:hover, .navbar-links a.active { color: #fff; background: rgba(255,255,255,0.11); }
+.nav-badge { position: absolute; top: -5px; right: -8px; display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #dc3545; color: #fff; font-size: 0.62rem; font-weight: 700; line-height: 1; pointer-events: none; z-index: 10; }
 .navbar-user { display: flex; align-items: center; gap: 10px; }
 .avatar-sm { width: 34px; height: 34px; border-radius: 50%; background: var(--amber); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.78rem; color: var(--navy); flex-shrink: 0; letter-spacing: 0.5px; }
 .nav-name { color: #c8d8e8; font-size: 0.87rem; font-weight: 500; }

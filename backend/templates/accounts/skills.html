@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +14,12 @@
     <ul class="navbar-links" id="navLinks">
       <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
       <li><a href="{% url 'accounts:skills_page' %}" class="active">Browse Skills</a></li>
-      <li><a href="{% url 'accounts:bookings' %}">Bookings</a></li>
+      <li style="position:relative;">
+        <a href="{% url 'accounts:bookings' %}">Bookings</a>
+        {% if pending_booking_notifications %}
+          <span style="position:absolute;top:-6px;right:-10px;display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#dc3545;color:#fff;font-size:0.65rem;font-weight:700;line-height:1;">{{ pending_booking_notifications }}</span>
+        {% endif %}
+      </li>
       <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
       <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
     </ul>
@@ -87,8 +92,15 @@
             <span>Fee: BDT {{ post.fee }}</span>
             <span>Time: {{ post.available_time|date:"d M Y, h:i A" }}</span>
           </div>
-          <div style="margin-top:14px;display:flex;gap:8px;">
+          <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
             <a href="{% url 'accounts:skill_detail' post.id %}" class="btn btn-primary btn-sm">View Detail</a>
+            {% if post.provider != request.user %}
+              {% if post.id in active_booked_ids %}
+                <span style="font-size:0.78rem;padding:4px 10px;border-radius:20px;background:rgba(16,185,129,0.12);color:#059669;font-weight:600;">✓ Booked</span>
+              {% else %}
+                <a href="{% url 'accounts:create_booking' post.id %}" class="btn btn-amber btn-sm">Book Now</a>
+              {% endif %}
+            {% endif %}
           </div>
         </div>
       {% empty %}

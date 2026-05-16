@@ -231,7 +231,6 @@ class Booking(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        unique_together = [["student", "skill_post"]]
 
     def __str__(self):
         return f"Booking #{self.id}: {self.student.username} → {self.skill_post.title} ({self.get_status_display()})"

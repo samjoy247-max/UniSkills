@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +15,12 @@
     <ul class="navbar-links" id="navLinks">
       <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
       <li><a href="{% url 'accounts:skills_page' %}" class="active">Browse Skills</a></li>
-      <li><a href="{% url 'accounts:bookings' %}">Bookings</a></li>
+      <li style="position:relative;">
+        <a href="{% url 'accounts:bookings' %}">Bookings</a>
+        {% if pending_booking_notifications %}
+          <span style="position:absolute;top:-6px;right:-10px;display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#dc3545;color:#fff;font-size:0.65rem;font-weight:700;line-height:1;">{{ pending_booking_notifications }}</span>
+        {% endif %}
+      </li>
       <li><a href="{% url 'accounts:alumni' %}">Alumni</a></li>
       <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
     </ul>
@@ -49,15 +54,43 @@
 
     <div class="card">
       <h3 style="margin-bottom:8px;">Book This Session</h3>
-      <p class="text-muted" style="font-size:0.86rem;">Ready to learn this skill? Book a session now and the instructor will respond to your request.</p>
+      <p class="text-muted" style="font-size:0.86rem;">Ready to learn this skill? Book a session and the instructor will respond to your request.</p>
       {% if request.user.is_authenticated %}
         {% if request.user.id == skill_post.provider.id %}
-          <p class="text-muted" style="color: #d97706; font-weight: 600;">You cannot book your own skill post</p>
+          <p style="color:#d97706;font-weight:600;">You cannot book your own skill post.</p>
+        {% elif existing_booking %}
+          {% if existing_booking.status == 'pending' %}
+            <div class="alert alert-warning" style="margin-bottom:12px;font-size:0.88rem;">
+              ⏳ <strong>Booking Pending</strong> — You already have a pending booking for this skill. Waiting for the instructor to respond.
+            </div>
+            <a href="{% url 'accounts:bookings' %}" class="btn btn-ghost">View My Bookings</a>
+          {% elif existing_booking.status == 'accepted' %}
+            <div class="alert alert-success" style="margin-bottom:12px;font-size:0.88rem;">
+              ✅ <strong>Booking Accepted!</strong> — Your session has been confirmed. Contact the instructor to finalise details.
+            </div>
+            <a href="{% url 'accounts:bookings' %}" class="btn btn-ghost">View My Bookings</a>
+          {% elif existing_booking.status == 'completed' %}
+            <div class="alert alert-info" style="margin-bottom:12px;font-size:0.88rem;">
+              🎓 <strong>Session Completed</strong> — You have already attended a session for this skill. You can book another one!
+            </div>
+            <a href="{% url 'accounts:create_booking' skill_post.id %}" class="btn btn-amber">Book New Session</a>
+            <a href="{% url 'accounts:bookings' %}" class="btn btn-ghost" style="margin-left:8px;">Rate in Bookings ↗</a>
+          {% elif existing_booking.status == 'declined' or existing_booking.status == 'cancelled' %}
+            <div class="alert" style="background:rgba(220,53,69,0.08);border:1px solid rgba(220,53,69,0.2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:0.88rem;">
+              {% if existing_booking.status == 'declined' %}
+                ✗ <strong>Previous booking was declined.</strong>{% if existing_booking.decline_reason %} Reason: "{{ existing_booking.decline_reason }}"{% endif %}
+              {% else %}
+                ✗ <strong>Previous booking was cancelled.</strong>
+              {% endif %}
+              You can book again below.
+            </div>
+            <a href="{% url 'accounts:create_booking' skill_post.id %}" class="btn btn-amber">Book Again</a>
+          {% endif %}
         {% else %}
           <a href="{% url 'accounts:create_booking' skill_post.id %}" class="btn btn-amber">Book Now</a>
         {% endif %}
       {% else %}
-        <p class="text-muted">Please <a href="{% url 'accounts:login' %}">login</a> to book a session</p>
+        <p class="text-muted">Please <a href="{% url 'accounts:login' %}">login</a> to book a session.</p>
       {% endif %}
     </div>    
   </div>

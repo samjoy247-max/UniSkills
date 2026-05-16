@@ -21,7 +21,7 @@
     <a href="{% url 'accounts:landing' %}" class="navbar-brand">Uni<span>Skills</span></a>
     <ul class="navbar-links">
       <li><a href="{% url 'accounts:student_dashboard' %}">Dashboard</a></li>
-      <li><a href="{% url 'accounts:booking_list' %}">Bookings</a></li>
+      <li><a href="{% url 'accounts:bookings' %}">Bookings</a></li>
     </ul>
     <div class="navbar-user">
       <div class="avatar-sm">{{ user.username|slice:":2"|upper }}</div>

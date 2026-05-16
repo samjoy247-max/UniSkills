@@ -57,15 +57,16 @@ def create_booking(request, post_id):
         messages.error(request, "You cannot book your own skill posts")
         return redirect("accounts:skill_detail", post_id=post_id)
     
-    # Check if already booked
+    # Check if already has an ACTIVE booking (pending or accepted)
     existing_booking = Booking.objects.filter(
         student=request.user,
-        skill_post=skill_post
-    ).exists()
+        skill_post=skill_post,
+        status__in=[Booking.STATUS_PENDING, Booking.STATUS_ACCEPTED]
+    ).first()
     
     if existing_booking:
-        messages.warning(request, "You already have a booking request for this skill")
-        return redirect("accounts:skill_detail", post_id=post_id)
+        messages.warning(request, "You already have an active booking for this skill. Cancel or wait for the current one to be resolved before re-booking.")
+        return redirect("accounts:bookings")
     
     if request.method == "POST":
         form = BookingForm(request.POST)
@@ -127,15 +128,19 @@ def respond_booking(request, booking_id):
 
 @login_required
 def bookings_page(request):
-    """View all bookings (as seeker and as provider) ΓÇö UN-64"""
-    # Bookings this user made as a seeker
+    """View active bookings (pending/accepted) as seeker and as provider — UN-64"""
+    ACTIVE = ("pending", "accepted")
+
+    # Bookings this user made as a seeker — only active ones
     bookings_as_seeker = Booking.objects.filter(
-        student=request.user
+        student=request.user,
+        status__in=ACTIVE,
     ).select_related("skill_post", "skill_post__provider").order_by("-created_at")
 
-    # Bookings for skill posts this user provides
+    # Bookings for skill posts this user provides — only active ones
     bookings_as_provider = Booking.objects.filter(
-        skill_post__provider=request.user
+        skill_post__provider=request.user,
+        status__in=ACTIVE,
     ).select_related("student", "skill_post").order_by("-created_at")
 
     context = {
