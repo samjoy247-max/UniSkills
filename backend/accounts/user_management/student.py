@@ -289,10 +289,13 @@ def skill_detail_page(request, post_id):
     # Check if user has an existing booking for this post
     existing_booking = None
     if request.user.is_authenticated and skill_post.provider != request.user:
-        existing_booking = Booking.objects.filter(
+        existing_booking = Booking.objects.select_related("skill_post", "skill_post__provider", "session").filter(
             student=request.user,
             skill_post=skill_post,
         ).order_by("-created_at").first()
+        if existing_booking:
+            existing_booking.can_rate = booking_can_be_rated(existing_booking)
+            existing_booking.is_rated = bool(getattr(existing_booking, "session", None) and getattr(existing_booking.session, "rating", None))
 
     return render(
         request,
