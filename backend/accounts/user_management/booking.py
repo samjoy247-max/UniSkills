@@ -14,6 +14,21 @@ from ..models import Booking, SkillPost, SessionHistory
 from django.forms import ModelForm, Textarea, TextInput
 
 
+def get_booking_scheduled_datetime(booking):
+    """Return the datetime that should be used to judge rating availability."""
+    return booking.requested_date or booking.skill_post.available_time
+
+
+def booking_can_be_rated(booking):
+    """Allow rating after completion or once the scheduled time has passed."""
+    scheduled_at = get_booking_scheduled_datetime(booking)
+    if booking.status == Booking.STATUS_COMPLETED:
+        return True
+    if booking.status != Booking.STATUS_ACCEPTED:
+        return False
+    return bool(scheduled_at and scheduled_at <= timezone.now())
+
+
 class BookingForm(ModelForm):
     """Form for creating booking requests"""
     class Meta:
@@ -136,6 +151,9 @@ def bookings_page(request):
         student=request.user,
         status__in=ACTIVE,
     ).select_related("skill_post", "skill_post__provider").order_by("-created_at")
+
+    for booking in bookings_as_seeker:
+        booking.can_rate = booking_can_be_rated(booking)
 
     # Bookings for skill posts this user provides — only active ones
     bookings_as_provider = Booking.objects.filter(

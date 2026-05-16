@@ -142,6 +142,9 @@
                   <span class="badge badge-pending">Pending</span>
                 {% elif booking.status == 'accepted' %}
                   <span class="badge badge-accepted">Accepted</span>
+                  {% if booking.can_rate %}
+                    <a href="{% url 'accounts:submit_rating' booking.skill_post.id %}" class="btn btn-amber btn-sm" style="margin-top:6px;display:block;">Rate</a>
+                  {% endif %}
                 {% elif booking.status == 'completed' %}
                   <span class="badge badge-completed">Completed</span>
                   {% if not booking.session.rating %}

@@ -104,7 +104,12 @@
                 <a href="{% url 'accounts:cancel_booking' booking.id %}" class="btn btn-ghost btn-sm" style="color:var(--danger);border-color:var(--danger);">Cancel</a>
               {% elif booking.status == 'accepted' %}
                 <span class="badge badge-accepted">Accepted</span>
-                <span style="font-size:0.78rem;color:var(--text-muted);display:block;margin-top:4px;">Awaiting session completion</span>
+                {% if booking.can_rate %}
+                  <span style="font-size:0.78rem;color:var(--success);display:block;margin-top:4px;">Session time passed</span>
+                  <a href="{% url 'accounts:submit_rating' booking.skill_post.id %}" class="btn btn-amber btn-sm" style="margin-top:6px;display:block;">⭐ Rate Session</a>
+                {% else %}
+                  <span style="font-size:0.78rem;color:var(--text-muted);display:block;margin-top:4px;">Awaiting session completion</span>
+                {% endif %}
               {% elif booking.status == 'completed' %}
                 <span class="badge badge-completed">Completed</span>
                 {% if booking.session %}

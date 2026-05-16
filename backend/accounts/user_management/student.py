@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponseForbidden
 
 from ..models import CustomUser, SkillPost, Booking, AlumniPost, Rating
+from .booking import booking_can_be_rated
 from ..otp_utils import create_and_send_otp
 
 
@@ -147,6 +148,8 @@ def student_dashboard(request):
     bookings_as_seeker = Booking.objects.filter(
         student=request.user
     ).select_related("skill_post", "skill_post__provider").order_by("-created_at")[:3]
+    for booking in bookings_as_seeker:
+        booking.can_rate = booking_can_be_rated(booking)
     
     # Get skill posts created by user that are approved
     approved_posts = my_skill_posts.filter(status=SkillPost.STATUS_APPROVED)
